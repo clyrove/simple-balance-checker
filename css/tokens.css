@@ -1,0 +1,116 @@
+/* ==========================================================================
+   DESIGN TOKENS & SYSTEM VARIABLES (ENLARGED FOR 16:9 LANDSCAPE KIOSK)
+   Palette: Navy, Putih, Kuning Pastel
+   Strict Rules:
+   - Font: Inter
+   - Letter Spacing: Max -0.02em (tighter down to -0.06em, NEVER positive)
+   - Corner Shape: Squircle
+   - Zero 1px borders
+   - Zero box-shadows (elevation via tonal color layering)
+   - Zero glows
+   - High legibility from 1-2 meters distance on landscape kiosk screens
+   ========================================================================== */
+
+:root {
+  /* --------------------------------------------------------------------------
+     1. TYPOGRAPHY (Inter + Strict Negative Tracking)
+     -------------------------------------------------------------------------- */
+  --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* Letter spacing strictly <= -0.02em (never positive) */
+  --tracking-normal: -0.02em;    /* Body text, max allowed */
+  --tracking-tight: -0.025em;    /* Buttons, tags, sublabels */
+  --tracking-tighter: -0.035em;  /* Headings, names */
+  --tracking-display: -0.045em;  /* Hero labels & clock */
+  --tracking-hero: -0.055em;     /* Giant Balance Number Display */
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  /* Scaled-up Font Scales for 16:9 Landscape Kiosk Readability */
+  --text-xs: 0.875rem;       /* 14px */
+  --text-sm: 1rem;           /* 16px */
+  --text-base: 1.125rem;     /* 18px */
+  --text-md: 1.25rem;        /* 20px */
+  --text-lg: 1.5rem;         /* 24px */
+  --text-xl: 1.875rem;       /* 30px */
+  --text-2xl: 2.375rem;      /* 38px */
+  --text-3xl: 3rem;          /* 48px */
+  --text-clock: clamp(3rem, 4.2vw, 4.2rem);
+  --text-hero: clamp(4.5rem, 6.8vw, 6.6rem);
+
+  /* --------------------------------------------------------------------------
+     2. COLOR PALETTE: NAVY, PUTIH, KUNING PASTEL
+     -------------------------------------------------------------------------- */
+  /* Canvas Background */
+  --color-canvas: #EAF0F7;
+  --color-canvas-subtle: #F4F7FB;
+
+  /* Navy Tones */
+  --navy-deep: #091524;
+  --navy-primary: #10213A;
+  --navy-surface: #1B3254;
+  --navy-tonal-100: #E1E8F2;
+  --navy-tonal-200: #CAD6E6;
+  --navy-tonal-300: #A2B7D3;
+  --navy-muted: #546B87;
+
+  /* Putih (Pure White & Light Tones) */
+  --color-white: #FFFFFF;
+  --color-white-subtle: #F8FAFD;
+  --color-white-pressed: #EDF2F8;
+
+  /* Kuning Pastel (Soft Butter/Pastel Yellow) */
+  --pastel-yellow: #FEF08A;
+  --pastel-yellow-light: #FEF9C3;
+  --pastel-yellow-deep: #FDE047;
+  --pastel-yellow-text: #713F12;
+
+  /* Semantic UI Surfaces (Color-based Elevation, ZERO box-shadow) */
+  --surface-base: var(--color-canvas);
+  --surface-card-outer: var(--navy-tonal-100);
+  --surface-card-inner: var(--color-white);
+  --surface-hero-balance: var(--pastel-yellow-light);
+  --surface-chip-neutral: var(--navy-tonal-100);
+  --surface-chip-active: var(--navy-primary);
+  --surface-chip-success: #DCFCE7;
+
+  /* Text Colors */
+  --text-primary: var(--navy-deep);
+  --text-secondary: var(--navy-muted);
+  --text-on-navy: var(--color-white);
+  --text-on-yellow: #3F2104;
+  --text-success: #15803D;
+
+  /* --------------------------------------------------------------------------
+     3. SQUIRCLE CORNER RADII (Continuous Curvature)
+     -------------------------------------------------------------------------- */
+  --radius-squircle-xs: 14px;
+  --radius-squircle-sm: 20px;
+  --radius-squircle-md: 32px;
+  --radius-squircle-lg: 42px;
+  --radius-squircle-xl: 56px;
+  --radius-squircle-full: 9999px;
+
+  /* --------------------------------------------------------------------------
+     4. KIOSK SPACING (Scale for 16:9 Landscape Screen)
+     -------------------------------------------------------------------------- */
+  --space-2xs: 6px;
+  --space-xs: 10px;
+  --space-sm: 16px;
+  --space-md: 22px;
+  --space-lg: 30px;
+  --space-xl: 40px;
+  --space-2xl: 56px;
+
+  /* --------------------------------------------------------------------------
+     5. TRANSITIONS & TIMING
+     -------------------------------------------------------------------------- */
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-smooth: cubic-bezier(0.25, 1, 0.5, 1);
+  --duration-fast: 160ms;
+  --duration-normal: 300ms;
+}

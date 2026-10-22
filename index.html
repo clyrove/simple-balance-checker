@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kios Cek Saldo Santri</title>
+  
+  <!-- Font Inter from Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Remix Icon -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css">
+  
+  <!-- GSAP Animation Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="kiosk-body">
+
+  <!-- ==================================================================== -->
+  <!-- MAIN KIOSK VIEWPORT: OPTIMIZED FOR 16:9 LANDSCAPE SCREENS            -->
+  <!-- ==================================================================== -->
+  <main class="kiosk-viewport" role="main" aria-label="Kios Pengecekan Saldo Santri">
+
+    <!-- ------------------------------------------------------------------ -->
+    <!-- TOP HEADER: ENLARGED DIGITAL CLOCK & RFID DEVICE STATUS             -->
+    <!-- ------------------------------------------------------------------ -->
+    <header class="kiosk-top-bar" role="banner">
+      
+      <!-- Big Colorful Clock Showcase -->
+      <div class="kiosk-clock-showcase" aria-label="Waktu Kios">
+        <div class="clock-date-chip">
+          <i class="ri-calendar-2-line" aria-hidden="true"></i>
+          <span id="kiosk-live-date">Memuat tanggal...</span>
+        </div>
+        <div class="clock-digits-display">
+          <span id="kiosk-clock-hours" class="time-main">--</span>
+          <span class="time-colon">:</span>
+          <span id="kiosk-clock-minutes" class="time-main">--</span>
+          <span id="kiosk-clock-seconds" class="time-sec-badge">--</span>
+          <span class="time-zone-label">WIB</span>
+        </div>
+      </div>
+
+      <!-- Hardware RFID Status Pill -->
+      <div class="device-status-badge" id="kiosk-device-status" role="status" aria-label="Status Sensor RFID Siap">
+        <span class="status-indicator-circle" aria-hidden="true"></span>
+        <span>Sensor RFID Siap</span>
+      </div>
+
+    </header>
+
+
+    <!-- ------------------------------------------------------------------ -->
+    <!-- CENTER STAGE: ZERO LAYOUT SHIFTING FIXED-FRAME ARCHITECTURE        -->
+    <!-- ------------------------------------------------------------------ -->
+    <div class="kiosk-center-stage">
+      <div id="kiosk-state-container" class="kiosk-card-frame state-waiting" role="region" aria-live="polite">
+
+        <!-- ============================================================== -->
+        <!-- STATE 1: WAITING FOR RFID SCAN (Idle Standby)                 -->
+        <!-- ============================================================== -->
+        <section id="kiosk-waiting-view" class="kiosk-view-layer active" aria-hidden="false">
+          
+          <div class="kiosk-inner-card">
+            
+            <!-- Top Eyebrow Row -->
+            <div class="card-eyebrow-row">
+              <span class="tonal-chip chip-navy">
+                <i class="ri-rfid-line" aria-hidden="true"></i>
+                <span id="kiosk-reader-label">NFC / RFID Reader</span>
+              </span>
+
+              <!-- Masked Placeholder Card Number -->
+              <span class="tonal-chip chip-masked" id="kiosk-waiting-card-mask" aria-label="Nomor kartu menunggu scan">
+                <i class="ri-asterisk" aria-hidden="true"></i>
+                <span>ID: •••• ••--</span>
+              </span>
+
+              <span class="tonal-chip chip-yellow">
+                <i class="ri-flashlight-line" aria-hidden="true"></i>
+                <span>Siap Scan</span>
+              </span>
+            </div>
+
+            <!-- Central RFID Scanning Target Area -->
+            <div id="kiosk-rfid-sensor-area" class="rfid-interactive-surface" tabindex="0" role="button" aria-label="Dekatkan kartu santri ke sensor RFID">
+              <div class="radar-pulse-ring-group" aria-hidden="true">
+                <div class="radar-ring r-1"></div>
+                <div class="radar-ring r-2"></div>
+                <div class="radar-ring r-3"></div>
+              </div>
+
+              <!-- Enlarged Stylized Card Visual -->
+              <div class="rfid-icon-hero" aria-hidden="true">
+                <div class="card-emblem">
+                  <i class="ri-wireless-charging-fill"></i>
+                </div>
+              </div>
+
+              <div class="sensor-text-block">
+                <h2 class="sensor-hero-title">Tempelkan Kartu Santri</h2>
+                <p class="sensor-subtitle">Dekatkan kartu santri ke modul sensor RFID untuk memeriksa saldo</p>
+              </div>
+            </div>
+
+            <!-- Bottom Dock Info -->
+            <div class="card-dock-info">
+              <span class="dock-pill">
+                <i class="ri-shield-check-line" aria-hidden="true"></i>
+                <span>Layanan Mandiri Pengecekan Saldo Santri</span>
+              </span>
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- ============================================================== -->
+        <!-- STATE 2: ACTIVE BALANCE DISPLAYED (Card Scanned / Tapped)     -->
+        <!-- ============================================================== -->
+        <section id="kiosk-active-view" class="kiosk-view-layer" aria-hidden="true">
+          
+          <div class="kiosk-inner-card">
+            
+            <!-- Top Eyebrow Row: Account Type, Masked ID (Password-style), Status -->
+            <div class="card-eyebrow-row">
+              <div class="eyebrow-left-tags">
+                <span class="tonal-chip chip-navy" id="kiosk-account-type">
+                  <i class="ri-wallet-3-line" aria-hidden="true"></i>
+                  <span>Tabungan Santri</span>
+                </span>
+                
+                <!-- Tersembunyi seperti password, hanya tampil 2 digit terakhir nomor RFID -->
+                <span class="tonal-chip chip-masked" id="kiosk-card-masked-number" aria-label="Nomor ID Kartu Terproteksi">
+                  <i class="ri-asterisk" aria-hidden="true"></i>
+                  <span class="masked-text">ID: •••• ••01</span>
+                </span>
+              </div>
+
+              <span class="tonal-chip chip-success" id="kiosk-account-status">
+                <i class="ri-check-line" aria-hidden="true"></i>
+                <span>Kartu Aktif</span>
+              </span>
+            </div>
+
+            <!-- ---------------------------------------------------------- -->
+            <!-- PENTING: HERO TOTAL BALANCE SECTION (KUNING PASTEL ACCENT)  -->
+            <!-- ---------------------------------------------------------- -->
+            <div class="hero-balance-plate" aria-label="Informasi Total Saldo">
+              
+              <div class="balance-meta-header">
+                <span class="balance-caption-title">TOTAL BALANCE SAAT INI</span>
+                <span class="balance-time-stamp" id="kiosk-last-tap-time">Diperbarui Baru Saja</span>
+              </div>
+
+              <!-- Giant Balance Number Display -->
+              <div class="balance-number-row" role="status" aria-live="polite">
+                <span class="currency-tag" id="kiosk-balance-currency" aria-hidden="true">Rp</span>
+                <div class="balance-digits-holder" id="kiosk-balance-display-wrapper">
+                  <!-- Animated via GSAP SplitText & Counter -->
+                  <span class="balance-digits" id="kiosk-balance-amount" aria-label="Nominal Saldo Santri">0</span>
+                </div>
+              </div>
+
+              <!-- Enlarged Daily Limit Label & Status -->
+              <div class="balance-tonal-badge-row">
+                <span class="hero-limit-badge" id="kiosk-limit-container">
+                  <i class="ri-bank-card-line" aria-hidden="true"></i>
+                  <span>Limit Belanja Harian: <strong id="kiosk-daily-limit">Rp 100.000 / hari</strong></span>
+                </span>
+                <span class="hero-status-badge">
+                  <i class="ri-checkbox-circle-fill" aria-hidden="true"></i>
+                  <span>Saldo Tersedia</span>
+                </span>
+              </div>
+
+            </div>
+
+            <!-- ---------------------------------------------------------- -->
+            <!-- LESS-PENTING: USER & SANTRI DETAILS SECTION (ENLARGED)      -->
+            <!-- ---------------------------------------------------------- -->
+            <div class="user-identity-plate" aria-label="Identitas Pemilik Kartu">
+              
+              <div class="user-avatar-squircle" id="kiosk-user-avatar" aria-hidden="true">
+                <span id="kiosk-user-initials">AF</span>
+              </div>
+
+              <div class="user-meta-column">
+                <span class="user-subcaption">NAMA SANTRI</span>
+                <!-- Unique ID for API Fetching (Enlarged) -->
+                <h3 class="user-display-name" id="kiosk-user-name">Ahmad Fauzi Ridwan</h3>
+                
+                <!-- Enlarged NIS and Class/Asrama -->
+                <div class="user-badge-group">
+                  <span class="user-chip-tag tag-nis" id="kiosk-user-nis">NIS: 202401089</span>
+                  <span class="tag-separator" aria-hidden="true">•</span>
+                  <span class="user-chip-tag tag-class" id="kiosk-user-class">Kelas 10-A • Asrama Abu Bakar</span>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- ---------------------------------------------------------- -->
+            <!-- KIOSK 3-SECOND PRIVACY AUTO-CLOSE FOOTER                   -->
+            <!-- ---------------------------------------------------------- -->
+            <div class="card-dock-footer">
+              <div class="countdown-bar-wrap" role="timer" aria-label="Waktu tutup otomatis 3 detik">
+                <div class="countdown-track">
+                  <div id="kiosk-countdown-progress" class="countdown-fill"></div>
+                </div>
+                <div class="countdown-caption">
+                  <span>Menutup otomatis dalam <strong id="kiosk-timer-seconds">3</strong> detik</span>
+                </div>
+              </div>
+
+              <button type="button" id="kiosk-btn-done" class="btn-done-squircle" aria-label="Selesai dan kembali ke sensor">
+                <i class="ri-check-line" aria-hidden="true"></i>
+                <span>Selesai</span>
+              </button>
+            </div>
+
+          </div>
+
+        </section>
+
+      </div>
+    </div>
+
+    <!-- Hidden Raw Data Inputs for Direct Programmatic Retrieval via API -->
+    <div class="sr-only" aria-hidden="true">
+      <input type="hidden" id="kiosk-api-raw-balance" value="0">
+      <input type="hidden" id="kiosk-api-card-uid" value="">
+      <input type="hidden" id="kiosk-api-santri-id" value="">
+    </div>
+
+  </main>
+
+  <!-- ==================================================================== -->
+  <!-- DEVELOPER & RFID SIMULATOR MODAL (TRIGGERED ONLY VIA SHORTCUT ALT + S)-->
+  <!-- ==================================================================== -->
+  <dialog id="kiosk-dev-modal" class="dev-squircle-dialog" aria-labelledby="modal-sim-title">
+    <div class="dev-dialog-surface">
+      
+      <div class="dev-modal-head">
+        <div class="modal-title-wrap">
+          <i class="ri-terminal-window-fill" aria-hidden="true"></i>
+          <h2 id="modal-sim-title">RFID Reader Simulator & API Console</h2>
+        </div>
+        <button type="button" class="dev-modal-close" id="modal-dev-close" aria-label="Tutup simulator">
+          <i class="ri-close-line" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <div class="dev-modal-body">
+        <form id="kiosk-simulate-form" onsubmit="return false;">
+          
+          <div class="dev-form-group">
+            <label for="sim-input-card-uid">Nomor UID Kartu RFID (Input dari Alat Scan Fisik):</label>
+            <input type="text" id="sim-input-card-uid" class="dev-input" value="STR-202401" placeholder="Misal: STR-202401">
+          </div>
+
+          <div class="dev-form-grid">
+            <div class="dev-form-group">
+              <label for="sim-input-name">Nama Santri:</label>
+              <input type="text" id="sim-input-name" class="dev-input" value="Ahmad Fauzi Ridwan">
+            </div>
+            <div class="dev-form-group">
+              <label for="sim-input-balance">Nominal Saldo (Rp):</label>
+              <input type="number" id="sim-input-balance" class="dev-input" value="350000" step="5000">
+            </div>
+          </div>
+
+          <div class="dev-form-grid">
+            <div class="dev-form-group">
+              <label for="sim-input-nis">NIS Santri:</label>
+              <input type="text" id="sim-input-nis" class="dev-input" value="202401089">
+            </div>
+            <div class="dev-form-group">
+              <label for="sim-input-class">Kelas / Asrama:</label>
+              <input type="text" id="sim-input-class" class="dev-input" value="Kelas 10-A • Asrama Abu Bakar">
+            </div>
+          </div>
+
+          <div class="dev-form-group">
+            <label for="sim-input-limit">Limit Belanja Harian (Rp):</label>
+            <input type="number" id="sim-input-limit" class="dev-input" value="100000" step="5000">
+          </div>
+
+          <div class="dev-action-row">
+            <button type="button" id="sim-btn-apply" class="dev-btn dev-btn-primary">
+              <i class="ri-rfid-line" aria-hidden="true"></i>
+              <span>Simulasi Scan Kartu</span>
+            </button>
+            <button type="button" id="sim-btn-reset" class="dev-btn dev-btn-secondary">
+              <i class="ri-refresh-line" aria-hidden="true"></i>
+              <span>Reset ke Standby</span>
+            </button>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+  </dialog>
+
+  <!-- JavaScript Modules -->
+  <script src="js/kiosk-api.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
