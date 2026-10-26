@@ -46,8 +46,8 @@
       unknownUser: 'Pemilik Wallet',
 
       // Pesan Kios Lock & Keamanan
-      kioskLocked: 'Kios Terkunci: Keyboard dinonaktifkan & kursor disembunyikan.',
-      kioskUnlocked: 'Mode Pemeliharaan IT: Keyboard & kursor diaktifkan. (Tekan Alt + O untuk mengunci kembali)'
+      kioskLocked: 'Kios Terkunci: Layar penuh terkunci, keyboard & tombol mouse dinonaktifkan.',
+      kioskUnlocked: 'Mode Pemeliharaan IT: Keyboard, mouse & jendela diaktifkan. (Tekan Alt + O untuk mengunci)'
     },
 
     // ------------------------------------------------------------------------

@@ -15,13 +15,15 @@ Antarmuka UI/UX Kios Pengecekan Saldo Mandiri Santri berbasis **HTML, CSS murni,
      - **Limit Harian**: `data.limitHarian` / `data.dailyLimit` (contoh: `Rp 100.000 / hari`).
      - **Limit Bulanan**: `data.limitBulanan` / `data.monthlyLimit` (contoh: `Rp 500.000 / bulan`).
    - **Bebas Error jika Nilai Kosong**: Jika backend API tidak mengirimkan nilai limit (bernilai `null`, `undefined`, `0`, atau kosong), sistem secara anggun menampilkan **"Tidak ada data"** tanpa memunculkan error konsol.
-3. **Pengunci Kios & Sembunyikan Kursor (`js/kiosk-lock.js`)**:
+3. **Pengunci Kios, Layar Penuh & Blokir Mouse (`js/kiosk-lock.js`)**:
+   - **Force Fullscreen & Kunci Fullscreen**: Kios otomatis memaksa mode layar penuh (*Fullscreen/F11*) dan menguncinya. Santri tidak dapat keluar dari layar penuh menggunakan tombol `Esc` atau `F11`.
+   - **Blokir Seluruh Klik Tombol Mouse**: Seluruh klik tombol mouse (kiri, kanan, tengah, drag, dan menu klik kanan) dinonaktifkan total saat kios terkunci.
+   - **Kursor Mouse Disembunyikan**: Kursor mouse disembunyikan secara otomatis (`cursor: none !important;`) untuk display kiosk.
    - **Blokir Total Keyboard Santri**: Menonaktifkan seluruh tombol fisik keyboard laptop/kios agar santri tidak dapat mengetik sembarangan atau menekan shortcut berbahaya (F5, F11, Ctrl+R, Alt+Tab, dll.).
-   - **Kursor Mouse Disembunyikan**: Kursor mouse disembunyikan secara otomatis (`cursor: none !important;`) untuk pengalaman *pure touch-kiosk*.
    - **Tetap Izinkan Scanner RFID**: Karakter cepat dari hardware reader RFID USB tetap dibaca secara otomatis.
    - **Shortcut Rahasia Buka Kunci `[Alt + O]`**:
-     - Untuk membuka keyboard dan memunculkan kembali kursor (misalnya saat pemeliharaan oleh tim IT), cukup tekan kombinasi tombol **`Alt + O`**.
-     - Tekan **`Alt + O`** kembali untuk mengunci kios.
+     - Untuk membuka keyboard, memunculkan kursor, dan mengaktifkan kembali kontrol mouse & jendela (saat pemeliharaan oleh tim IT), cukup tekan kombinasi tombol **`Alt + O`**.
+     - Tekan **`Alt + O`** kembali untuk mengunci kios dan mengaktifkan kembali layar penuh otomatis.
 4. **Integrasi Backend API Riil (`api/lookup.php`)**:
    - Terhubung via HTTP `POST` dengan parameter `wallet=<UID>`.
    - Dilengkapi **Micro-Cache In-Memory (5 Detik)** untuk merespons instan (0 ms) jika santri menempelkan kartu dua kali berturut-turut.
