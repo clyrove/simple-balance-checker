@@ -3,18 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kios Cek Saldo Santri</title>
+  <title>Cek Saldo Santri – Al-Wafi</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#0B192C">
   
-  <!-- Font Inter from Google Fonts -->
+  <!-- Font Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- Remix Icon -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css">
+  <!-- Remix Icon: Mendukung vendor lokal offline dan CDN fallback -->
+  <link rel="stylesheet" href="vendor/remixicon/remixicon.css" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css';">
   
-  <!-- GSAP Animation Library -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <!-- GSAP Animation Library: Mendukung vendor lokal offline dan CDN fallback -->
+  <script src="vendor/gsap.min.js"></script>
+  <script>
+    if (typeof window.gsap === 'undefined') {
+      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"><\/script>');
+    }
+  </script>
   
   <!-- Stylesheets -->
   <link rel="stylesheet" href="css/tokens.css">
@@ -134,13 +141,13 @@
               <div class="eyebrow-left-tags">
                 <span class="tonal-chip chip-navy" id="kiosk-account-type">
                   <i class="ri-wallet-3-line" aria-hidden="true"></i>
-                  <span>Tabungan Santri</span>
+                  <span>Saldo Wallet</span>
                 </span>
                 
                 <!-- Tersembunyi seperti password, hanya tampil 2 digit terakhir nomor RFID -->
                 <span class="tonal-chip chip-masked" id="kiosk-card-masked-number" aria-label="Nomor ID Kartu Terproteksi">
                   <i class="ri-asterisk" aria-hidden="true"></i>
-                  <span class="masked-text">ID: •••• ••01</span>
+                  <span class="masked-text">ID: •••• ••--</span>
                 </span>
               </div>
 
@@ -164,16 +171,16 @@
               <div class="balance-number-row" role="status" aria-live="polite">
                 <span class="currency-tag" id="kiosk-balance-currency" aria-hidden="true">Rp</span>
                 <div class="balance-digits-holder" id="kiosk-balance-display-wrapper">
-                  <!-- Animated via GSAP SplitText & Counter -->
+                  <!-- Animated via GSAP SplitText & Counter (Fast 0.4s) -->
                   <span class="balance-digits" id="kiosk-balance-amount" aria-label="Nominal Saldo Santri">0</span>
                 </div>
               </div>
 
-              <!-- Enlarged Daily Limit Label & Status -->
+              <!-- Enlarged Monthly/Daily Limit Label & Status -->
               <div class="balance-tonal-badge-row">
                 <span class="hero-limit-badge" id="kiosk-limit-container">
                   <i class="ri-bank-card-line" aria-hidden="true"></i>
-                  <span>Limit Belanja Harian: <strong id="kiosk-daily-limit">Rp 100.000 / hari</strong></span>
+                  <span>Limit Belanja Bulanan: <strong id="kiosk-daily-limit">Tanpa limit</strong></span>
                 </span>
                 <span class="hero-status-badge">
                   <i class="ri-checkbox-circle-fill" aria-hidden="true"></i>
@@ -243,6 +250,14 @@
   </main>
 
   <!-- ==================================================================== -->
+  <!-- FLOATING STATUS TOAST (NON-INTRUSIVE STATUS MESSAGE)                 -->
+  <!-- ==================================================================== -->
+  <div id="kiosk-toast" class="kiosk-toast" role="status" aria-live="polite" hidden>
+    <i id="kiosk-toast-icon" class="ri-information-line" aria-hidden="true"></i>
+    <span id="kiosk-toast-text"></span>
+  </div>
+
+  <!-- ==================================================================== -->
   <!-- DEVELOPER & RFID SIMULATOR MODAL (TRIGGERED ONLY VIA SHORTCUT ALT + S)-->
   <!-- ==================================================================== -->
   <dialog id="kiosk-dev-modal" class="dev-squircle-dialog" aria-labelledby="modal-sim-title">
@@ -263,7 +278,7 @@
           
           <div class="dev-form-group">
             <label for="sim-input-card-uid">Nomor UID Kartu RFID (Input dari Alat Scan Fisik):</label>
-            <input type="text" id="sim-input-card-uid" class="dev-input" value="STR-202401" placeholder="Misal: STR-202401">
+            <input type="text" id="sim-input-card-uid" class="dev-input" value="104928172" placeholder="Misal: 104928172">
           </div>
 
           <div class="dev-form-grid">
@@ -289,18 +304,22 @@
           </div>
 
           <div class="dev-form-group">
-            <label for="sim-input-limit">Limit Belanja Harian (Rp):</label>
-            <input type="number" id="sim-input-limit" class="dev-input" value="100000" step="5000">
+            <label for="sim-input-limit">Limit Belanja Bulanan (Rp):</label>
+            <input type="number" id="sim-input-limit" class="dev-input" value="500000" step="10000">
           </div>
 
           <div class="dev-action-row">
-            <button type="button" id="sim-btn-apply" class="dev-btn dev-btn-primary">
-              <i class="ri-rfid-line" aria-hidden="true"></i>
-              <span>Simulasi Scan Kartu</span>
+            <button type="button" id="sim-btn-lookup" class="dev-btn dev-btn-primary" title="Kirim UID ke Server API lookup.php">
+              <i class="ri-cloud-line" aria-hidden="true"></i>
+              <span>Cek ke Server API</span>
             </button>
-            <button type="button" id="sim-btn-reset" class="dev-btn dev-btn-secondary">
+            <button type="button" id="sim-btn-apply" class="dev-btn dev-btn-accent" title="Gunakan data formulir di atas sebagai mock">
+              <i class="ri-file-text-line" aria-hidden="true"></i>
+              <span>Terapkan Mock</span>
+            </button>
+            <button type="button" id="sim-btn-reset" class="dev-btn dev-btn-secondary" title="Kembalikan kios ke standby">
               <i class="ri-refresh-line" aria-hidden="true"></i>
-              <span>Reset ke Standby</span>
+              <span>Reset Standby</span>
             </button>
           </div>
 
@@ -310,8 +329,14 @@
     </div>
   </dialog>
 
-  <!-- JavaScript Modules -->
+  <!-- ==================================================================== -->
+  <!-- JAVASCRIPT MODULES (MODULAR, CLEAN, SCALEABLE)                       -->
+  <!-- ==================================================================== -->
+  <!-- 1. Central Configuration (Semua konfig ada di satu tempat ini) -->
+  <script src="js/kiosk-config.js"></script>
+  <!-- 2. API Service Layer & Hardware RFID Driver -->
   <script src="js/kiosk-api.js"></script>
+  <!-- 3. Application Controller & GSAP Animation Engine -->
   <script src="js/app.js"></script>
 </body>
 </html>

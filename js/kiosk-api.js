@@ -3,29 +3,53 @@
  * KIOSK API & HARDWARE RFID SCANNER CONTROLLER
  * ============================================================================
  * Modul ini menangani:
- * 1. Database santri & fallback dinamis untuk kartu baru.
- * 2. Masking nomor kartu RFID (seperti password, hanya 2 digit terakhir terlihat).
- * 3. Pendeteksi keyboard-wedge dari alat scan RFID USB fisik.
- * 4. Antarmuka global `window.SantriKioskAPI` yang mudah dibaca & di-maintain.
+ * 1. Pengambilan data saldo santri dari API riil backend (`api/lookup.php`).
+ * 2. Micro-cache in-memory (5 detik) untuk mencegah double-tap jaringan berulang.
+ * 3. Masking nomor kartu RFID seperti sandi (hanya 2 digit terakhir terlihat).
+ * 4. Driver pendeteksi keyboard-wedge dari scanner RFID USB fisik.
+ * 5. Antarmuka global `window.SantriKioskAPI` yang mudah dibaca & di-maintain.
  * ============================================================================
  */
 
-(function (window) {
+(function (window, document) {
   'use strict';
 
-  // --------------------------------------------------------------------------
-  // 1. MOCK DATABASE SANTRI
-  // --------------------------------------------------------------------------
-  const SANTRI_DATABASE = {
+  // Ambil referensi konfigurasi terpusat
+  const CONFIG = window.KIOSK_CONFIG || {
+    api: { endpoint: 'api/lookup.php', timeoutMs: 6000, cacheTtlMs: 5000, fallbackToMockOnOffline: true },
+    timing: { autoCloseSeconds: 3, toastDurationMs: 4000, scanCharMaxIntervalMs: 400, scanSubmitMaxAgeMs: 2000 }
+  };
+
+  let currentActiveData = null;
+  let isRequestBusy = false;
+
+  // Micro-cache in-memory: Map(walletId => { data, timestamp })
+  const microCache = new Map();
+
+  // Mock Database Lokal sebagai fallback jika server offline / demo
+  const LOCAL_MOCK_DATABASE = {
+    '104928172': {
+      cardUid: '104928172',
+      name: 'Ahmad Fauzi Ridwan',
+      nis: '202401089',
+      className: 'Kelas 10-A • Asrama Abu Bakar',
+      balance: 350000,
+      limitBulanan: 500000,
+      limitSaldo: 0,
+      status: 'Kartu Aktif',
+      accountType: 'Saldo Wallet',
+      initials: 'AF'
+    },
     'STR-202401': {
       cardUid: 'STR-202401',
       name: 'Ahmad Fauzi Ridwan',
       nis: '202401089',
       className: 'Kelas 10-A • Asrama Abu Bakar',
       balance: 350000,
-      dailyLimit: 100000,
+      limitBulanan: 500000,
+      limitSaldo: 0,
       status: 'Kartu Aktif',
-      accountType: 'Tabungan Santri',
+      accountType: 'Saldo Wallet',
       initials: 'AF'
     },
     'STR-202402': {
@@ -34,9 +58,10 @@
       nis: '202402014',
       className: 'Kelas 11-Tahfidz • Asrama Maryam',
       balance: 1250000,
-      dailyLimit: 150000,
+      limitBulanan: 1500000,
+      limitSaldo: 0,
       status: 'Kartu Aktif',
-      accountType: 'Tabungan Santri',
+      accountType: 'Saldo Wallet',
       initials: 'FZ'
     },
     'STR-202403': {
@@ -45,20 +70,19 @@
       nis: '202403072',
       className: 'Kelas 9-B • Asrama Umar',
       balance: 45000,
-      dailyLimit: 50000,
+      limitBulanan: 300000,
+      limitSaldo: 20000,
       status: 'Kartu Aktif',
-      accountType: 'Tabungan Santri',
+      accountType: 'Saldo Wallet',
       initials: 'MG'
     }
   };
 
-  let currentActiveData = null;
-
   // --------------------------------------------------------------------------
-  // 2. HELPER FUNCTIONS
+  // 1. HELPER FUNCTIONS
   // --------------------------------------------------------------------------
   /**
-   * Format angka Rupiah standar Indonesia (misal: 350000 -> "350.000")
+   * Format Rupiah standar Indonesia (misal: 350000 -> "350.000")
    */
   function formatRupiahNumber(num) {
     return new Intl.NumberFormat('id-ID').format(Math.round(num || 0));
@@ -66,56 +90,130 @@
 
   /**
    * Masking nomor kartu RFID seperti password.
-   * Hanya menampilkan 2 digit terakhir, sisanya disamarkan dengan bullet titik.
-   * Contoh: "STR-202401" -> "ID: •••• ••01"
+   * Hanya 2 digit terakhir yang ditampilkan, sisanya disamarkan titik bullet.
+   * Contoh: "104928172" -> "ID: •••• ••72"
    */
   function maskRfidCardNumber(cardUid) {
     if (!cardUid) return 'ID: •••• ••--';
     const cleanStr = String(cardUid).trim();
-    // Ambil 2 digit/karakter paling belakang
     const lastTwoDigits = cleanStr.slice(-2);
     return `ID: •••• ••${lastTwoDigits}`;
   }
 
+  /**
+   * Memunculkan notifikasi toast mengambang di bawah layar kios
+   */
+  function showToast(message, type, duration) {
+    const dur = typeof duration === 'number' ? duration : CONFIG.timing.toastDurationMs;
+    window.dispatchEvent(new CustomEvent('kiosk:toast', {
+      detail: {
+        message: message || 'Terjadi kesalahan.',
+        type: type || 'error',
+        duration: dur
+      }
+    }));
+  }
+
   // --------------------------------------------------------------------------
-  // 3. PUBLIC API OBJECT (window.SantriKioskAPI)
+  // 2. PUBLIC API CONTROLLER (window.SantriKioskAPI)
   // --------------------------------------------------------------------------
   const SantriKioskAPI = {
     /**
-     * Cari data santri dari database atau generate data santri jika kartu baru
+     * Mengambil data santri dari backend API /api/lookup.php
+     * Menggunakan AbortController, timeout, micro-cache, dan offline fallback
      */
     async fetchSantriByCardId(cardId) {
-      const cleanId = (cardId || '').trim();
-      if (SANTRI_DATABASE[cleanId]) {
-        return { success: true, data: SANTRI_DATABASE[cleanId] };
+      const cleanId = String(cardId || '').replace(/\s+/g, '');
+
+      // Validasi panjang karakter UID
+      if (cleanId.length < 3) {
+        return {
+          success: false,
+          code: 'invalid_wallet',
+          message: 'Nomor kartu tidak valid.'
+        };
       }
 
-      // Fallback dinamis jika ada kartu fisik baru di-tap pada scanner
-      const randomLastTwo = cleanId.length >= 2 ? cleanId.slice(-2) : '88';
-      return {
-        success: true,
-        data: {
-          cardUid: cleanId || 'RFID-SCAN',
-          name: 'Santri ID ' + randomLastTwo,
-          nis: '2024' + Math.floor(10000 + Math.random() * 90000),
-          className: 'Santri Reguler',
-          balance: Math.floor(Math.random() * 150 + 10) * 5000,
-          dailyLimit: 100000,
-          status: 'Kartu Aktif',
-          accountType: 'Tabungan Santri',
-          initials: 'ST'
+      // 1. Cek Micro-cache in-memory (TTL 5 detik)
+      const cached = microCache.get(cleanId);
+      if (cached && (Date.now() - cached.timestamp < CONFIG.api.cacheTtlMs)) {
+        return { success: true, data: cached.data, fromCache: true };
+      }
+
+      // 2. Request jaringan ke backend endpoint
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), CONFIG.api.timeoutMs);
+
+      try {
+        const response = await fetch(CONFIG.api.endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+            'Accept': 'application/json'
+          },
+          body: new URLSearchParams({ wallet: cleanId }).toString(),
+          cache: 'no-store',
+          signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+
+        let payload;
+        try {
+          payload = await response.json();
+        } catch (jsonErr) {
+          payload = null;
         }
-      };
+
+        // Tangani respons HTTP dan payload
+        if (response.ok && payload && payload.success === true && payload.data) {
+          // Simpan ke micro-cache
+          microCache.set(cleanId, {
+            data: payload.data,
+            timestamp: Date.now()
+          });
+          return { success: true, data: payload.data };
+        }
+
+        // Jika kartu tidak terdaftar di backend (HTTP 404 / 400)
+        const errMsg = (payload && payload.message) || 'Kartu tidak terdaftar. Silakan hubungi petugas.';
+        const errCode = (payload && payload.code) || `HTTP_${response.status}`;
+
+        // Fallback ke mock jika server mengembalikan 404 pada data test
+        if (LOCAL_MOCK_DATABASE[cleanId]) {
+          return { success: true, data: LOCAL_MOCK_DATABASE[cleanId], fromMock: true };
+        }
+
+        return { success: false, code: errCode, message: errMsg };
+
+      } catch (err) {
+        clearTimeout(timeoutId);
+
+        const isTimeout = err.name === 'AbortError';
+
+        // Jika offline atau jaringan gagal, dan fallback diaktifkan
+        if (CONFIG.api.fallbackToMockOnOffline && LOCAL_MOCK_DATABASE[cleanId]) {
+          return { success: true, data: LOCAL_MOCK_DATABASE[cleanId], fromMock: true };
+        }
+
+        return {
+          success: false,
+          code: isTimeout ? 'timeout' : 'network_error',
+          message: isTimeout
+            ? 'Koneksi ke server timeout. Silakan coba lagi.'
+            : 'Tidak dapat menghubungi server. Periksa koneksi.'
+        };
+      }
     },
 
     /**
-     * Menerapkan data santri ke UI secara langsung dan memperbarui seluruh elemen ber-ID unik
+     * Menerapkan data santri ke tampilan UI dan mengisi seluruh elemen ber-ID unik
      */
     setSantriData(data) {
       if (!data) return;
       currentActiveData = { ...data };
 
-      // 1. Update elemen hidden untuk kemudahan integrasi API / form capture
+      // 1. Sinkronisasi elemen hidden
       const elRawBalance = document.getElementById('kiosk-api-raw-balance');
       const elCardUid = document.getElementById('kiosk-api-card-uid');
       const elSantriId = document.getElementById('kiosk-api-santri-id');
@@ -124,7 +222,7 @@
       if (elCardUid) elCardUid.value = data.cardUid || '';
       if (elSantriId) elSantriId.value = data.nis || '';
 
-      // 2. Update tampilan nomor kartu RFID dengan sensor masking (2 digit terakhir saja)
+      // 2. Nomor kartu terproteksi (masking password)
       const elMaskedCard = document.getElementById('kiosk-card-masked-number');
       const maskedString = maskRfidCardNumber(data.cardUid);
       if (elMaskedCard) {
@@ -136,7 +234,7 @@
         }
       }
 
-      // 3. Update nama santri, NIS, kelas, dan status kartu (Semua ber-ID Unik)
+      // 3. Nama, NIS, Kelas, Status, Avatar
       const elName = document.getElementById('kiosk-user-name');
       const elNis = document.getElementById('kiosk-user-nis');
       const elClass = document.getElementById('kiosk-user-class');
@@ -146,14 +244,26 @@
       const elAccountType = document.getElementById('kiosk-account-type');
       const elTimestamp = document.getElementById('kiosk-last-tap-time');
 
-      if (elName) elName.textContent = data.name || 'Santri Al-Wafi';
+      if (elName) elName.textContent = data.name || 'Pemilik Wallet';
       if (elNis) elNis.textContent = 'NIS: ' + (data.nis || '-');
-      if (elClass) elClass.textContent = data.className || 'Santri Terdaftar';
+      if (elClass) elClass.textContent = data.className || 'Pemilik Wallet';
       if (elStatus) elStatus.textContent = data.status || 'Kartu Aktif';
-      if (elLimit) elLimit.textContent = 'Rp ' + formatRupiahNumber(data.dailyLimit || 100000) + ' / hari';
-      if (elAccountType) elAccountType.textContent = data.accountType || 'Tabungan Santri';
+      if (elAccountType) elAccountType.textContent = data.accountType || 'Saldo Wallet';
 
-      // 4. Inisial avatar
+      // 4. Format Limit Belanja (Bulanan / Minimum Saldo)
+      if (elLimit) {
+        const bulanan = Number(data.limitBulanan || data.dailyLimit || 0);
+        const minimal = Number(data.limitSaldo || 0);
+        if (bulanan > 0) {
+          elLimit.textContent = 'Rp ' + formatRupiahNumber(bulanan) + ' / bulan';
+        } else if (minimal > 0) {
+          elLimit.textContent = 'Saldo min. Rp ' + formatRupiahNumber(minimal);
+        } else {
+          elLimit.textContent = 'Tanpa limit';
+        }
+      }
+
+      // 5. Inisial avatar 2 huruf
       if (elInitials) {
         if (data.initials) {
           elInitials.textContent = data.initials;
@@ -163,14 +273,15 @@
         }
       }
 
-      // 5. Waktu pembaruan
+      // 6. Label waktu pembaruan
       if (elTimestamp) {
         const d = new Date();
         const timeStr = d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
         elTimestamp.textContent = `Diperbarui pukul ${timeStr} WIB`;
       }
 
-      // 6. Terbangkan event ke GSAP Animation Engine
+      // 7. Sembunyikan toast dan pemicu animasi tampilan saldo
+      window.dispatchEvent(new CustomEvent('kiosk:toast-hide'));
       window.dispatchEvent(new CustomEvent('kiosk:show-balance', {
         detail: {
           targetBalance: Number(data.balance) || 0,
@@ -180,17 +291,32 @@
     },
 
     /**
-     * Memproses tap kartu berdasarkan Card ID
+     * Memproses tap kartu: mengambil data dari API lalu menampilkan
      */
     async tapCard(cardId) {
-      const res = await this.fetchSantriByCardId(cardId);
-      if (res && res.data) {
-        this.setSantriData(res.data);
+      if (isRequestBusy) return;
+      const cleanId = String(cardId || '').replace(/\s+/g, '');
+      if (!cleanId) return;
+
+      isRequestBusy = true;
+      showToast('Membaca kartu...', 'info', 0);
+
+      try {
+        const res = await this.fetchSantriByCardId(cleanId);
+        if (res && res.success && res.data) {
+          this.setSantriData(res.data);
+        } else {
+          showToast((res && res.message) || 'Kartu tidak terdaftar. Silakan hubungi petugas.', 'error', CONFIG.timing.toastDurationMs);
+        }
+      } catch (err) {
+        showToast('Gagal memeriksa saldo. Silakan coba lagi.', 'error', CONFIG.timing.toastDurationMs);
+      } finally {
+        isRequestBusy = false;
       }
     },
 
     /**
-     * Reset kios ke State 1 (Waiting RFID)
+     * Reset kios kembali ke State 1 (Standby)
      */
     reset() {
       window.dispatchEvent(new CustomEvent('kiosk:reset-state'));
@@ -209,37 +335,50 @@
     }
   };
 
-  // Ekspos ke global window
   window.SantriKioskAPI = SantriKioskAPI;
 
   // --------------------------------------------------------------------------
-  // 4. LISTENER ALAT SCAN RFID USB HID (KEYBOARD EMULATION)
+  // 3. HARDWARE RFID SCANNER DRIVER (USB KEYBOARD-WEDGE)
   // --------------------------------------------------------------------------
   let rfidScanBuffer = '';
   let lastStrokeTime = 0;
 
   window.addEventListener('keydown', function (e) {
-    // Jangan proses jika user sedang mengetik di input modal [Alt + S]
-    if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) {
+    // Jangan proses jika pengguna sedang mengetik di input modal [Alt + S]
+    const tag = e.target && e.target.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') {
+      return;
+    }
+    const devModal = document.getElementById('kiosk-dev-modal');
+    if (devModal && devModal.open) {
       return;
     }
 
     const now = Date.now();
-    // Hardware RFID scanner mengetik karakter secara beruntun dan cepat (< 50ms)
-    if (now - lastStrokeTime > 250) {
+
+    // Enter atau Tab menandakan akhir scan dari hardware reader
+    if (e.key === 'Enter' || e.key === 'Tab') {
+      const scanned = rfidScanBuffer.trim();
+      const age = now - lastStrokeTime;
+      rfidScanBuffer = '';
+      lastStrokeTime = now;
+
+      if (scanned.length >= 3 && age <= CONFIG.timing.scanSubmitMaxAgeMs) {
+        e.preventDefault();
+        SantriKioskAPI.tapCard(scanned);
+      }
+      return;
+    }
+
+    // Reader RFID USB mengetik sangat rapat (<400ms antar karakter)
+    if (now - lastStrokeTime > CONFIG.timing.scanCharMaxIntervalMs) {
       rfidScanBuffer = '';
     }
     lastStrokeTime = now;
 
-    if (e.key === 'Enter') {
-      if (rfidScanBuffer.trim().length >= 3) {
-        SantriKioskAPI.tapCard(rfidScanBuffer.trim());
-        rfidScanBuffer = '';
-        e.preventDefault();
-      }
-    } else if (e.key.length === 1) {
+    if (e.key && e.key.length === 1) {
       rfidScanBuffer += e.key;
     }
   });
 
-})(window);
+})(window, document);

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   KIOSK BALANCE CHECK - MAIN STYLESHEET (ENLARGED 16:9 LANDSCAPE KIOSK)
+   KIOSK BALANCE CHECK - MAIN STYLESHEET (OPTIMIZED 16:9 LANDSCAPE)
    Target: 16:9 Landscape Kiosk Screens (1920x1080 / Touch Terminals)
    Palette: Navy, Putih, Kuning Pastel
 
@@ -10,7 +10,7 @@
    4. Zero glows
    5. Squircles corner shape
    6. Zero layout shifting (fixed-grid stage overlay)
-   7. Highly readable from 1-2 meters distance
+   7. High legibility from 1-2 meters distance
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
@@ -120,7 +120,7 @@ h1, h2, h3, h4, p, span, button, input, label, div {
 }
 
 .time-main {
-  font-size: var(--text-clock); /* Enlarged: clamp(3rem, 4.2vw, 4.2rem) */
+  font-size: var(--text-clock);
   font-weight: var(--font-weight-extrabold);
   letter-spacing: var(--tracking-display);
   color: var(--navy-deep);
@@ -180,7 +180,7 @@ h1, h2, h3, h4, p, span, button, input, label, div {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #16A34A;
+  background: var(--status-success);
   animation: pulse-rfid 2s infinite ease-in-out;
 }
 
@@ -200,7 +200,7 @@ h1, h2, h3, h4, p, span, button, input, label, div {
   width: 100%;
 }
 
-/* Enlarged Fixed-footprint Frame for 16:9 Landscape Screen */
+/* Fixed-footprint Frame for 16:9 Landscape Screen */
 .kiosk-card-frame {
   width: 100%;
   max-width: clamp(860px, 58vw, 980px); /* Enlarged card width */
@@ -225,7 +225,7 @@ h1, h2, h3, h4, p, span, button, input, label, div {
   opacity: 0;
   pointer-events: none;
   visibility: hidden;
-  transition: opacity var(--duration-fast) var(--ease-smooth);
+  transition: opacity var(--duration-fade) var(--ease-smooth);
 }
 
 .kiosk-view-layer.active {
@@ -306,7 +306,7 @@ h1, h2, h3, h4, p, span, button, input, label, div {
 
 .masked-text {
   font-family: inherit;
-  letter-spacing: 0.05em; /* Spaced bullets for readability */
+  letter-spacing: 0.05em;
 }
 
 /* --------------------------------------------------------------------------
@@ -487,7 +487,7 @@ h1, h2, h3, h4, p, span, button, input, label, div {
 .balance-digits-holder {
   display: inline-flex;
   align-items: baseline;
-  font-size: var(--text-hero); /* clamp(4.5rem, 6.8vw, 6.6rem) */
+  font-size: var(--text-hero);
   font-weight: var(--font-weight-extrabold);
   letter-spacing: var(--tracking-hero);
   color: var(--navy-deep);
@@ -518,7 +518,7 @@ h1, h2, h3, h4, p, span, button, input, label, div {
   padding-top: 2px;
 }
 
-/* Enlarged Daily Limit Label */
+/* Enlarged Daily/Monthly Limit Label */
 .hero-limit-badge {
   display: inline-flex;
   align-items: center;
@@ -554,14 +554,14 @@ h1, h2, h3, h4, p, span, button, input, label, div {
 }
 
 .hero-status-badge i {
-  color: #16A34A;
+  color: var(--status-success);
 }
 
 /* --------------------------------------------------------------------------
    8. LESS-PENTING: USER & SANTRI DETAILS SECTION (ENLARGED)
    -------------------------------------------------------------------------- */
 .user-identity-plate {
-  background: var(--navy-tonal-100); /* Soft Navy Surface */
+  background: var(--navy-tonal-100);
   border-radius: var(--radius-squircle-md);
   corner-shape: squircle;
   padding: 18px 24px;
@@ -663,7 +663,7 @@ h1, h2, h3, h4, p, span, button, input, label, div {
 }
 
 .countdown-caption {
-  font-size: var(--text-sm); /* 16px */
+  font-size: var(--text-sm);
   font-weight: var(--font-weight-medium);
   letter-spacing: var(--tracking-tight);
   color: var(--navy-muted);
@@ -702,7 +702,67 @@ h1, h2, h3, h4, p, span, button, input, label, div {
 }
 
 /* --------------------------------------------------------------------------
-   10. DEVELOPER & RFID SIMULATOR MODAL (TRIGGERED ONLY VIA ALT + S)
+   10. FLOATING STATUS TOAST (NON-INTRUSIVE STATUS MESSAGE)
+   -------------------------------------------------------------------------- */
+.kiosk-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 34px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  max-width: min(92vw, 820px);
+  padding: 16px 28px;
+  border-radius: var(--radius-squircle-full);
+  corner-shape: squircle;
+  background: var(--navy-primary);
+  color: var(--color-white);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-tight);
+  text-align: center;
+  z-index: 9999;
+  pointer-events: none;
+  animation: toast-fade-in 0.25s var(--ease-smooth);
+}
+
+.kiosk-toast[hidden] {
+  display: none !important;
+}
+
+.kiosk-toast[data-type="info"] {
+  background: var(--navy-primary);
+  color: var(--color-white);
+}
+
+.kiosk-toast[data-type="error"] {
+  background: var(--status-error);
+  color: var(--status-error-bg);
+}
+
+.kiosk-toast[data-type="success"] {
+  background: var(--status-success);
+  color: var(--status-success-bg);
+}
+
+.kiosk-toast i {
+  flex: 0 0 auto;
+  font-size: 1.4em;
+}
+
+.kiosk-toast span {
+  line-height: 1.35;
+}
+
+@keyframes toast-fade-in {
+  from { opacity: 0; transform: translate(-50%, 12px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* --------------------------------------------------------------------------
+   11. DEVELOPER & RFID SIMULATOR MODAL (TRIGGERED ONLY VIA ALT + S)
    -------------------------------------------------------------------------- */
 .dev-squircle-dialog {
   position: fixed;
@@ -799,7 +859,8 @@ h1, h2, h3, h4, p, span, button, input, label, div {
 
 .dev-action-row {
   display: flex;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 10px;
   margin-top: 8px;
 }
 
@@ -808,25 +869,29 @@ h1, h2, h3, h4, p, span, button, input, label, div {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 14px;
+  padding: 14px 18px;
   border-radius: var(--radius-squircle-full);
   corner-shape: squircle;
-  font-size: var(--text-base);
+  font-size: var(--text-sm);
   font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-tight);
   cursor: pointer;
+  flex: 1 1 auto;
 }
 
 .dev-btn-primary {
-  flex: 2;
   background: var(--navy-primary);
   color: var(--color-white);
 }
 
 .dev-btn-secondary {
-  flex: 1;
   background: var(--navy-tonal-100);
   color: var(--navy-deep);
+}
+
+.dev-btn-accent {
+  background: var(--pastel-yellow);
+  color: var(--pastel-yellow-text);
 }
 
 /* Screen reader only utility */

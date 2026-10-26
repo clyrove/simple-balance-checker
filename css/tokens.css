@@ -1,14 +1,14 @@
 /* ==========================================================================
-   DESIGN TOKENS & SYSTEM VARIABLES (ENLARGED FOR 16:9 LANDSCAPE KIOSK)
-   Palette: Navy, Putih, Kuning Pastel
-   Strict Rules:
-   - Font: Inter
-   - Letter Spacing: Max -0.02em (tighter down to -0.06em, NEVER positive)
-   - Corner Shape: Squircle
-   - Zero 1px borders
-   - Zero box-shadows (elevation via tonal color layering)
-   - Zero glows
-   - High legibility from 1-2 meters distance on landscape kiosk screens
+   DESIGN TOKENS & SYSTEM VARIABLES (UNIFIED CONFIGURATION)
+   Palette: Navy, Putih, Kuning Pastel (M3 & Apple Inspiration)
+   
+   STRICT COMPLIANCE RULES:
+   1. Font: Inter (Google Fonts / Local)
+   2. Letter-Spacing: Max -0.02em, down to -0.06em, NEVER positive
+   3. Corner Shape: Squircle
+   4. Zero 1px borders (strictly tonal color boundaries)
+   5. Zero box-shadows (elevation via color contrast)
+   6. Zero glows
    ========================================================================== */
 
 :root {
@@ -17,7 +17,7 @@
      -------------------------------------------------------------------------- */
   --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
-  /* Letter spacing strictly <= -0.02em (never positive) */
+  /* Letter-spacing strictly <= -0.02em (never positive) */
   --tracking-normal: -0.02em;    /* Body text, max allowed */
   --tracking-tight: -0.025em;    /* Buttons, tags, sublabels */
   --tracking-tighter: -0.035em;  /* Headings, names */
@@ -30,7 +30,7 @@
   --font-weight-bold: 700;
   --font-weight-extrabold: 800;
 
-  /* Scaled-up Font Scales for 16:9 Landscape Kiosk Readability */
+  /* Font Scales for 16:9 Landscape Kiosk Readability */
   --text-xs: 0.875rem;       /* 14px */
   --text-sm: 1rem;           /* 16px */
   --text-base: 1.125rem;     /* 18px */
@@ -43,13 +43,13 @@
   --text-hero: clamp(4.5rem, 6.8vw, 6.6rem);
 
   /* --------------------------------------------------------------------------
-     2. COLOR PALETTE: NAVY, PUTIH, KUNING PASTEL
+     2. COLOR PALETTE: NAVY, PUTIH, KUNING PASTEL (Sesuai KIOSK_CONFIG)
      -------------------------------------------------------------------------- */
-  /* Canvas Background */
+  /* Canvas / Background */
   --color-canvas: #EAF0F7;
   --color-canvas-subtle: #F4F7FB;
 
-  /* Navy Tones */
+  /* Navy Tones (Foreground & Primary) */
   --navy-deep: #091524;
   --navy-primary: #10213A;
   --navy-surface: #1B3254;
@@ -83,7 +83,18 @@
   --text-secondary: var(--navy-muted);
   --text-on-navy: var(--color-white);
   --text-on-yellow: #3F2104;
-  --text-success: #15803D;
+
+  /* Semantic Feedback Colors (Error, Info, Success) */
+  --status-success: #15803D;
+  --status-success-bg: #DCFCE7;
+  --status-error: #7F1D1D;
+  --status-error-bg: #FEF2F2;
+  --status-info: #10213A;
+  --status-info-bg: #E1E8F2;
+  --text-success: var(--status-success);
+
+  /* Border Tokens (Strictly 0px per requirement) */
+  --border-default: 0px solid transparent;
 
   /* --------------------------------------------------------------------------
      3. SQUIRCLE CORNER RADII (Continuous Curvature)
@@ -107,10 +118,12 @@
   --space-2xl: 56px;
 
   /* --------------------------------------------------------------------------
-     5. TRANSITIONS & TIMING
+     5. ANIMATION DURATIONS (Synchronized with KIOSK_CONFIG)
      -------------------------------------------------------------------------- */
-  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-smooth: cubic-bezier(0.25, 1, 0.5, 1);
+  --duration-counter: 0.4s;
+  --duration-fade: 0.18s;
   --duration-fast: 160ms;
   --duration-normal: 300ms;
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-smooth: cubic-bezier(0.25, 1, 0.5, 1);
 }

@@ -1,18 +1,26 @@
 /**
  * ============================================================================
- * KIOSK APPLICATION & GSAP ANIMATION ENGINE
+ * KIOSK APPLICATION & GSAP ANIMATION CONTROLLER
  * ============================================================================
- * Menangani:
- * 1. Jam Digital Kiosk (WIB & Format Tanggal Indonesia)
- * 2. GSAP SplitText Character & Rolling Counter Saldo
- * 3. Transisi State 1 (Waiting RFID) <-> State 2 (Active Balance) tanpa pergeseran layout (Zero Layout Shift)
- * 4. Timer Privasi 3 Detik dengan visual progress bar
- * 5. Shortcut tersembunyi [Alt + S] untuk membuka simulator/konsol settingan
+ * Modul ini menangani:
+ * 1. Jam Digital Kiosk Real-Time (WIB & Format Tanggal Bahasa Indonesia).
+ * 2. GSAP SplitText Character & Rolling Counter Saldo (Kecepatan 0.4s Snappy).
+ * 3. Transisi State 1 (Waiting RFID) <-> State 2 (Active Balance) tanpa pergeseran layout.
+ * 4. Timer Privasi 3 Detik dengan visual progress bar.
+ * 5. Toast Notifikasi Mengambang (Info, Error, Success).
+ * 6. Shortcut Tersembunyi [Alt + S] untuk Simulator Kiosk & Direct API Lookup.
  * ============================================================================
  */
 
 document.addEventListener('DOMContentLoaded', () => {
   'use strict';
+
+  // Cek ketersediaan GSAP (Graceful Degradation jika library gagal dimuat)
+  const hasGsap = typeof window.gsap !== 'undefined';
+  const CONFIG = window.KIOSK_CONFIG || {
+    animation: { counterSpeed: 0.4, counterEasing: 'power2.out', splitBounceSpeed: 0.35, splitBounceEasing: 'back.out(2)', stateCrossFadeSpeed: 0.18 },
+    timing: { autoCloseSeconds: 3, toastDurationMs: 4000 }
+  };
 
   // --------------------------------------------------------------------------
   // 1. SELECTOR DOM ELEMEN
@@ -42,9 +50,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const devModalClose = document.getElementById('modal-dev-close');
   const simBtnApply = document.getElementById('sim-btn-apply');
   const simBtnReset = document.getElementById('sim-btn-reset');
+  const simBtnLookup = document.getElementById('sim-btn-lookup');
+
+  // Toast / Floating Status Message Elements
+  const toastEl = document.getElementById('kiosk-toast');
+  const toastTextEl = document.getElementById('kiosk-toast-text');
+  const toastIconEl = document.getElementById('kiosk-toast-icon');
+  let toastTimer = null;
 
   // Timer Configuration
-  const COUNTDOWN_TOTAL_SECONDS = 3;
+  const COUNTDOWN_TOTAL_SECONDS = CONFIG.timing.autoCloseSeconds || 3;
   let remainingSeconds = COUNTDOWN_TOTAL_SECONDS;
   let countdownTimer = null;
   let countdownTween = null;
@@ -56,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateKioskClock() {
     const now = new Date();
 
-    // Tanggal format Indonesia (Contoh: "Kamis, 22 Okt 2026")
+    // Tanggal format Indonesia (Contoh: "Kamis, 26 Okt 2026")
     const dateOptions = { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' };
     const dateString = now.toLocaleDateString('id-ID', dateOptions);
     if (clockDateEl) {
@@ -77,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setInterval(updateKioskClock, 1000);
 
   // --------------------------------------------------------------------------
-  // 3. SPLIT TEXT & GSAP ANIMATION COUNTER
+  // 3. SPLIT TEXT & GSAP ANIMATION COUNTER (SNAPPY & FAST)
   // --------------------------------------------------------------------------
   /**
    * Memecah string menjadi elemen span per karakter untuk animasi GSAP
@@ -104,27 +119,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /**
    * Menjalankan animasi rolling counter dan staggered split text pada nominal saldo
+   * Menggunakan durasi cepat 0.4s sesuai rekomendasi efisiensi antrean
    */
   function animateBalanceNumber(targetBalance) {
-    if (!balanceAmountEl || typeof gsap === 'undefined') {
-      if (balanceAmountEl) {
-        balanceAmountEl.textContent = window.SantriKioskAPI.formatRupiah(targetBalance);
-      }
+    if (!balanceAmountEl) return;
+
+    // Fallback jika GSAP tidak tersedia
+    if (!hasGsap) {
+      balanceAmountEl.textContent = window.SantriKioskAPI.formatRupiah(targetBalance);
       return;
     }
 
     const counterObj = { value: 0 };
-    const duration = 0.95; // Cepat dan responsif untuk kiosk 3 detik
+    const duration = CONFIG.animation.counterSpeed || 0.4;
 
     gsap.to(counterObj, {
       value: targetBalance,
       duration: duration,
-      ease: "power2.out",
+      ease: CONFIG.animation.counterEasing || "power2.out",
       onUpdate: () => {
         balanceAmountEl.textContent = window.SantriKioskAPI.formatRupiah(counterObj.value);
       },
       onComplete: () => {
-        // Pada akhir hitungan, tambahkan animasi staggered spring bounce
+        // Efek lenting karakter (split bounce) saat angka mencapai target
         const finalFormatted = window.SantriKioskAPI.formatRupiah(targetBalance);
         const spans = splitTextToChars(balanceAmountEl, finalFormatted);
 
@@ -133,9 +150,9 @@ document.addEventListener('DOMContentLoaded', () => {
           {
             y: 0,
             opacity: 1,
-            duration: 0.35,
-            stagger: 0.025,
-            ease: "back.out(2)"
+            duration: CONFIG.animation.splitBounceSpeed || 0.35,
+            stagger: 0.02,
+            ease: CONFIG.animation.splitBounceEasing || "back.out(2)"
           }
         );
       }
@@ -147,11 +164,15 @@ document.addEventListener('DOMContentLoaded', () => {
    */
   function animateUserName(nameText) {
     if (!userNameEl) return;
-    const spans = splitTextToChars(userNameEl, nameText);
+    if (!hasGsap) {
+      userNameEl.textContent = nameText;
+      return;
+    }
 
+    const spans = splitTextToChars(userNameEl, nameText);
     gsap.fromTo(spans,
       { opacity: 0, y: 8 },
-      { opacity: 1, y: 0, duration: 0.28, stagger: 0.015, ease: "power2.out" }
+      { opacity: 1, y: 0, duration: CONFIG.animation.userNameRevealSpeed || 0.25, stagger: 0.012, ease: "power2.out" }
     );
   }
 
@@ -163,15 +184,19 @@ document.addEventListener('DOMContentLoaded', () => {
     remainingSeconds = COUNTDOWN_TOTAL_SECONDS;
     if (timerSecondsEl) timerSecondsEl.textContent = remainingSeconds;
 
-    // Reset progress bar dan jalankan GSAP tween
+    // Reset dan jalankan progress bar menyusut
     if (countdownProgressEl) {
-      gsap.killTweensOf(countdownProgressEl);
-      gsap.set(countdownProgressEl, { scaleX: 1 });
-      countdownTween = gsap.to(countdownProgressEl, {
-        scaleX: 0,
-        duration: COUNTDOWN_TOTAL_SECONDS,
-        ease: "linear"
-      });
+      if (hasGsap) {
+        gsap.killTweensOf(countdownProgressEl);
+        gsap.set(countdownProgressEl, { scaleX: 1 });
+        countdownTween = gsap.to(countdownProgressEl, {
+          scaleX: 0,
+          duration: COUNTDOWN_TOTAL_SECONDS,
+          ease: "linear"
+        });
+      } else {
+        countdownProgressEl.style.transform = 'scaleX(0)';
+      }
     }
 
     // Interval hitung mundur per detik
@@ -206,9 +231,25 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isTransitioning) return;
     isTransitioning = true;
 
+    // Fallback tanpa GSAP
+    if (!hasGsap) {
+      waitingView.classList.remove('active');
+      waitingView.setAttribute('aria-hidden', 'true');
+      activeView.classList.add('active');
+      activeView.setAttribute('aria-hidden', 'false');
+      stateContainer.classList.remove('state-waiting');
+      stateContainer.classList.add('state-active');
+      isTransitioning = false;
+      animateBalanceNumber(targetBalance);
+      if (santriData && santriData.name) animateUserName(santriData.name);
+      startPrivacyCountdown();
+      return;
+    }
+
     activeView.classList.add('active');
     activeView.setAttribute('aria-hidden', 'false');
 
+    const fadeSpeed = CONFIG.animation.stateCrossFadeSpeed || 0.18;
     const tl = gsap.timeline({
       onComplete: () => {
         waitingView.classList.remove('active');
@@ -225,14 +266,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Cross-fade murni dalam CSS Grid yang terkunci (Zero Shift)
     tl.to(waitingView, {
       opacity: 0,
-      duration: 0.18,
+      duration: fadeSpeed,
       ease: "power1.in"
     });
 
     tl.fromTo(activeView,
       { opacity: 0 },
-      { opacity: 1, duration: 0.22, ease: "power2.out" },
-      "-=0.08"
+      { opacity: 1, duration: fadeSpeed * 1.2, ease: "power2.out" },
+      "-=0.06"
     );
 
     // Animasi Saldo & Nama
@@ -247,9 +288,22 @@ document.addEventListener('DOMContentLoaded', () => {
     isTransitioning = true;
     stopPrivacyCountdown();
 
+    // Fallback tanpa GSAP
+    if (!hasGsap) {
+      activeView.classList.remove('active');
+      activeView.setAttribute('aria-hidden', 'true');
+      waitingView.classList.add('active');
+      waitingView.setAttribute('aria-hidden', 'false');
+      stateContainer.classList.remove('state-active');
+      stateContainer.classList.add('state-waiting');
+      isTransitioning = false;
+      return;
+    }
+
     waitingView.classList.add('active');
     waitingView.setAttribute('aria-hidden', 'false');
 
+    const fadeSpeed = CONFIG.animation.stateCrossFadeSpeed || 0.18;
     const tl = gsap.timeline({
       onComplete: () => {
         activeView.classList.remove('active');
@@ -262,24 +316,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     tl.to(activeView, {
       opacity: 0,
-      duration: 0.18,
+      duration: fadeSpeed,
       ease: "power1.in"
     });
 
     tl.fromTo(waitingView,
       { opacity: 0 },
-      { opacity: 1, duration: 0.22, ease: "power2.out" },
-      "-=0.08"
+      { opacity: 1, duration: fadeSpeed * 1.2, ease: "power2.out" },
+      "-=0.06"
     );
   }
 
   // --------------------------------------------------------------------------
   // 6. EVENT LISTENERS
   // --------------------------------------------------------------------------
-  // Area sentuh sensor (untuk pengujian klik / touchscreen)
+  // Klik area sensor (pada layar sentuh / demo)
   if (rfidSensorArea) {
     rfidSensorArea.addEventListener('click', () => {
-      window.SantriKioskAPI.tapCard('STR-202401');
+      showToast('Tempelkan kartu pada reader RFID.', 'info', 2500);
     });
   }
 
@@ -291,7 +345,53 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --------------------------------------------------------------------------
-  // 7. SHORTCUT TERSEMBUNYI [ALT + S] UNTUK SIMULATOR KIOSK
+  // 7. FLOATING STATUS TOAST
+  // --------------------------------------------------------------------------
+  function hideToast() {
+    if (toastTimer) {
+      clearTimeout(toastTimer);
+      toastTimer = null;
+    }
+    if (toastEl) {
+      toastEl.hidden = true;
+      toastEl.removeAttribute('data-type');
+    }
+  }
+
+  function showToast(message, type, duration) {
+    if (!toastEl) return;
+    if (toastTimer) {
+      clearTimeout(toastTimer);
+      toastTimer = null;
+    }
+
+    if (toastTextEl) toastTextEl.textContent = message || '';
+    toastEl.hidden = false;
+    toastEl.setAttribute('data-type', type || 'info');
+
+    if (toastIconEl) {
+      toastIconEl.className = type === 'error'
+        ? 'ri-error-warning-line'
+        : (type === 'info' ? 'ri-information-line' : 'ri-check-line');
+    }
+
+    if (duration && duration > 0) {
+      toastTimer = setTimeout(hideToast, duration);
+    }
+  }
+
+  window.addEventListener('kiosk:toast', (event) => {
+    const detail = event.detail || {};
+    showToast(detail.message, detail.type, detail.duration);
+  });
+  window.addEventListener('kiosk:toast-hide', hideToast);
+  window.addEventListener('kiosk:error', (event) => {
+    const detail = event.detail || {};
+    showToast(detail.message || 'Terjadi kesalahan.', 'error', 4000);
+  });
+
+  // --------------------------------------------------------------------------
+  // 8. SHORTCUT TERSEMBUNYI [ALT + S] UNTUK SIMULATOR KIOSK
   // (Tanpa tombol dan tanpa instruksi terlihat di layar)
   // --------------------------------------------------------------------------
   window.addEventListener('keydown', (e) => {
@@ -313,7 +413,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Submit Simulator Form
+  // Tombol 1: Cek ke Server API (Real Backend Test)
+  if (simBtnLookup) {
+    simBtnLookup.addEventListener('click', () => {
+      const cardUid = document.getElementById('sim-input-card-uid').value;
+      if (devModal) devModal.close();
+      window.SantriKioskAPI.tapCard(cardUid);
+    });
+  }
+
+  // Tombol 2: Terapkan Mock Data (Testing Manual)
   if (simBtnApply) {
     simBtnApply.addEventListener('click', () => {
       const cardUid = document.getElementById('sim-input-card-uid').value;
@@ -322,7 +431,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const nis = document.getElementById('sim-input-nis').value;
       const className = document.getElementById('sim-input-class').value;
       const dailyLimitInput = document.getElementById('sim-input-limit');
-      const dailyLimit = dailyLimitInput ? Number(dailyLimitInput.value) || 100000 : 100000;
+      const limitVal = dailyLimitInput ? Number(dailyLimitInput.value) || 100000 : 100000;
 
       window.SantriKioskAPI.setSantriData({
         cardUid,
@@ -330,14 +439,18 @@ document.addEventListener('DOMContentLoaded', () => {
         balance,
         nis,
         className,
-        dailyLimit,
-        status: 'Kartu Aktif'
+        dailyLimit: limitVal,
+        limitBulanan: limitVal,
+        limitSaldo: 0,
+        status: 'Kartu Aktif',
+        accountType: 'Saldo Wallet'
       });
 
       if (devModal) devModal.close();
     });
   }
 
+  // Tombol 3: Reset ke Standby
   if (simBtnReset) {
     simBtnReset.addEventListener('click', () => {
       window.SantriKioskAPI.reset();
@@ -346,7 +459,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --------------------------------------------------------------------------
-  // 8. DISPATCH EVENT LISTENER DARI API
+  // 9. EVENT DISPATCH LISTENER DARI API
   // --------------------------------------------------------------------------
   window.addEventListener('kiosk:show-balance', (event) => {
     const { targetBalance, santri } = event.detail;
