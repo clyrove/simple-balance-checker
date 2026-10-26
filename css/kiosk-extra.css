@@ -1,0 +1,95 @@
+/* ==========================================================================
+   KIOSK EXTRA STYLESHEET (SAFETY OVERRIDES & POSITIONING STABILITY)
+   Ensures zero layout shifting, robust toast centering, and strict lock styles.
+   ========================================================================== */
+
+/* 1. Kiosk Toast Guaranteed Centering (Prevents edge squash or flex wrapping) */
+.kiosk-toast {
+  position: fixed !important;
+  left: 50% !important;
+  bottom: 28px !important;
+  transform: translateX(-50%) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 12px !important;
+  width: max-content !important;
+  max-width: min(90vw, 820px) !important;
+  padding: 14px 28px !important;
+  border-radius: 9999px !important;
+  corner-shape: squircle;
+  background-color: #10213A !important;
+  color: #FFFFFF !important;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  font-size: 1.125rem !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.025em !important;
+  text-align: center !important;
+  z-index: 99999 !important;
+  pointer-events: none !important;
+  box-sizing: border-box !important;
+  white-space: normal !important;
+  line-height: 1.4 !important;
+}
+
+.kiosk-toast[hidden] {
+  display: none !important;
+}
+
+.kiosk-toast[data-type="info"] {
+  background-color: #10213A !important;
+  color: #FFFFFF !important;
+}
+
+.kiosk-toast[data-type="error"] {
+  background-color: #7F1D1D !important;
+  color: #FEF2F2 !important;
+}
+
+.kiosk-toast[data-type="success"] {
+  background-color: #15803D !important;
+  color: #F0FDF4 !important;
+}
+
+.kiosk-toast i {
+  flex: 0 0 auto !important;
+  font-size: 1.4em !important;
+}
+
+.kiosk-toast span {
+  display: inline-block !important;
+  line-height: 1.35 !important;
+}
+
+/* 2. Cursor Hiding when Kiosk is Locked */
+body.kiosk-locked,
+body.kiosk-locked * {
+  cursor: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+/* 3. Screen Boundary Safety: Guarantee Clock is Never Cut Off */
+.kiosk-body {
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+.kiosk-viewport {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 1920px !important;
+  margin: 0 auto !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+
+.kiosk-top-bar {
+  flex-shrink: 0 !important;
+  margin-top: 0 !important;
+}

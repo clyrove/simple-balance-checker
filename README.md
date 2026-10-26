@@ -51,7 +51,8 @@ balance-check-kiosk/
 ├── README.md             # Panduan dokumentasi lengkap
 ├── css/
 │   ├── tokens.css        # Desain token, CSS Custom Properties & skala squircle
-│   └── style.css         # Styling display 16:9, grid bertumpuk, toast, cursor lock
+│   ├── style.css         # Styling display 16:9, grid bertumpuk, toast, cursor lock
+│   └── kiosk-extra.css   # Override keamanan & kestabilan posisi toast mengambang
 ├── js/
 │   ├── kiosk-config.js   # PUSAT KONFIGURASI (Pesan Error/Sukses, Warna, Animasi, Ukuran, API)
 │   ├── kiosk-lock.js     # PENGUNCI KEAMANAN (Blokir Keyboard Santri, Sembunyikan Kursor, Alt + O)

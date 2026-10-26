@@ -1,6 +1,6 @@
 /* ==========================================================================
-   KIOSK BALANCE CHECK - MAIN STYLESHEET (OPTIMIZED 16:9 LANDSCAPE)
-   Target: 16:9 Landscape Kiosk Screens (1920x1080 / Touch Terminals)
+   KIOSK BALANCE CHECK - MAIN STYLESHEET (BUG-FREE & RESPONSIVE 16:9)
+   Target: 16:9 Landscape Kiosk Screens (1920x1080 / Touch Terminals / Laptops)
    Palette: Navy, Putih, Kuning Pastel
 
    STRICT ARCHITECTURAL RULES:
@@ -31,6 +31,8 @@
 html, body {
   width: 100%;
   height: 100%;
+  margin: 0;
+  padding: 0;
   overflow: hidden; /* Locked screen for kiosk stability */
   font-family: var(--font-family-base);
   letter-spacing: var(--tracking-normal); /* Strict max -0.02em */
@@ -47,31 +49,44 @@ h1, h2, h3, h4, p, span, button, input, label, div {
 }
 
 /* --------------------------------------------------------------------------
-   2. 16:9 LANDSCAPE KIOSK VIEWPORT LAYOUT
+   2. VIEWPORT LAYOUT (ZERO CUT-OFF, FULL HEIGHT & WIDTH RESPONSIVE)
    -------------------------------------------------------------------------- */
 .kiosk-body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-color: var(--surface-base);
-}
-
-.kiosk-viewport {
   width: 100vw;
   height: 100vh;
-  max-width: 1920px;
-  max-height: 1080px;
-  aspect-ratio: 16 / 9; /* Landscape screen priority */
+  margin: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding: var(--space-lg) var(--space-xl);
+  align-items: stretch;
+  justify-content: stretch;
+  background-color: var(--surface-base);
+  overflow: hidden;
   position: relative;
 }
 
+/* Kiosk Security Lock: Sembunyikan Kursor Mouse saat Kios Terkunci */
+body.kiosk-locked,
+body.kiosk-locked * {
+  cursor: none !important;
+}
+
+.kiosk-viewport {
+  width: 100%;
+  height: 100%;
+  max-width: 1920px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: clamp(14px, 2.2vh, 26px) clamp(16px, 3vw, 44px);
+  position: relative;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
 /* --------------------------------------------------------------------------
-   3. TOP BAR: ENLARGED CLOCK & RFID HARDWARE STATUS
+   3. TOP BAR: ENLARGED CLOCK & RFID HARDWARE STATUS (NEVER CUT OFF)
    -------------------------------------------------------------------------- */
 .kiosk-top-bar {
   display: flex;
@@ -79,6 +94,7 @@ h1, h2, h3, h4, p, span, button, input, label, div {
   justify-content: space-between;
   width: 100%;
   z-index: 10;
+  flex-shrink: 0;
 }
 
 /* Big Colorful Clock Showcase */
@@ -87,7 +103,7 @@ h1, h2, h3, h4, p, span, button, input, label, div {
   align-items: center;
   gap: var(--space-md);
   background: var(--color-white);
-  padding: 12px 28px;
+  padding: 10px 24px;
   border-radius: var(--radius-squircle-md);
   corner-shape: squircle;
 }
@@ -101,7 +117,7 @@ h1, h2, h3, h4, p, span, button, input, label, div {
   font-size: var(--text-base);
   font-weight: var(--font-weight-semibold);
   letter-spacing: var(--tracking-tight);
-  padding: 10px 18px;
+  padding: 8px 16px;
   border-radius: var(--radius-squircle-sm);
   corner-shape: squircle;
 }
@@ -128,7 +144,7 @@ h1, h2, h3, h4, p, span, button, input, label, div {
 }
 
 .time-colon {
-  font-size: clamp(2.4rem, 3.4vw, 3.4rem);
+  font-size: clamp(2.2rem, 3.2vw, 3.2rem);
   font-weight: var(--font-weight-bold);
   color: var(--navy-muted);
   line-height: 1;
@@ -167,7 +183,7 @@ h1, h2, h3, h4, p, span, button, input, label, div {
   align-items: center;
   gap: 12px;
   background: var(--color-white);
-  padding: 14px 24px;
+  padding: 12px 22px;
   border-radius: var(--radius-squircle-full);
   corner-shape: squircle;
   font-size: var(--text-base);
@@ -198,17 +214,19 @@ h1, h2, h3, h4, p, span, button, input, label, div {
   align-items: center;
   justify-content: center;
   width: 100%;
+  min-height: 0; /* Prevents overflow pushing elements */
+  padding: var(--space-xs) 0;
 }
 
 /* Fixed-footprint Frame for 16:9 Landscape Screen */
 .kiosk-card-frame {
   width: 100%;
-  max-width: clamp(860px, 58vw, 980px); /* Enlarged card width */
-  height: clamp(580px, 68vh, 660px);    /* Locked height: zero layout shifts */
+  max-width: clamp(840px, 58vw, 980px);
+  height: clamp(520px, 66vh, 650px); /* Responsive locked height */
   background: var(--surface-card-outer); /* Outer Navy Tonal Layer */
   border-radius: var(--radius-squircle-xl);
   corner-shape: squircle;
-  padding: 20px;
+  padding: 18px;
   display: grid;
   grid-template-areas: "kiosk-screen";
   position: relative;
@@ -241,7 +259,7 @@ h1, h2, h3, h4, p, span, button, input, label, div {
   background: var(--surface-card-inner); /* Pure Crisp White */
   border-radius: var(--radius-squircle-lg);
   corner-shape: squircle;
-  padding: 26px 30px;
+  padding: 24px 28px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -255,6 +273,7 @@ h1, h2, h3, h4, p, span, button, input, label, div {
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  flex-shrink: 0;
 }
 
 .eyebrow-left-tags {
@@ -319,7 +338,7 @@ h1, h2, h3, h4, p, span, button, input, label, div {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: var(--space-xl) var(--space-lg);
+  padding: var(--space-lg) var(--space-md);
   cursor: pointer;
   position: relative;
 }
@@ -371,12 +390,12 @@ h1, h2, h3, h4, p, span, button, input, label, div {
 .rfid-icon-hero {
   position: relative;
   z-index: 2;
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-md);
 }
 
 .card-emblem {
-  width: 104px;
-  height: 104px;
+  width: 96px;
+  height: 96px;
   border-radius: var(--radius-squircle-md);
   corner-shape: squircle;
   background: var(--pastel-yellow);
@@ -384,7 +403,7 @@ h1, h2, h3, h4, p, span, button, input, label, div {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 50px;
+  font-size: 46px;
   animation: float-emblem 3.6s infinite ease-in-out;
 }
 
@@ -420,6 +439,7 @@ h1, h2, h3, h4, p, span, button, input, label, div {
   align-items: center;
   justify-content: center;
   padding-top: var(--space-xs);
+  flex-shrink: 0;
 }
 
 .dock-pill {
@@ -440,7 +460,7 @@ h1, h2, h3, h4, p, span, button, input, label, div {
   background: var(--surface-hero-balance); /* Soft Pastel Butter Yellow */
   border-radius: var(--radius-squircle-md);
   corner-shape: squircle;
-  padding: 22px 28px;
+  padding: 20px 26px;
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
@@ -473,11 +493,11 @@ h1, h2, h3, h4, p, span, button, input, label, div {
   display: flex;
   align-items: baseline;
   gap: 10px;
-  margin: 2px 0 8px 0;
+  margin: 2px 0 6px 0;
 }
 
 .currency-tag {
-  font-size: clamp(2.2rem, 3.2vw, 3.2rem);
+  font-size: clamp(2rem, 3vw, 3rem);
   font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-display);
   color: var(--text-on-yellow);
@@ -509,26 +529,25 @@ h1, h2, h3, h4, p, span, button, input, label, div {
   transform-origin: bottom center;
 }
 
-/* ENLARGED LIMIT LABEL & STATUS BADGES */
+/* DUA LIMIT LABEL: LIMIT HARIAN & LIMIT BULANAN */
 .balance-tonal-badge-row {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: var(--space-sm);
+  gap: 10px;
   padding-top: 2px;
 }
 
-/* Enlarged Daily/Monthly Limit Label */
 .hero-limit-badge {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   background: rgba(16, 33, 58, 0.08);
   color: var(--navy-deep);
-  padding: 8px 16px;
+  padding: 6px 14px;
   border-radius: var(--radius-squircle-full);
   corner-shape: squircle;
-  font-size: var(--text-base); /* 18px enlarged */
+  font-size: var(--text-sm);
   font-weight: var(--font-weight-semibold);
   letter-spacing: var(--tracking-tight);
 }
@@ -536,7 +555,7 @@ h1, h2, h3, h4, p, span, button, input, label, div {
 .hero-limit-badge strong {
   font-weight: var(--font-weight-extrabold);
   color: var(--navy-primary);
-  font-size: var(--text-md); /* 20px */
+  font-size: var(--text-base);
 }
 
 .hero-status-badge {
@@ -545,7 +564,7 @@ h1, h2, h3, h4, p, span, button, input, label, div {
   gap: 6px;
   background: var(--color-white);
   color: var(--navy-deep);
-  padding: 8px 16px;
+  padding: 6px 14px;
   border-radius: var(--radius-squircle-full);
   corner-shape: squircle;
   font-size: var(--text-sm);
@@ -558,21 +577,21 @@ h1, h2, h3, h4, p, span, button, input, label, div {
 }
 
 /* --------------------------------------------------------------------------
-   8. LESS-PENTING: USER & SANTRI DETAILS SECTION (ENLARGED)
+   8. LESS-PENTING: USER & SANTRI DETAILS SECTION
    -------------------------------------------------------------------------- */
 .user-identity-plate {
   background: var(--navy-tonal-100);
   border-radius: var(--radius-squircle-md);
   corner-shape: squircle;
-  padding: 18px 24px;
+  padding: 16px 22px;
   display: flex;
   align-items: center;
   gap: var(--space-md);
 }
 
 .user-avatar-squircle {
-  width: 60px;
-  height: 60px;
+  width: 56px;
+  height: 56px;
   background: var(--navy-primary);
   color: var(--color-white);
   border-radius: var(--radius-squircle-sm);
@@ -589,7 +608,7 @@ h1, h2, h3, h4, p, span, button, input, label, div {
 .user-meta-column {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
 
 .user-subcaption {
@@ -599,16 +618,14 @@ h1, h2, h3, h4, p, span, button, input, label, div {
   color: var(--navy-muted);
 }
 
-/* Enlarged Santri Name */
 .user-display-name {
-  font-size: var(--text-xl); /* 30px bold */
+  font-size: var(--text-xl);
   font-weight: var(--font-weight-extrabold);
   letter-spacing: var(--tracking-tighter);
   color: var(--navy-deep);
   line-height: 1.2;
 }
 
-/* Enlarged NIS and Class */
 .user-badge-group {
   display: flex;
   align-items: center;
@@ -617,7 +634,7 @@ h1, h2, h3, h4, p, span, button, input, label, div {
 }
 
 .user-chip-tag {
-  font-size: var(--text-base); /* 18px */
+  font-size: var(--text-base);
   font-weight: var(--font-weight-semibold);
   letter-spacing: var(--tracking-tight);
   color: var(--navy-surface);
@@ -636,13 +653,14 @@ h1, h2, h3, h4, p, span, button, input, label, div {
   align-items: center;
   justify-content: space-between;
   padding-top: var(--space-xs);
+  flex-shrink: 0;
 }
 
 .countdown-bar-wrap {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  width: 280px;
+  width: 260px;
 }
 
 .countdown-track {
@@ -681,7 +699,7 @@ h1, h2, h3, h4, p, span, button, input, label, div {
   gap: 8px;
   background: var(--navy-primary);
   color: var(--color-white);
-  padding: 14px 34px;
+  padding: 12px 30px;
   border-radius: var(--radius-squircle-full);
   corner-shape: squircle;
   font-size: var(--text-base);
@@ -702,36 +720,34 @@ h1, h2, h3, h4, p, span, button, input, label, div {
 }
 
 /* --------------------------------------------------------------------------
-   10. FLOATING STATUS TOAST (NON-INTRUSIVE STATUS MESSAGE)
+   10. FLOATING STATUS TOAST (ROBUST & CENTERED AT BOTTOM)
    -------------------------------------------------------------------------- */
-/* Kiosk Security Lock: Sembunyikan Kursor Mouse saat Kios Terkunci */
-body.kiosk-locked,
-body.kiosk-locked * {
-  cursor: none !important;
-}
-
 .kiosk-toast {
-  position: fixed;
-  left: 50%;
-  bottom: 34px;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  max-width: min(92vw, 820px);
-  padding: 16px 28px;
-  border-radius: var(--radius-squircle-full);
+  position: fixed !important;
+  left: 50% !important;
+  bottom: 28px !important;
+  transform: translateX(-50%) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 12px !important;
+  width: max-content !important;
+  max-width: min(90vw, 820px) !important;
+  padding: 14px 28px !important;
+  border-radius: 9999px !important;
   corner-shape: squircle;
-  background: var(--navy-primary);
-  color: var(--color-white);
-  font-size: var(--text-base);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: var(--tracking-tight);
-  text-align: center;
-  z-index: 9999;
-  pointer-events: none;
-  animation: toast-fade-in 0.25s var(--ease-smooth);
+  background: #10213A !important;
+  color: #FFFFFF !important;
+  font-size: var(--text-base) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  letter-spacing: var(--tracking-tight) !important;
+  text-align: center !important;
+  z-index: 99999 !important;
+  pointer-events: none !important;
+  box-sizing: border-box !important;
+  white-space: normal !important;
+  line-height: 1.4 !important;
+  animation: toast-fade-in 0.22s var(--ease-smooth);
 }
 
 .kiosk-toast[hidden] {
@@ -739,36 +755,37 @@ body.kiosk-locked * {
 }
 
 .kiosk-toast[data-type="info"] {
-  background: var(--navy-primary);
-  color: var(--color-white);
+  background: #10213A !important;
+  color: #FFFFFF !important;
 }
 
 .kiosk-toast[data-type="error"] {
-  background: var(--status-error);
-  color: var(--status-error-bg);
+  background: #7F1D1D !important;
+  color: #FEF2F2 !important;
 }
 
 .kiosk-toast[data-type="success"] {
-  background: var(--status-success);
-  color: var(--status-success-bg);
+  background: #15803D !important;
+  color: #F0FDF4 !important;
 }
 
 .kiosk-toast i {
-  flex: 0 0 auto;
-  font-size: 1.4em;
+  flex: 0 0 auto !important;
+  font-size: 1.4em !important;
 }
 
 .kiosk-toast span {
-  line-height: 1.35;
+  line-height: 1.35 !important;
+  display: inline-block !important;
 }
 
 @keyframes toast-fade-in {
-  from { opacity: 0; transform: translate(-50%, 12px); }
+  from { opacity: 0; transform: translate(-50%, 14px); }
   to { opacity: 1; transform: translate(-50%, 0); }
 }
 
 /* --------------------------------------------------------------------------
-   11. DEVELOPER & RFID SIMULATOR MODAL (TRIGGERED ONLY VIA ALT + S)
+   11. DEVELOPER & RFID SIMULATOR MODAL (TRIGGERED VIA ALT + S)
    -------------------------------------------------------------------------- */
 .dev-squircle-dialog {
   position: fixed;
@@ -778,7 +795,7 @@ body.kiosk-locked * {
   background: transparent;
   width: 90%;
   max-width: 580px;
-  z-index: 9999;
+  z-index: 99999;
 }
 
 .dev-squircle-dialog::backdrop {

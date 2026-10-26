@@ -24,8 +24,9 @@
   </script>
   
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/tokens.css">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/tokens.css?v=20261026e">
+  <link rel="stylesheet" href="css/style.css?v=20261026e">
+  <link rel="stylesheet" href="css/kiosk-extra.css?v=20261026e">
 </head>
 <body class="kiosk-body">
 
@@ -256,15 +257,15 @@
       <input type="hidden" id="kiosk-api-santri-id" value="">
     </div>
 
-  </main>
+    <!-- ==================================================================== -->
+    <!-- FLOATING STATUS TOAST (ROBUST & CENTERED AT BOTTOM)                  -->
+    <!-- ==================================================================== -->
+    <div id="kiosk-toast" class="kiosk-toast" role="status" aria-live="polite" style="position:fixed!important;bottom:28px!important;left:50%!important;transform:translateX(-50%)!important;z-index:99999!important;width:max-content!important;max-width:min(90vw,820px)!important;" hidden>
+      <i id="kiosk-toast-icon" class="ri-information-line" aria-hidden="true"></i>
+      <span id="kiosk-toast-text"></span>
+    </div>
 
-  <!-- ==================================================================== -->
-  <!-- FLOATING STATUS TOAST (NON-INTRUSIVE STATUS MESSAGE)                 -->
-  <!-- ==================================================================== -->
-  <div id="kiosk-toast" class="kiosk-toast" role="status" aria-live="polite" hidden>
-    <i id="kiosk-toast-icon" class="ri-information-line" aria-hidden="true"></i>
-    <span id="kiosk-toast-text"></span>
-  </div>
+  </main>
 
   <!-- ==================================================================== -->
   <!-- DEVELOPER & RFID SIMULATOR MODAL (DIBUKA DENGAN SHORTCUT ALT + S)   -->
