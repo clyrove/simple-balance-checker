@@ -1,41 +1,47 @@
 # Kios Cek Saldo Santri (Smart Balance Kiosk) – Al-Wafi
 
-Antarmuka UI/UX Kios Pengecekan Saldo Mandiri Santri berbasis **HTML, CSS murni, dan JavaScript Native**, dioptimalkan untuk display sentuh / kiosk rasio **16:9 landscape (1920x1080)** dengan integrasi langsung alat scan RFID fisik dan backend API `api/lookup.php`.
+Antarmuka UI/UX Kios Pengecekan Saldo Mandiri Santri berbasis **HTML, CSS murni, dan JavaScript Native**, dioptimalkan khusus untuk display sentuh / kiosk rasio **16:9 landscape (1920x1080)** dengan integrasi langsung alat scan RFID fisik, backend API `api/lookup.php`, serta proteksi penguncian keyboard santri.
 
 ---
 
-## 🌟 Fitur Utama & Keunggulan Arsitektur
+## 🌟 Fitur Utama & Pembaruan Sistem
 
-1. **Central Configuration System (`js/kiosk-config.js`)**:
-   - **Satu Tempat untuk Semua Konfigurasi**: Kecepatan animasi, kurva easing GSAP, palet warna (*background, foreground, accent, highlight, error, info, success, text, border*), ukuran elemen (*sizes*), durasi timer privasi, dan endpoint API semuanya diatur di file `js/kiosk-config.js`.
-   - Mengubah nilai di `kiosk-config.js` otomatis menyinkronkan CSS variables secara *real-time*.
-2. **Integrasi Backend API Riil (`api/lookup.php`)**:
-   - Terhubung langsung via HTTP `POST` dengan parameter `wallet=<UID>`.
-   - Dilengkapi **Micro-Cache In-Memory (5 Detik)** untuk mencegah request jaringan berulang jika kartu santri di-tap cepat dua kali.
-   - Proteksi **Timeout & AbortController** (6 detik) agar tidak terjadi race condition saat antrean padat.
-   - **Offline / Mock Fallback**: Jika server offline atau kiosk dibuka secara lokal tanpa jaringan, sistem otomatis beralih ke mode simulasi tanpa error/crash.
-3. **Interaksi Cepat & Responsif (Fast GSAP Rolling Counter 0.4s)**:
-   - Durasi animasi hitung saldo dipersingkat menjadi **0.4 detik** (*snappy*), memastikan antrean santri di kantin/koperasi bergerak sangat cepat tanpa kehilangan estetika *split text character bounce*.
-4. **Pemberitahuan Status Mengambang (Floating Toast)**:
-   - Notifikasi elegan berposisi fixed di bawah layar untuk status `info` (*"Membaca kartu..."*), `error` (*"Kartu tidak terdaftar. Silakan hubungi petugas"*), dan `success`.
-   - Tidak menggeser tata letak kiosk sama sekali (*Zero Layout Shift*).
-5. **Masking Nomor Kartu RFID (Password-Style)**:
+1. **Pusat Pesan & Konfigurasi Lengkap (`js/kiosk-config.js`)**:
+   - Seluruh pesan status **sukses, error, info, warning**, dan pesan fallback disatukan dalam objek `KIOSK_CONFIG.messages`.
+   - Seluruh rujukan kata *"petugas"* telah diubah menjadi **"tim IT"** (contoh: *"Kartu tidak terdaftar. Silakan hubungi tim IT."*).
+   - Seluruh pengaturan kecepatan animasi GSAP, warna (*background, foreground, accent, highlight, error, info, success, text, border*), dan ukuran elemen (*sizes*) terpusat di file ini.
+2. **Dua Limit Belanja (Limit Harian & Limit Bulanan)**:
+   - Menampilkan dua limit secara terpisah:
+     - **Limit Harian**: `data.limitHarian` / `data.dailyLimit` (contoh: `Rp 100.000 / hari`).
+     - **Limit Bulanan**: `data.limitBulanan` / `data.monthlyLimit` (contoh: `Rp 500.000 / bulan`).
+   - **Bebas Error jika Nilai Kosong**: Jika backend API tidak mengirimkan nilai limit (bernilai `null`, `undefined`, `0`, atau kosong), sistem secara anggun menampilkan **"Tidak ada data"** tanpa memunculkan error konsol.
+3. **Pengunci Kios & Sembunyikan Kursor (`js/kiosk-lock.js`)**:
+   - **Blokir Total Keyboard Santri**: Menonaktifkan seluruh tombol fisik keyboard laptop/kios agar santri tidak dapat mengetik sembarangan atau menekan shortcut berbahaya (F5, F11, Ctrl+R, Alt+Tab, dll.).
+   - **Kursor Mouse Disembunyikan**: Kursor mouse disembunyikan secara otomatis (`cursor: none !important;`) untuk pengalaman *pure touch-kiosk*.
+   - **Tetap Izinkan Scanner RFID**: Karakter cepat dari hardware reader RFID USB tetap dibaca secara otomatis.
+   - **Shortcut Rahasia Buka Kunci `[Alt + O]`**:
+     - Untuk membuka keyboard dan memunculkan kembali kursor (misalnya saat pemeliharaan oleh tim IT), cukup tekan kombinasi tombol **`Alt + O`**.
+     - Tekan **`Alt + O`** kembali untuk mengunci kios.
+4. **Integrasi Backend API Riil (`api/lookup.php`)**:
+   - Terhubung via HTTP `POST` dengan parameter `wallet=<UID>`.
+   - Dilengkapi **Micro-Cache In-Memory (5 Detik)** untuk merespons instan (0 ms) jika santri menempelkan kartu dua kali berturut-turut.
+   - Proteksi **Timeout & AbortController** (6 detik).
+   - **Offline / Mock Fallback**: Otomatis beralih ke simulasi lokal jika jaringan terputus.
+5. **Animasi Cepat & Responsif (GSAP 0.4s)**:
+   - Durasi rolling counter dipersingkat ke **0.4 detik** (*snappy*) agar antrean santri bergerak lancar.
+6. **Masking Nomor Kartu RFID (Password-Style)**:
    - Nomor kartu santri disamarkan: hanya **2 digit terakhir** yang ditampilkan (`ID: •••• ••72`).
-6. **Limit Belanja Fleksibel**:
-   - Mendukung format limit bulanan santri (`limitBulanan`) atau saldo mengendap minimal (`limitSaldo`), serta fallback `Tanpa limit`.
 7. **Bebas Layout Shifting (Zero Layout Shift)**:
-   - Wadah panggung kartu dikunci dalam CSS Grid bertumpuk (`grid-area: kiosk-screen;` dengan ukuran `width: clamp(860px, 58vw, 980px); height: clamp(580px, 68vh, 660px);`).
+   - Menggunakan panggung CSS Grid bertumpuk dengan dimensi terkunci.
 8. **Kepatuhan Desain Ketat**:
-   - **Zero 1px Border**: Tidak ada border 1px (`border: 0 !important;`).
-   - **Zero Box-Shadow**: Elevasi murni melalui kontras warna permukaan bertingkat.
-   - **Letter-Spacing Ketat**: Maksimal `-0.02em` hingga `-0.055em` (tidak ada nilai positif).
-   - **Corner Shape Squircle**: Sudut kurvatur organik khas Apple / M3.
-9. **Kemandirian Penuh (100% Offline Ready)**:
-   - Seluruh aset vendor (`vendor/gsap.min.js`, `vendor/remixicon/`) tersimpan secara lokal dan otomatis menyediakan fallback CDN jika dibutuhkan.
+   - **Zero 1px Border**: `border: 0 !important;`.
+   - **Zero Box-Shadow**: Elevasi warna murni.
+   - **Letter-Spacing Ketat**: Maksimal `-0.02em` hingga `-0.055em`.
+   - **Corner Shape Squircle**: Kurvatur continuous khas Apple / M3.
 
 ---
 
-## 🗂️ Struktur Berkas & Panduan Maintainability
+## 🗂️ Struktur Berkas Proyek
 
 ```text
 balance-check-kiosk/
@@ -43,47 +49,54 @@ balance-check-kiosk/
 ├── README.md             # Panduan dokumentasi lengkap
 ├── css/
 │   ├── tokens.css        # Desain token, CSS Custom Properties & skala squircle
-│   └── style.css         # Styling display 16:9, grid bertumpuk, toast, modal
+│   └── style.css         # Styling display 16:9, grid bertumpuk, toast, cursor lock
 ├── js/
-│   ├── kiosk-config.js   # PUSAT KONFIGURASI (Warna, Kecepatan, Ukuran, Timeout, API)
-│   ├── kiosk-api.js      # API Service, Micro-Cache, Driver Scanner RFID USB
+│   ├── kiosk-config.js   # PUSAT KONFIGURASI (Pesan Error/Sukses, Warna, Animasi, Ukuran, API)
+│   ├── kiosk-lock.js     # PENGUNCI KEAMANAN (Blokir Keyboard Santri, Sembunyikan Kursor, Alt + O)
+│   ├── kiosk-api.js      # API Service, Micro-Cache, Format 2 Limit, Driver RFID USB
 │   └── app.js            # Jam real-time, Animasi GSAP, Timer 3s, Toast Controller
 └── vendor/
-    ├── gsap.min.js       # GSAP Library lokal
+    ├── gsap.min.js       # GSAP Library lokal (100% offline ready)
     └── remixicon/        # Font & icon pack Remix Icon lokal
 ```
 
 ---
 
-## ⚙️ Mengubah Konfigurasi di `js/kiosk-config.js`
+## 🔐 Panduan Pintasan Keyboard untuk Tim IT
 
-Semua konfigurasi diatur dalam objek `window.KIOSK_CONFIG`:
+| Shortcut | Fungsi | Keterangan |
+|---|---|---|
+| **`Alt + O`** | **Buka / Kunci Kios** | Memunculkan / menyembunyikan kursor mouse dan mengaktifkan / menonaktifkan ketikan keyboard laptop. |
+| **`Alt + S`** | **Simulator RFID & API** | Membuka konsol pengujian API dan mock data. *(Hanya dapat dibuka jika kios sudah di-unlock via `Alt + O`)*. |
+
+---
+
+## ⚙️ Mengubah Pesan & Konfigurasi di `js/kiosk-config.js`
+
+Semua pesan status dan error diatur pada bagian `KIOSK_CONFIG.messages`:
 
 ```javascript
-// Contoh: Mengubah kecepatan animasi saldo menjadi lebih lambat / cepat
-KIOSK_CONFIG.animation.counterSpeed = 0.5; // dalam detik
+KIOSK_CONFIG.messages = {
+  // Pesan Error
+  cardNotRegistered: 'Kartu tidak terdaftar. Silakan hubungi tim IT.',
+  invalidCard: 'Nomor kartu tidak valid. Silakan hubungi tim IT.',
+  networkError: 'Tidak dapat menghubungi server. Periksa koneksi atau hubungi tim IT.',
+  timeoutError: 'Koneksi ke server timeout. Silakan coba lagi atau hubungi tim IT.',
+  generalError: 'Gagal memeriksa saldo. Silakan hubungi tim IT.',
 
-// Contoh: Mengubah warna background atau accent kuning
-KIOSK_CONFIG.colors.background = '#EAF0F7';
-KIOSK_CONFIG.colors.accent = '#FEF08A';
+  // Pesan Nilai Kosong
+  noData: 'Tidak ada data',
 
-// Contoh: Mengubah durasi auto-close privasi
-KIOSK_CONFIG.timing.autoCloseSeconds = 5; // 5 detik
-
-// Contoh: Mengubah endpoint server backend
-KIOSK_CONFIG.api.endpoint = 'https://ceksaldo.al-wafi.sch.id/api/lookup.php';
+  // Pesan Kunci Kios
+  kioskLocked: 'Kios Terkunci: Keyboard dinonaktifkan & kursor disembunyikan.',
+  kioskUnlocked: 'Mode Pemeliharaan IT: Keyboard & kursor diaktifkan. (Tekan Alt + O untuk mengunci kembali)'
+};
 ```
 
 ---
 
-## 🔌 Integrasi API Backend (`api/lookup.php`)
+## 🔌 Format Response Payload API Backend (`api/lookup.php`)
 
-### Parameter Request:
-* **Metode:** `POST`
-* **Content-Type:** `application/x-www-form-urlencoded`
-* **Body:** `wallet=<NOMOR_UID_RFID>` (contoh: `wallet=104928172`)
-
-### Format Response Sukses (HTTP 200):
 ```json
 {
   "success": true,
@@ -93,30 +106,12 @@ KIOSK_CONFIG.api.endpoint = 'https://ceksaldo.al-wafi.sch.id/api/lookup.php';
     "nis": "202401089",
     "className": "Kelas 10-A • Asrama Abu Bakar",
     "balance": 350000,
+    "limitHarian": 100000,
     "limitBulanan": 500000,
-    "limitSaldo": 0,
     "status": "Kartu Aktif",
     "accountType": "Saldo Wallet",
     "initials": "AF"
   }
 }
 ```
-
-### Format Response Gagal (HTTP 404 / 400):
-```json
-{
-  "success": false,
-  "code": "not_found",
-  "message": "Kartu tidak terdaftar. Silakan hubungi petugas."
-}
-```
-
----
-
-## 🕹️ Pintasan Pengembang & Pengujian
-
-* **Shortcut Simulator `[Alt + S]`**:
-  Tekan `Alt + S` pada keyboard untuk membuka modal simulator rahasia. Tersedia opsi:
-  - **Cek ke Server API**: Menembak langsung nomor UID ke endpoint `api/lookup.php`.
-  - **Terapkan Mock**: Mengisi form simulasi saldo secara manual.
-  - **Reset Standby**: Mengembalikan kiosk ke layar tunggu.
+*Catatan: Jika `limitHarian` atau `limitBulanan` bernilai `null`, `0`, atau tidak ada di respon server, layar otomatis menampilkan `"Tidak ada data"` tanpa terjadi error.*

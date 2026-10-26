@@ -704,6 +704,12 @@ h1, h2, h3, h4, p, span, button, input, label, div {
 /* --------------------------------------------------------------------------
    10. FLOATING STATUS TOAST (NON-INTRUSIVE STATUS MESSAGE)
    -------------------------------------------------------------------------- */
+/* Kiosk Security Lock: Sembunyikan Kursor Mouse saat Kios Terkunci */
+body.kiosk-locked,
+body.kiosk-locked * {
+  cursor: none !important;
+}
+
 .kiosk-toast {
   position: fixed;
   left: 50%;

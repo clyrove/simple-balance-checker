@@ -7,7 +7,8 @@
  * 2. Micro-cache in-memory (5 detik) untuk mencegah double-tap jaringan berulang.
  * 3. Masking nomor kartu RFID seperti sandi (hanya 2 digit terakhir terlihat).
  * 4. Driver pendeteksi keyboard-wedge dari scanner RFID USB fisik.
- * 5. Antarmuka global `window.SantriKioskAPI` yang mudah dibaca & di-maintain.
+ * 5. Tampilan 2 Limit (Limit Harian & Limit Bulanan) dengan fallback "Tidak ada data".
+ * 6. Seluruh pesan status & error terpusat dari `KIOSK_CONFIG.messages`.
  * ============================================================================
  */
 
@@ -16,6 +17,17 @@
 
   // Ambil referensi konfigurasi terpusat
   const CONFIG = window.KIOSK_CONFIG || {
+    messages: {
+      readingCard: 'Membaca kartu...',
+      cardNotRegistered: 'Kartu tidak terdaftar. Silakan hubungi tim IT.',
+      invalidCard: 'Nomor kartu tidak valid. Silakan hubungi tim IT.',
+      networkError: 'Tidak dapat menghubungi server. Periksa koneksi atau hubungi tim IT.',
+      timeoutError: 'Koneksi ke server timeout. Silakan coba lagi atau hubungi tim IT.',
+      generalError: 'Gagal memeriksa saldo. Silakan hubungi tim IT.',
+      noData: 'Tidak ada data',
+      walletFallbackType: 'Saldo Wallet',
+      unknownUser: 'Pemilik Wallet'
+    },
     api: { endpoint: 'api/lookup.php', timeoutMs: 6000, cacheTtlMs: 5000, fallbackToMockOnOffline: true },
     timing: { autoCloseSeconds: 3, toastDurationMs: 4000, scanCharMaxIntervalMs: 400, scanSubmitMaxAgeMs: 2000 }
   };
@@ -34,8 +46,8 @@
       nis: '202401089',
       className: 'Kelas 10-A • Asrama Abu Bakar',
       balance: 350000,
+      limitHarian: 100000,
       limitBulanan: 500000,
-      limitSaldo: 0,
       status: 'Kartu Aktif',
       accountType: 'Saldo Wallet',
       initials: 'AF'
@@ -46,8 +58,8 @@
       nis: '202401089',
       className: 'Kelas 10-A • Asrama Abu Bakar',
       balance: 350000,
+      limitHarian: 100000,
       limitBulanan: 500000,
-      limitSaldo: 0,
       status: 'Kartu Aktif',
       accountType: 'Saldo Wallet',
       initials: 'AF'
@@ -58,8 +70,8 @@
       nis: '202402014',
       className: 'Kelas 11-Tahfidz • Asrama Maryam',
       balance: 1250000,
+      limitHarian: 150000,
       limitBulanan: 1500000,
-      limitSaldo: 0,
       status: 'Kartu Aktif',
       accountType: 'Saldo Wallet',
       initials: 'FZ'
@@ -70,8 +82,8 @@
       nis: '202403072',
       className: 'Kelas 9-B • Asrama Umar',
       balance: 45000,
+      limitHarian: 50000,
       limitBulanan: 300000,
-      limitSaldo: 20000,
       status: 'Kartu Aktif',
       accountType: 'Saldo Wallet',
       initials: 'MG'
@@ -86,6 +98,22 @@
    */
   function formatRupiahNumber(num) {
     return new Intl.NumberFormat('id-ID').format(Math.round(num || 0));
+  }
+
+  /**
+   * Helper format nilai limit belanja (Harian atau Bulanan).
+   * Jika tidak ada value / bernilai 0 / undefined di server API,
+   * kembalikan string aman "Tidak ada data" tanpa error.
+   */
+  function formatLimitValue(value, unitSuffix) {
+    if (value === undefined || value === null || value === '') {
+      return (CONFIG.messages && CONFIG.messages.noData) || 'Tidak ada data';
+    }
+    const num = Number(value);
+    if (isNaN(num) || num <= 0) {
+      return (CONFIG.messages && CONFIG.messages.noData) || 'Tidak ada data';
+    }
+    return `Rp ${formatRupiahNumber(num)}${unitSuffix ? ' / ' + unitSuffix : ''}`;
   }
 
   /**
@@ -130,7 +158,7 @@
         return {
           success: false,
           code: 'invalid_wallet',
-          message: 'Nomor kartu tidak valid.'
+          message: (CONFIG.messages && CONFIG.messages.invalidCard) || 'Nomor kartu tidak valid. Silakan hubungi tim IT.'
         };
       }
 
@@ -165,7 +193,7 @@
           payload = null;
         }
 
-        // Tangani respons HTTP dan payload
+        // Tangani respons HTTP dan payload sukses
         if (response.ok && payload && payload.success === true && payload.data) {
           // Simpan ke micro-cache
           microCache.set(cleanId, {
@@ -176,7 +204,11 @@
         }
 
         // Jika kartu tidak terdaftar di backend (HTTP 404 / 400)
-        const errMsg = (payload && payload.message) || 'Kartu tidak terdaftar. Silakan hubungi petugas.';
+        let errMsg = (payload && payload.message) || (CONFIG.messages && CONFIG.messages.cardNotRegistered);
+        // Ganti kata "petugas" dengan "tim IT" jika ada di pesan dari backend
+        if (errMsg) {
+          errMsg = errMsg.replace(/petugas/gi, 'tim IT');
+        }
         const errCode = (payload && payload.code) || `HTTP_${response.status}`;
 
         // Fallback ke mock jika server mengembalikan 404 pada data test
@@ -200,14 +232,15 @@
           success: false,
           code: isTimeout ? 'timeout' : 'network_error',
           message: isTimeout
-            ? 'Koneksi ke server timeout. Silakan coba lagi.'
-            : 'Tidak dapat menghubungi server. Periksa koneksi.'
+            ? (CONFIG.messages && CONFIG.messages.timeoutError) || 'Koneksi ke server timeout. Silakan coba lagi atau hubungi tim IT.'
+            : (CONFIG.messages && CONFIG.messages.networkError) || 'Tidak dapat menghubungi server. Periksa koneksi atau hubungi tim IT.'
         };
       }
     },
 
     /**
      * Menerapkan data santri ke tampilan UI dan mengisi seluruh elemen ber-ID unik
+     * Aman dari nilai null / undefined di API (menampilkan "Tidak ada data")
      */
     setSantriData(data) {
       if (!data) return;
@@ -240,27 +273,38 @@
       const elClass = document.getElementById('kiosk-user-class');
       const elStatus = document.getElementById('kiosk-account-status');
       const elInitials = document.getElementById('kiosk-user-initials');
-      const elLimit = document.getElementById('kiosk-daily-limit');
       const elAccountType = document.getElementById('kiosk-account-type');
       const elTimestamp = document.getElementById('kiosk-last-tap-time');
 
-      if (elName) elName.textContent = data.name || 'Pemilik Wallet';
-      if (elNis) elNis.textContent = 'NIS: ' + (data.nis || '-');
-      if (elClass) elClass.textContent = data.className || 'Pemilik Wallet';
-      if (elStatus) elStatus.textContent = data.status || 'Kartu Aktif';
-      if (elAccountType) elAccountType.textContent = data.accountType || 'Saldo Wallet';
+      const noDataText = (CONFIG.messages && CONFIG.messages.noData) || 'Tidak ada data';
 
-      // 4. Format Limit Belanja (Bulanan / Minimum Saldo)
-      if (elLimit) {
-        const bulanan = Number(data.limitBulanan || data.dailyLimit || 0);
-        const minimal = Number(data.limitSaldo || 0);
-        if (bulanan > 0) {
-          elLimit.textContent = 'Rp ' + formatRupiahNumber(bulanan) + ' / bulan';
-        } else if (minimal > 0) {
-          elLimit.textContent = 'Saldo min. Rp ' + formatRupiahNumber(minimal);
-        } else {
-          elLimit.textContent = 'Tanpa limit';
-        }
+      if (elName) elName.textContent = data.name || (CONFIG.messages && CONFIG.messages.unknownUser) || 'Pemilik Wallet';
+      if (elNis) elNis.textContent = data.nis ? ('NIS: ' + data.nis) : ('NIS: ' + noDataText);
+      if (elClass) elClass.textContent = data.className || noDataText;
+      if (elStatus) elStatus.textContent = data.status || (CONFIG.messages && CONFIG.messages.cardActive) || 'Kartu Aktif';
+      if (elAccountType) elAccountType.textContent = data.accountType || (CONFIG.messages && CONFIG.messages.walletFallbackType) || 'Saldo Wallet';
+
+      // 4. Dua Limit: Limit Harian & Limit Bulanan (Aman jika tidak memiliki value di API)
+      const elDailyLimit = document.getElementById('kiosk-daily-limit');
+      const elMonthlyLimit = document.getElementById('kiosk-monthly-limit');
+
+      // Ambil nilai dari field API:
+      // Limit Harian: data.limitHarian atau data.dailyLimit
+      const dailyVal = (data.limitHarian !== undefined && data.limitHarian !== null)
+        ? data.limitHarian
+        : data.dailyLimit;
+
+      // Limit Bulanan: data.limitBulanan atau data.monthlyLimit
+      const monthlyVal = (data.limitBulanan !== undefined && data.limitBulanan !== null)
+        ? data.limitBulanan
+        : data.monthlyLimit;
+
+      if (elDailyLimit) {
+        elDailyLimit.textContent = formatLimitValue(dailyVal, 'hari');
+      }
+
+      if (elMonthlyLimit) {
+        elMonthlyLimit.textContent = formatLimitValue(monthlyVal, 'bulan');
       }
 
       // 5. Inisial avatar 2 huruf
@@ -270,6 +314,8 @@
         } else if (data.name) {
           const words = data.name.trim().split(/\s+/);
           elInitials.textContent = (words[0][0] + (words[1] ? words[1][0] : '')).toUpperCase();
+        } else {
+          elInitials.textContent = 'ST';
         }
       }
 
@@ -299,17 +345,20 @@
       if (!cleanId) return;
 
       isRequestBusy = true;
-      showToast('Membaca kartu...', 'info', 0);
+      const readingMsg = (CONFIG.messages && CONFIG.messages.readingCard) || 'Membaca kartu...';
+      showToast(readingMsg, 'info', 0);
 
       try {
         const res = await this.fetchSantriByCardId(cleanId);
         if (res && res.success && res.data) {
           this.setSantriData(res.data);
         } else {
-          showToast((res && res.message) || 'Kartu tidak terdaftar. Silakan hubungi petugas.', 'error', CONFIG.timing.toastDurationMs);
+          const notRegMsg = (res && res.message) || (CONFIG.messages && CONFIG.messages.cardNotRegistered) || 'Kartu tidak terdaftar. Silakan hubungi tim IT.';
+          showToast(notRegMsg, 'error', CONFIG.timing.toastDurationMs);
         }
       } catch (err) {
-        showToast('Gagal memeriksa saldo. Silakan coba lagi.', 'error', CONFIG.timing.toastDurationMs);
+        const genErrMsg = (CONFIG.messages && CONFIG.messages.generalError) || 'Gagal memeriksa saldo. Silakan hubungi tim IT.';
+        showToast(genErrMsg, 'error', CONFIG.timing.toastDurationMs);
       } finally {
         isRequestBusy = false;
       }

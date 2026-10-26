@@ -176,12 +176,21 @@
                 </div>
               </div>
 
-              <!-- Enlarged Monthly/Daily Limit Label & Status -->
+              <!-- Dua Limit Belanja: Limit Harian & Limit Bulanan -->
               <div class="balance-tonal-badge-row">
-                <span class="hero-limit-badge" id="kiosk-limit-container">
-                  <i class="ri-bank-card-line" aria-hidden="true"></i>
-                  <span>Limit Belanja Bulanan: <strong id="kiosk-daily-limit">Tanpa limit</strong></span>
+                <!-- 1. Limit Harian -->
+                <span class="hero-limit-badge" id="kiosk-daily-limit-badge">
+                  <i class="ri-calendar-line" aria-hidden="true"></i>
+                  <span>Limit Harian: <strong id="kiosk-daily-limit">Tidak ada data</strong></span>
                 </span>
+
+                <!-- 2. Limit Bulanan -->
+                <span class="hero-limit-badge" id="kiosk-monthly-limit-badge">
+                  <i class="ri-calendar-todo-line" aria-hidden="true"></i>
+                  <span>Limit Bulanan: <strong id="kiosk-monthly-limit">Tidak ada data</strong></span>
+                </span>
+
+                <!-- 3. Status Saldo -->
                 <span class="hero-status-badge">
                   <i class="ri-checkbox-circle-fill" aria-hidden="true"></i>
                   <span>Saldo Tersedia</span>
@@ -258,7 +267,7 @@
   </div>
 
   <!-- ==================================================================== -->
-  <!-- DEVELOPER & RFID SIMULATOR MODAL (TRIGGERED ONLY VIA SHORTCUT ALT + S)-->
+  <!-- DEVELOPER & RFID SIMULATOR MODAL (DIBUKA DENGAN SHORTCUT ALT + S)   -->
   <!-- ==================================================================== -->
   <dialog id="kiosk-dev-modal" class="dev-squircle-dialog" aria-labelledby="modal-sim-title">
     <div class="dev-dialog-surface">
@@ -303,9 +312,15 @@
             </div>
           </div>
 
-          <div class="dev-form-group">
-            <label for="sim-input-limit">Limit Belanja Bulanan (Rp):</label>
-            <input type="number" id="sim-input-limit" class="dev-input" value="500000" step="10000">
+          <div class="dev-form-grid">
+            <div class="dev-form-group">
+              <label for="sim-input-daily-limit">Limit Belanja Harian (Rp):</label>
+              <input type="number" id="sim-input-daily-limit" class="dev-input" value="100000" step="5000">
+            </div>
+            <div class="dev-form-group">
+              <label for="sim-input-monthly-limit">Limit Belanja Bulanan (Rp):</label>
+              <input type="number" id="sim-input-monthly-limit" class="dev-input" value="500000" step="10000">
+            </div>
           </div>
 
           <div class="dev-action-row">
@@ -332,11 +347,13 @@
   <!-- ==================================================================== -->
   <!-- JAVASCRIPT MODULES (MODULAR, CLEAN, SCALEABLE)                       -->
   <!-- ==================================================================== -->
-  <!-- 1. Central Configuration (Semua konfig ada di satu tempat ini) -->
+  <!-- 1. Central Configuration (Semua pesan, warna, ukuran, animasi) -->
   <script src="js/kiosk-config.js"></script>
-  <!-- 2. API Service Layer & Hardware RFID Driver -->
+  <!-- 2. Kiosk Security Lock (Blokir keyboard santri, sembunyikan kursor, Alt + O) -->
+  <script src="js/kiosk-lock.js"></script>
+  <!-- 3. API Service Layer & Hardware RFID Driver -->
   <script src="js/kiosk-api.js"></script>
-  <!-- 3. Application Controller & GSAP Animation Engine -->
+  <!-- 4. Application Controller & GSAP Animation Engine -->
   <script src="js/app.js"></script>
 </body>
 </html>

@@ -18,6 +18,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Cek ketersediaan GSAP (Graceful Degradation jika library gagal dimuat)
   const hasGsap = typeof window.gsap !== 'undefined';
   const CONFIG = window.KIOSK_CONFIG || {
+    messages: {
+      touchPrompt: 'Tempelkan kartu pada reader RFID.',
+      generalError: 'Gagal memeriksa saldo. Silakan hubungi tim IT.'
+    },
     animation: { counterSpeed: 0.4, counterEasing: 'power2.out', splitBounceSpeed: 0.35, splitBounceEasing: 'back.out(2)', stateCrossFadeSpeed: 0.18 },
     timing: { autoCloseSeconds: 3, toastDurationMs: 4000 }
   };
@@ -333,7 +337,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Klik area sensor (pada layar sentuh / demo)
   if (rfidSensorArea) {
     rfidSensorArea.addEventListener('click', () => {
-      showToast('Tempelkan kartu pada reader RFID.', 'info', 2500);
+      const promptMsg = (CONFIG.messages && CONFIG.messages.touchPrompt) || 'Tempelkan kartu pada reader RFID.';
+      showToast(promptMsg, 'info', 2500);
     });
   }
 
@@ -387,12 +392,13 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('kiosk:toast-hide', hideToast);
   window.addEventListener('kiosk:error', (event) => {
     const detail = event.detail || {};
-    showToast(detail.message || 'Terjadi kesalahan.', 'error', 4000);
+    const errMsg = detail.message || (CONFIG.messages && CONFIG.messages.generalError) || 'Terjadi kesalahan. Silakan hubungi tim IT.';
+    showToast(errMsg, 'error', 4000);
   });
 
   // --------------------------------------------------------------------------
   // 8. SHORTCUT TERSEMBUNYI [ALT + S] UNTUK SIMULATOR KIOSK
-  // (Tanpa tombol dan tanpa instruksi terlihat di layar)
+  // Catatan: Jika kiosk terkunci oleh kiosk-lock.js, buka dulu via [Alt + O]
   // --------------------------------------------------------------------------
   window.addEventListener('keydown', (e) => {
     if (e.altKey && (e.key === 's' || e.key === 'S')) {
@@ -422,7 +428,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Tombol 2: Terapkan Mock Data (Testing Manual)
+  // Tombol 2: Terapkan Mock Data (Testing Manual dengan 2 Limit)
   if (simBtnApply) {
     simBtnApply.addEventListener('click', () => {
       const cardUid = document.getElementById('sim-input-card-uid').value;
@@ -430,8 +436,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const balance = Number(document.getElementById('sim-input-balance').value) || 0;
       const nis = document.getElementById('sim-input-nis').value;
       const className = document.getElementById('sim-input-class').value;
-      const dailyLimitInput = document.getElementById('sim-input-limit');
-      const limitVal = dailyLimitInput ? Number(dailyLimitInput.value) || 100000 : 100000;
+
+      const dailyLimitInput = document.getElementById('sim-input-daily-limit');
+      const monthlyLimitInput = document.getElementById('sim-input-monthly-limit');
+
+      const dailyLimitVal = dailyLimitInput ? Number(dailyLimitInput.value) || 100000 : 100000;
+      const monthlyLimitVal = monthlyLimitInput ? Number(monthlyLimitInput.value) || 500000 : 500000;
 
       window.SantriKioskAPI.setSantriData({
         cardUid,
@@ -439,11 +449,12 @@ document.addEventListener('DOMContentLoaded', () => {
         balance,
         nis,
         className,
-        dailyLimit: limitVal,
-        limitBulanan: limitVal,
-        limitSaldo: 0,
-        status: 'Kartu Aktif',
-        accountType: 'Saldo Wallet'
+        limitHarian: dailyLimitVal,
+        limitBulanan: monthlyLimitVal,
+        dailyLimit: dailyLimitVal,
+        monthlyLimit: monthlyLimitVal,
+        status: (CONFIG.messages && CONFIG.messages.cardActive) || 'Kartu Aktif',
+        accountType: (CONFIG.messages && CONFIG.messages.walletFallbackType) || 'Saldo Wallet'
       });
 
       if (devModal) devModal.close();
