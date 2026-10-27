@@ -1,28 +1,10 @@
-/* ==========================================================================
-   KIOSK BALANCE CHECK - MAIN STYLESHEET (BUG-FREE & RESPONSIVE 16:9)
-   Target: 16:9 Landscape Kiosk Screens (1920x1080 / Touch Terminals / Laptops)
-   Palette: Navy, Putih, Kuning Pastel
-
-   STRICT ARCHITECTURAL RULES:
-   1. Font: Inter with negative tracking (max -0.02em, down to -0.06em, never positive)
-   2. Zero 1px borders (strictly tonal color boundaries)
-   3. Zero box-shadows (elevation via color contrast)
-   4. Zero glows
-   5. Squircles corner shape
-   6. Zero layout shifting (fixed-grid stage overlay)
-   7. High legibility from 1-2 meters distance
-   ========================================================================== */
-
-/* --------------------------------------------------------------------------
-   1. GLOBAL RESET & BASE STYLES
-   -------------------------------------------------------------------------- */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  border: 0 !important;        /* Strict: no 1px borders anywhere */
-  box-shadow: none !important;  /* Strict: zero box-shadows */
-  text-shadow: none !important; /* Strict: zero glows */
+  border: 0 !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
   outline: none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

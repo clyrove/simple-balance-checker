@@ -1,119 +1,28 @@
-# Kios Cek Saldo Santri (Smart Balance Kiosk) – Al-Wafi
+# Balance Check Kiosk
 
-Antarmuka UI/UX Kios Pengecekan Saldo Mandiri Santri berbasis **HTML, CSS murni, dan JavaScript Native**, dioptimalkan khusus untuk display sentuh / kiosk rasio **16:9 landscape (1920x1080)** dengan integrasi langsung alat scan RFID fisik, backend API `api/lookup.php`, serta proteksi penguncian keyboard santri.
+Aplikasi antarmuka web mandiri untuk pengecekan saldo santri.
 
----
-
-## 🌟 Fitur Utama & Pembaruan Sistem
-
-1. **Pusat Pesan & Konfigurasi Lengkap (`js/kiosk-config.js`)**:
-   - Seluruh pesan status **sukses, error, info, warning**, dan pesan fallback disatukan dalam objek `KIOSK_CONFIG.messages`.
-   - Seluruh rujukan kata *"petugas"* telah diubah menjadi **"tim IT"** (contoh: *"Kartu tidak terdaftar. Silakan hubungi tim IT."*).
-   - Seluruh pengaturan kecepatan animasi GSAP, warna (*background, foreground, accent, highlight, error, info, success, text, border*), dan ukuran elemen (*sizes*) terpusat di file ini.
-2. **Dua Limit Belanja (Limit Harian & Limit Bulanan)**:
-   - Menampilkan dua limit secara terpisah:
-     - **Limit Harian**: `data.limitHarian` / `data.dailyLimit` (contoh: `Rp 100.000 / hari`).
-     - **Limit Bulanan**: `data.limitBulanan` / `data.monthlyLimit` (contoh: `Rp 500.000 / bulan`).
-   - **Bebas Error jika Nilai Kosong**: Jika backend API tidak mengirimkan nilai limit (bernilai `null`, `undefined`, `0`, atau kosong), sistem secara anggun menampilkan **"Tidak ada data"** tanpa memunculkan error konsol.
-3. **Pengunci Keyboard & Mouse Kios Ketat Tanpa Force Fullscreen (`js/kiosk-lock.js`)**:
-   - **Tanpa Force Fullscreen**: Tidak memaksa jendela browser masuk ke mode F11/fullscreen otomatis.
-   - **Blokir Mutlak Seluruh Tombol Keyboard (Termasuk Tombol Windows)**: Saat kios terkunci, seluruh tombol keyboard (`Meta`/`Windows`, `F1`–`F12`, `Tab`, `Esc`, `Ctrl`, `Alt`, spasi, huruf, dan angka) dikunci penuh (`preventDefault` + `stopImmediatePropagation` + Web `navigator.keyboard.lock`).
-   - **Hanya `[Alt + O]` yang Bisa Membuka Kunci**: Satu-satunya kombinasi tombol yang diizinkan saat terkunci adalah **`Alt + O`**.
-   - **`[Alt + S]` Terkunci Rapat**: Konsol simulator **`Alt + S`** tidak dapat dibuka sama sekali ketika keyboard sedang terkunci, dan otomatis tertutup jika kios dikunci kembali.
-   - **Blokir Seluruh Klik Tombol Mouse & Sembunyikan Kursor**: Klik kiri, kanan, tengah, drag, dan *context menu* dinonaktifkan total serta kursor disembunyikan (`cursor: none !important;`) saat terkunci.
-   - **Filter Ketat Scanner RFID USB**: Hanya *burst* pembacaan kartu dari hardware RFID USB ($\le 55\text{ms}$ antar karakter, minimal 5 karakter) yang diproses; ketikan tangan manusia diblokir 100%.
-4. **Integrasi Backend API di Development Lokal & Production (`https://ceksaldo.al-wafi.sch.id/api/lookup.php`)**:
-   - Otomatis mendeteksi apakah dijalankan di **Local Development** (`localhost`, `127.0.0.1`, Live Server, `file://`) atau di **Server Production** (`https://ceksaldo.al-wafi.sch.id`).
-   - Dilengkapi **`dev-server.js`** (`start-dev.bat`) pada `http://127.0.0.1:8787` dan **`.htaccess`** sehingga saat diuji di lokal (tanpa perlu di-upload ke server dulu), pemanggilan API langsung terhubung ke `https://ceksaldo.al-wafi.sch.id/api/lookup.php` bebas masalah CORS.
-   - Dilengkapi **Micro-Cache In-Memory (5 Detik)** dan proteksi **Timeout & AbortController** (6 detik).
-5. **Anti-Jitter Floating Toast**:
-   - Menggunakan *in-place DOM update*, deduplikasi pesan identik, penundaan cerdas (*delayed loading toast* 160ms), serta transisi GPU `translate3d` & `opacity` sehingga toast tidak pernah berkedip atau *jittering* saat menerima banyak input cepat.
-5. **Animasi Cepat & Responsif (GSAP 0.4s)**:
-   - Durasi rolling counter dipersingkat ke **0.4 detik** (*snappy*) agar antrean santri bergerak lancar.
-6. **Masking Nomor Kartu RFID (Password-Style)**:
-   - Nomor kartu santri disamarkan: hanya **2 digit terakhir** yang ditampilkan (`ID: •••• ••72`).
-7. **Bebas Layout Shifting (Zero Layout Shift)**:
-   - Menggunakan panggung CSS Grid bertumpuk dengan dimensi terkunci.
-8. **Kepatuhan Desain Ketat**:
-   - **Zero 1px Border**: `border: 0 !important;`.
-   - **Zero Box-Shadow**: Elevasi warna murni.
-   - **Letter-Spacing Ketat**: Maksimal `-0.02em` hingga `-0.055em`.
-   - **Corner Shape Squircle**: Kurvatur continuous khas Apple / M3.
-
----
-
-## 🗂️ Struktur Berkas Proyek
+## Struktur Proyek
 
 ```text
 balance-check-kiosk/
-├── index.html            # Halaman utama kiosk (Semantic HTML5, ARIA labels lengkap)
-├── README.md             # Panduan dokumentasi lengkap
+├── index.html            # Antarmuka utama kios
+├── README.md             # Panduan struktur proyek
 ├── css/
-│   ├── tokens.css        # Desain token, CSS Custom Properties & skala squircle
-│   ├── style.css         # Styling display 16:9, grid bertumpuk, toast, cursor lock
-│   └── kiosk-extra.css   # Override keamanan & kestabilan posisi toast mengambang
+│   ├── tokens.css        # Desain token dan variabel gaya
+│   ├── style.css         # Tata letak tampilan dan antarmuka
+│   └── kiosk-extra.css   # Penyesuaian tampilan status
 ├── js/
-│   ├── kiosk-config.js   # PUSAT KONFIGURASI (Pesan Error/Sukses, Warna, Animasi, Ukuran, API)
-│   ├── kiosk-lock.js     # PENGUNCI KEAMANAN (Blokir Keyboard Santri, Sembunyikan Kursor, Alt + O)
-│   ├── kiosk-api.js      # API Service, Micro-Cache, Format 2 Limit, Driver RFID USB
-│   └── app.js            # Jam real-time, Animasi GSAP, Timer 3s, Toast Controller
+│   ├── kiosk-config.js   # Konfigurasi aplikasi
+│   ├── kiosk-lock.js     # Pengontrol interaksi perangkat
+│   ├── kiosk-api.js      # Layanan pertukaran data
+│   └── app.js            # Logika pengontrol tampilan
 └── vendor/
-    ├── gsap.min.js       # GSAP Library lokal (100% offline ready)
-    └── remixicon/        # Font & icon pack Remix Icon lokal
+    ├── gsap.min.js       # Pustaka animasi
+    └── remixicon/        # Ikonografi
 ```
 
----
+## Panduan Menjalankan
 
-## 🔐 Panduan Pintasan Keyboard untuk Tim IT
-
-| Shortcut | Fungsi | Keterangan |
-|---|---|---|
-| **`Alt + O`** | **Buka / Kunci Kios** | Memunculkan / menyembunyikan kursor mouse dan mengaktifkan / menonaktifkan ketikan keyboard laptop. |
-| **`Alt + S`** | **Simulator RFID & API** | Membuka konsol pengujian API dan mock data. *(Hanya dapat dibuka jika kios sudah di-unlock via `Alt + O`)*. |
-
----
-
-## ⚙️ Mengubah Pesan & Konfigurasi di `js/kiosk-config.js`
-
-Semua pesan status dan error diatur pada bagian `KIOSK_CONFIG.messages`:
-
-```javascript
-KIOSK_CONFIG.messages = {
-  // Pesan Error
-  cardNotRegistered: 'Kartu tidak terdaftar. Silakan hubungi tim IT.',
-  invalidCard: 'Nomor kartu tidak valid. Silakan hubungi tim IT.',
-  networkError: 'Tidak dapat menghubungi server. Periksa koneksi atau hubungi tim IT.',
-  timeoutError: 'Koneksi ke server timeout. Silakan coba lagi atau hubungi tim IT.',
-  generalError: 'Gagal memeriksa saldo. Silakan hubungi tim IT.',
-
-  // Pesan Nilai Kosong
-  noData: 'Tidak ada data',
-
-  // Pesan Kunci Kios
-  kioskLocked: 'Kios Terkunci: Keyboard dinonaktifkan & kursor disembunyikan.',
-  kioskUnlocked: 'Mode Pemeliharaan IT: Keyboard & kursor diaktifkan. (Tekan Alt + O untuk mengunci kembali)'
-};
-```
-
----
-
-## 🔌 Format Response Payload API Backend (`api/lookup.php`)
-
-```json
-{
-  "success": true,
-  "data": {
-    "cardUid": "104928172",
-    "name": "Ahmad Fauzi Ridwan",
-    "nis": "202401089",
-    "className": "Kelas 10-A • Asrama Abu Bakar",
-    "balance": 350000,
-    "limitHarian": 100000,
-    "limitBulanan": 500000,
-    "status": "Kartu Aktif",
-    "accountType": "Saldo Wallet",
-    "initials": "AF"
-  }
-}
-```
-*Catatan: Jika `limitHarian` atau `limitBulanan` bernilai `null`, `0`, atau tidak ada di respon server, layar otomatis menampilkan `"Tidak ada data"` tanpa terjadi error.*
+1. Buka berkas `index.html` menggunakan peramban web modern atau jalankan melalui web server lokal.
+2. Pastikan perangkat pembaca kartu terhubung ke peramban.
