@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cek Saldo Santri – Al-Wafi</title>
   <meta name="robots" content="noindex, nofollow">
-  <meta name="theme-color" content="#0B192C">
+  <meta name="theme-color" content="#010101">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,9 +20,43 @@
     }
   </script>
   
-  <link rel="stylesheet" href="css/tokens.css?v=20261028g">
-  <link rel="stylesheet" href="css/style.css?v=20261028g">
-  <link rel="stylesheet" href="css/kiosk-extra.css?v=20261028g">
+  <style>
+    html, body, .kiosk-body {
+      background-color: #010101 !important;
+      color: #F8FAFC !important;
+    }
+    .kiosk-card-frame {
+      background: #0D121B !important;
+    }
+    .kiosk-inner-card {
+      background: #06080D !important;
+      color: #F8FAFC !important;
+    }
+    .kiosk-clock-showcase,
+    .device-status-badge {
+      background: #0B0E14 !important;
+      color: #F8FAFC !important;
+    }
+    body.tier-silver .kiosk-card-frame {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0%, rgba(148, 163, 184, 0.35) 50%, rgba(255, 255, 255, 0.5) 100%) !important;
+    }
+    body.tier-gold .kiosk-card-frame {
+      background: linear-gradient(135deg, rgba(250, 204, 21, 0.7) 0%, rgba(234, 179, 8, 0.35) 50%, rgba(253, 224, 71, 0.6) 100%) !important;
+    }
+    body.tier-platinum .kiosk-card-frame {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.75) 0%, rgba(255, 255, 255, 0.9) 35%, rgba(14, 165, 233, 0.45) 70%, rgba(99, 102, 241, 0.6) 100%) !important;
+    }
+    body.tier-diamond .kiosk-card-frame {
+      background: linear-gradient(135deg, rgba(186, 230, 253, 0.8) 0%, #FFFFFF 25%, rgba(56, 189, 248, 0.7) 50%, rgba(192, 132, 252, 0.7) 75%, rgba(56, 189, 248, 0.85) 100%) !important;
+    }
+    body.tier-prismatic .kiosk-card-frame {
+      background: linear-gradient(135deg, #F43F5E 0%, #A855F7 20%, #38BDF8 42%, #22C55E 65%, #EAB308 82%, #EC4899 100%) !important;
+    }
+  </style>
+
+  <link rel="stylesheet" href="css/tokens.css?v=20261028h">
+  <link rel="stylesheet" href="css/style.css?v=20261028h">
+  <link rel="stylesheet" href="css/kiosk-extra.css?v=20261028h">
 </head>
 <body class="kiosk-body">
 
@@ -300,9 +334,9 @@
     </div>
   </dialog>
 
-  <script src="js/kiosk-config.js?v=20261028g"></script>
-  <script src="js/kiosk-lock.js?v=20261028g"></script>
-  <script src="js/kiosk-api.js?v=20261028g"></script>
-  <script src="js/app.js?v=20261028g"></script>
+  <script src="js/kiosk-config.js?v=20261028h"></script>
+  <script src="js/kiosk-lock.js?v=20261028h"></script>
+  <script src="js/kiosk-api.js?v=20261028h"></script>
+  <script src="js/app.js?v=20261028h"></script>
 </body>
 </html>

@@ -1,3 +1,5 @@
+@import './tokens.css';
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -15,24 +17,20 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden; /* Locked screen for kiosk stability */
-  font-family: var(--font-family-base);
-  letter-spacing: var(--tracking-normal); /* Strict max -0.02em */
-  background-color: var(--surface-base);
-  color: var(--text-primary);
+  overflow: hidden;
+  font-family: var(--font-family-base, 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  letter-spacing: var(--tracking-normal, -0.02em);
+  background-color: #010101 !important;
+  color: #F8FAFC !important;
   user-select: none;
   -webkit-user-select: none;
 }
 
-/* Enforce negative letter-spacing universally */
 h1, h2, h3, h4, p, span, button, input, label, div {
-  font-family: var(--font-family-base);
-  letter-spacing: var(--tracking-normal);
+  font-family: var(--font-family-base, 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  letter-spacing: var(--tracking-normal, -0.02em);
 }
 
-/* --------------------------------------------------------------------------
-   2. VIEWPORT LAYOUT (ZERO CUT-OFF, FULL HEIGHT & WIDTH RESPONSIVE)
-   -------------------------------------------------------------------------- */
 .kiosk-body {
   width: 100vw;
   height: 100vh;
@@ -42,7 +40,7 @@ h1, h2, h3, h4, p, span, button, input, label, div {
   flex-direction: column;
   align-items: stretch;
   justify-content: stretch;
-  background-color: var(--surface-base);
+  background-color: #010101 !important;
   overflow: hidden;
   position: relative;
 }
@@ -531,7 +529,8 @@ body.kiosk-locked * {
   display: flex;
   align-items: center;
   gap: var(--space-md);
-  background: var(--color-white);
+  background: #0B0E14 !important;
+  color: #F8FAFC !important;
   padding: 10px 20px;
   border-radius: var(--radius-squircle-md);
   corner-shape: squircle;
@@ -606,8 +605,8 @@ body:not(.kiosk-locked) .clock-drag-handle {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  background: var(--navy-tonal-100);
-  color: var(--navy-primary);
+  background: rgba(255, 255, 255, 0.06);
+  color: #38BDF8;
   font-size: var(--text-base);
   font-weight: var(--font-weight-semibold);
   letter-spacing: var(--tracking-tight);
@@ -618,7 +617,7 @@ body:not(.kiosk-locked) .clock-drag-handle {
 
 .clock-date-chip i {
   font-size: 20px;
-  color: var(--navy-surface);
+  color: #38BDF8;
 }
 
 /* Enlarged Digital Time */
@@ -676,14 +675,14 @@ body:not(.kiosk-locked) .clock-drag-handle {
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  background: var(--color-white);
+  background: #0B0E14 !important;
   padding: 12px 22px;
   border-radius: var(--radius-squircle-full);
   corner-shape: squircle;
   font-size: var(--text-base);
   font-weight: var(--font-weight-semibold);
   letter-spacing: var(--tracking-tight);
-  color: var(--navy-primary);
+  color: #38BDF8 !important;
 }
 
 .status-indicator-circle {
@@ -716,8 +715,8 @@ body:not(.kiosk-locked) .clock-drag-handle {
 .kiosk-card-frame {
   width: 100%;
   max-width: clamp(840px, 58vw, 980px);
-  height: clamp(520px, 66vh, 650px); /* Responsive locked height */
-  background: var(--surface-card-outer); /* Outer Navy Tonal Layer */
+  height: clamp(520px, 66vh, 650px);
+  background: var(--surface-card-outer, #0D121B);
   border-radius: var(--radius-squircle-xl);
   corner-shape: squircle;
   padding: 18px;
@@ -746,11 +745,11 @@ body:not(.kiosk-locked) .clock-drag-handle {
   visibility: visible;
 }
 
-/* Inner White Card Surface */
 .kiosk-inner-card {
   width: 100%;
   height: 100%;
-  background: var(--surface-card-inner); /* Pure Crisp White */
+  background: #06080D !important;
+  color: #F8FAFC !important;
   border-radius: var(--radius-squircle-lg);
   corner-shape: squircle;
   padding: 24px 28px;
@@ -789,24 +788,24 @@ body:not(.kiosk-locked) .clock-drag-handle {
 }
 
 .chip-navy {
-  background: var(--navy-tonal-100);
-  color: var(--navy-primary);
+  background: rgba(56, 189, 248, 0.12);
+  color: #38BDF8;
 }
 
 .chip-yellow {
-  background: var(--pastel-yellow);
-  color: var(--pastel-yellow-text);
+  background: rgba(250, 204, 21, 0.16);
+  color: #FDE047;
 }
 
 .chip-success {
-  background: var(--surface-chip-success);
-  color: var(--text-success);
+  background: rgba(34, 197, 94, 0.16);
+  color: #4ADE80;
 }
 
 /* Masked Card ID (Password-style masking with only last 2 digits shown) */
 .chip-masked {
-  background: var(--navy-tonal-100);
-  color: var(--navy-deep);
+  background: rgba(255, 255, 255, 0.07);
+  color: #F8FAFC;
   font-weight: var(--font-weight-bold);
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
@@ -814,7 +813,7 @@ body:not(.kiosk-locked) .clock-drag-handle {
 
 .chip-masked i {
   font-size: 14px;
-  color: var(--navy-muted);
+  color: #94A3B8;
 }
 
 .masked-text {
@@ -852,7 +851,7 @@ body:not(.kiosk-locked) .clock-drag-handle {
   top: 50%;
   left: 50%;
   border-radius: 50%;
-  background: var(--navy-tonal-100);
+  background: rgba(56, 189, 248, 0.12);
   transform: translate(-50%, -50%) scale(0.35);
   opacity: 0;
 }
@@ -892,8 +891,8 @@ body:not(.kiosk-locked) .clock-drag-handle {
   height: 96px;
   border-radius: var(--radius-squircle-md);
   corner-shape: squircle;
-  background: var(--pastel-yellow);
-  color: var(--navy-deep);
+  background: rgba(56, 189, 248, 0.14);
+  color: #38BDF8;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -912,18 +911,18 @@ body:not(.kiosk-locked) .clock-drag-handle {
 }
 
 .sensor-hero-title {
-  font-size: var(--text-2xl); /* 38px bold */
+  font-size: var(--text-2xl);
   font-weight: var(--font-weight-extrabold);
   letter-spacing: var(--tracking-display);
-  color: var(--navy-deep);
+  color: #F8FAFC !important;
   margin-bottom: 8px;
 }
 
 .sensor-subtitle {
-  font-size: var(--text-base); /* 18px */
+  font-size: var(--text-base);
   font-weight: var(--font-weight-medium);
   letter-spacing: var(--tracking-normal);
-  color: var(--navy-muted);
+  color: #94A3B8 !important;
   max-width: 440px;
   line-height: 1.5;
 }
@@ -1397,8 +1396,8 @@ body:not(.kiosk-locked) .clock-drag-handle {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(16, 33, 58, 0.08);
-  color: var(--navy-deep);
+  background: rgba(255, 255, 255, 0.07);
+  color: #94A3B8;
   padding: 6px 14px;
   border-radius: var(--radius-squircle-full);
   corner-shape: squircle;
@@ -1409,7 +1408,7 @@ body:not(.kiosk-locked) .clock-drag-handle {
 
 .hero-limit-badge strong {
   font-weight: var(--font-weight-extrabold);
-  color: var(--navy-primary);
+  color: #F8FAFC;
   font-size: var(--text-base);
 }
 
@@ -1417,8 +1416,8 @@ body:not(.kiosk-locked) .clock-drag-handle {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: var(--color-white);
-  color: var(--navy-deep);
+  background: rgba(34, 197, 94, 0.16) !important;
+  color: #4ADE80 !important;
   padding: 6px 14px;
   border-radius: var(--radius-squircle-full);
   corner-shape: squircle;

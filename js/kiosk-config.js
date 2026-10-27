@@ -69,27 +69,27 @@
       radarPulseEasing: 'cubic-bezier(0.25, 1, 0.5, 1)'
     },
     colors: {
-      background: '#EAF0F7',
-      backgroundSubtle: '#F4F7FB',
-      foreground: '#091524',
-      primaryNavy: '#10213A',
-      surfaceNavy: '#1B3254',
-      cardSurface: '#FFFFFF',
-      cardFrameOuter: '#E1E8F2',
-      userPlateBg: '#E1E8F2',
-      accent: '#FEF08A',
-      accentLight: '#FEF9C3',
-      accentDeep: '#FDE047',
-      accentText: '#713F12',
-      textPrimary: '#091524',
-      textMuted: '#546B87',
+      background: '#010101',
+      backgroundSubtle: '#080A0E',
+      foreground: '#F8FAFC',
+      primaryNavy: '#38BDF8',
+      surfaceNavy: '#1E293B',
+      cardSurface: '#06080D',
+      cardFrameOuter: '#0D121B',
+      userPlateBg: 'rgba(255, 255, 255, 0.04)',
+      accent: 'rgba(250, 204, 21, 0.16)',
+      accentLight: 'linear-gradient(135deg, #101622 0%, #161F30 50%, #0D121B 100%)',
+      accentDeep: '#FACC15',
+      accentText: '#FDE047',
+      textPrimary: '#F8FAFC',
+      textMuted: '#94A3B8',
       textOnNavy: '#FFFFFF',
-      success: '#15803D',
-      successBg: '#DCFCE7',
-      error: '#7F1D1D',
-      errorBg: '#FEF2F2',
-      info: '#10213A',
-      infoBg: '#E1E8F2',
+      success: '#4ADE80',
+      successBg: 'rgba(34, 197, 94, 0.16)',
+      error: '#F87171',
+      errorBg: 'rgba(239, 68, 68, 0.16)',
+      info: '#38BDF8',
+      infoBg: 'rgba(56, 189, 248, 0.16)',
       border: '0px solid transparent'
     },
     sizes: {
@@ -170,13 +170,16 @@
     const a = KIOSK_CONFIG.animation;
 
     root.style.setProperty('--color-canvas', c.background);
+    root.style.setProperty('--surface-base', c.background);
     root.style.setProperty('--navy-deep', c.foreground);
     root.style.setProperty('--navy-primary', c.primaryNavy);
     root.style.setProperty('--surface-card-inner', c.cardSurface);
     root.style.setProperty('--surface-card-outer', c.cardFrameOuter);
+    root.style.setProperty('--color-white', '#0B0E14');
     root.style.setProperty('--pastel-yellow', c.accent);
     root.style.setProperty('--surface-hero-balance', c.accentLight);
     root.style.setProperty('--navy-muted', c.textMuted);
+    root.style.setProperty('--text-primary', c.textPrimary);
     root.style.setProperty('--text-success', c.success);
     root.style.setProperty('--status-error', c.error);
     root.style.setProperty('--status-error-bg', c.errorBg);
