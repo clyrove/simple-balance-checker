@@ -118,11 +118,12 @@
     api: {
       productionBaseUrl: PRODUCTION_BASE_URL,
       remoteEndpoint: PRODUCTION_BASE_URL + '/api/lookup.php',
+      localProxyEndpoint: 'http://127.0.0.1:8787/api/lookup.php',
       endpoint: resolveEndpoint('api/lookup.php'),
       isLocalDev: isLocalDev(),
       timeoutMs: 6000,
       cacheTtlMs: 5000,
-      fallbackToMockOnOffline: false
+      fallbackToMockOnOffline: true
     }
   };
 

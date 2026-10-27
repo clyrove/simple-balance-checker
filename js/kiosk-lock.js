@@ -36,10 +36,27 @@
     try {
       if (navigator && navigator.keyboard) {
         if (isLocked && typeof navigator.keyboard.lock === 'function') {
-          navigator.keyboard.lock(['MetaLeft', 'MetaRight', 'Escape', 'Tab', 'ContextMenu', 'F11']).catch(() => {});
+          navigator.keyboard.lock(['MetaLeft', 'MetaRight', 'Escape', 'Tab', 'ContextMenu', 'F11', 'AltLeft', 'AltRight']).catch(() => {});
         } else if (!isLocked && typeof navigator.keyboard.unlock === 'function') {
           navigator.keyboard.unlock();
         }
+      }
+    } catch (_) {}
+  }
+
+  function requestKioskFullscreen() {
+    try {
+      const doc = document.documentElement;
+      if (!document.fullscreenElement && doc.requestFullscreen) {
+        doc.requestFullscreen().catch(() => {});
+      }
+    } catch (_) {}
+  }
+
+  function exitKioskFullscreen() {
+    try {
+      if (document.fullscreenElement && document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
       }
     } catch (_) {}
   }
@@ -75,6 +92,7 @@
     if (document.body) document.body.classList.remove('kiosk-locked');
 
     syncSystemKeyboardLock();
+    exitKioskFullscreen();
 
     if (showNotification) {
       notify(KIOSK_LOCK_CONFIG.messages.unlocked, 'success', 3800);
@@ -95,6 +113,12 @@
 
   function blockMouseInteractions(e) {
     if (!isLocked || !KIOSK_LOCK_CONFIG.blockMouseClickWhenLocked) return;
+
+    // Saat kios terkunci, interaksi pertama santri mengaktifkan fullscreen agar tombol Windows terkunci total
+    if (!document.fullscreenElement) {
+      requestKioskFullscreen();
+    }
+
     e.preventDefault();
     e.stopPropagation();
     e.stopImmediatePropagation();
@@ -155,6 +179,11 @@
     }
 
     if (!isLocked || !KIOSK_LOCK_CONFIG.blockKeyboardWhenLocked) return;
+
+    // Masuk fullscreen jika belum agar Keyboard Lock API mengunci hardware tombol Windows
+    if (!document.fullscreenElement) {
+      requestKioskFullscreen();
+    }
 
     e.preventDefault();
 
@@ -219,7 +248,7 @@
   window.addEventListener('blur', () => {
     if (isLocked) {
       window.focus();
-      setTimeout(() => { if (isLocked) window.focus(); }, 15);
+      setTimeout(() => { if (isLocked) window.focus(); }, 10);
     }
   });
 

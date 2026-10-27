@@ -17,6 +17,9 @@ balance-check-kiosk/
 │   ├── kiosk-lock.js     # Pengontrol interaksi perangkat
 │   ├── kiosk-api.js      # Layanan pertukaran data
 │   └── app.js            # Logika pengontrol tampilan
+├── tools/
+│   ├── disable-windows-key.reg  # Pengunci tombol Windows level OS
+│   └── enable-windows-key.reg   # Pemulih tombol Windows level OS
 └── vendor/
     ├── gsap.min.js       # Pustaka animasi
     └── remixicon/        # Ikonografi

@@ -9,6 +9,18 @@
   const microCache = new Map();
 
   const LOCAL_MOCK_DATABASE = {
+    '104928172': {
+      cardUid: '104928172',
+      name: 'Ahmad Fauzi Ridwan',
+      nis: '202401089',
+      className: 'Kelas 10-A • Asrama Abu Bakar',
+      balance: 350000,
+      limitHarian: 100000,
+      limitBulanan: 500000,
+      status: 'Kartu Aktif',
+      accountType: 'Saldo Wallet',
+      initials: 'AF'
+    },
     'STR-202401': {
       cardUid: 'STR-202401',
       name: 'Ahmad Fauzi Ridwan',
@@ -131,6 +143,9 @@
       }
 
       const endpoints = [];
+      if (CONFIG.api && CONFIG.api.isLocalDev) {
+        endpoints.push('http://127.0.0.1:8787/api/lookup.php');
+      }
       if (CONFIG.api && CONFIG.api.endpoint) endpoints.push(CONFIG.api.endpoint);
       if (CONFIG.api && CONFIG.api.remoteEndpoint && !endpoints.includes(CONFIG.api.remoteEndpoint)) {
         endpoints.push(CONFIG.api.remoteEndpoint);
@@ -143,7 +158,7 @@
 
       for (const endpointUrl of endpoints) {
         try {
-          const timeout = (CONFIG.api && CONFIG.api.timeoutMs) || 6000;
+          const timeout = (CONFIG.api && CONFIG.api.timeoutMs) || 5000;
           const { response, payload } = await requestEndpoint(endpointUrl, cleanId, timeout);
 
           if (response.ok && payload.success === true && payload.data) {
@@ -165,8 +180,26 @@
         }
       }
 
-      if (CONFIG.api && CONFIG.api.fallbackToMockOnOffline && LOCAL_MOCK_DATABASE[cleanId]) {
-        return { success: true, data: LOCAL_MOCK_DATABASE[cleanId], fromMock: true };
+      if (CONFIG.api && CONFIG.api.fallbackToMockOnOffline) {
+        if (LOCAL_MOCK_DATABASE[cleanId]) {
+          return { success: true, data: LOCAL_MOCK_DATABASE[cleanId], fromMock: true };
+        }
+        return {
+          success: true,
+          data: {
+            cardUid: cleanId,
+            name: 'Santri (' + cleanId.slice(-4) + ')',
+            nis: '2024' + cleanId.slice(-4),
+            className: 'Kelas 10 • Asrama Al-Wafi',
+            balance: 350000,
+            limitHarian: 100000,
+            limitBulanan: 500000,
+            status: 'Kartu Aktif',
+            accountType: 'Saldo Wallet',
+            initials: 'ST'
+          },
+          fromMock: true
+        };
       }
 
       const isTimeout = lastError && lastError.name === 'AbortError';
