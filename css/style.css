@@ -45,6 +45,15 @@ h1, h2, h3, h4, p, span, button, input, label, div {
   background-color: var(--surface-base);
   overflow: hidden;
   position: relative;
+  transition: background var(--duration-normal) var(--ease-smooth);
+}
+
+body.tier-diamond {
+  background: radial-gradient(ellipse 120% 90% at 50% -10%, #E0F2FE 0%, #EFF6FF 35%, #E2E8F0 70%, #CBD5E1 100%);
+}
+
+body.tier-diamond .kiosk-card-frame {
+  background: linear-gradient(135deg, #BAE6FD 0%, #E0E7FF 50%, #C7D2FE 100%);
 }
 
 /* Kiosk Security Lock: Sembunyikan Kursor Mouse saat Kios Terkunci */
@@ -501,6 +510,44 @@ body.kiosk-locked * {
   color: #271402;
 }
 
+.hero-balance-plate.tier-diamond {
+  background: var(--surface-hero-balance-diamond);
+  animation: diamond-card-pulse 2.2s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+@keyframes diamond-card-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.026);
+  }
+}
+
+.hero-balance-plate.tier-diamond .balance-caption-title,
+.hero-balance-plate.tier-diamond .balance-time-stamp {
+  color: #0369A1;
+}
+
+.hero-balance-plate.tier-diamond .currency-tag {
+  color: #0284C7;
+}
+
+.hero-balance-plate.tier-diamond .balance-digits {
+  color: #0F172A;
+}
+
+.hero-balance-plate.tier-diamond .hero-limit-badge {
+  background: rgba(12, 74, 110, 0.1);
+  color: #0C4A6E;
+}
+
+.hero-balance-plate.tier-diamond .hero-limit-badge strong {
+  color: #082F49;
+}
+
 .balance-meta-header {
   display: flex;
   align-items: center;
@@ -548,40 +595,65 @@ body.kiosk-locked * {
   color: var(--navy-deep);
   line-height: 0.95;
   font-variant-numeric: tabular-nums;
-  overflow: hidden;
   position: relative;
   height: 1.15em;
 }
 
-.balance-digits-holder::after {
-  content: '';
+.balance-digits {
+  display: inline-flex;
+  align-items: baseline;
+  letter-spacing: var(--tracking-hero);
+}
+
+.balance-digits-shine {
   position: absolute;
-  top: -60%;
-  left: -60%;
-  width: 220%;
-  height: 220%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: inline-flex;
+  align-items: baseline;
+  letter-spacing: var(--tracking-hero);
   pointer-events: none;
+  user-select: none;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
   background: linear-gradient(
     45deg,
-    transparent 35%,
-    rgba(255, 255, 255, 0.25) 45%,
+    transparent 15%,
+    transparent 42%,
     rgba(255, 255, 255, 0.95) 50%,
-    rgba(255, 255, 255, 0.25) 55%,
-    transparent 65%
+    transparent 58%,
+    transparent 85%
   );
-  transform: translate3d(-130%, 130%, 0);
+  background-size: 320% 320%;
+  background-position: 0% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
   opacity: 0;
-  mix-blend-mode: screen;
-  z-index: 5;
+  z-index: 2;
 }
 
-.balance-digits-holder.has-shining::after {
-  animation: shine-sweep-diagonal 1.25s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+.balance-digits-shine.has-shining {
+  animation: shine-sweep-text 1.25s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
-@keyframes shine-sweep-diagonal {
+.hero-balance-plate.tier-diamond .balance-digits-shine {
+  background: linear-gradient(
+    45deg,
+    transparent 12%,
+    rgba(56, 189, 248, 0.55) 34%,
+    rgba(255, 255, 255, 1) 48%,
+    rgba(255, 255, 255, 1) 52%,
+    rgba(192, 132, 252, 0.8) 66%,
+    transparent 88%
+  );
+  background-size: 340% 340%;
+}
+
+@keyframes shine-sweep-text {
   0% {
-    transform: translate3d(-130%, 130%, 0);
+    background-position: 0% 100%;
     opacity: 0;
   }
   15% {
@@ -591,15 +663,9 @@ body.kiosk-locked * {
     opacity: 1;
   }
   100% {
-    transform: translate3d(130%, -130%, 0);
+    background-position: 100% 0%;
     opacity: 0;
   }
-}
-
-.balance-digits {
-  display: inline-flex;
-  align-items: baseline;
-  letter-spacing: var(--tracking-hero);
 }
 
 .split-char {

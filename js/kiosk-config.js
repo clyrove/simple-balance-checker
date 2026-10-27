@@ -118,11 +118,15 @@
     tiers: {
       silverThreshold: 100000,
       goldThreshold: 250000,
+      diamondThreshold: 400000,
       silver: {
         confettiColors: ['#F1F5F9', '#E2E8F0', '#CBD5E1', '#94A3B8', '#64748B', '#38BDF8', '#FFFFFF']
       },
       gold: {
         confettiColors: ['#FDE047', '#FACC15', '#F59E0B', '#D97706', '#FEF08A', '#FFFFFF']
+      },
+      diamond: {
+        confettiColors: ['#38BDF8', '#7DD3FC', '#BAE6FD', '#C084FC', '#E0E7FF', '#FFFFFF', '#CBD5E1', '#93C5FD']
       }
     },
     api: {

@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnDone = document.getElementById('kiosk-btn-done');
   const heroBalancePlate = document.querySelector('.hero-balance-plate');
   const balanceDigitsHolder = document.getElementById('kiosk-balance-display-wrapper');
+  const balanceDigitsShine = document.getElementById('kiosk-balance-shine');
   const confettiCanvas = document.getElementById('kiosk-confetti-canvas');
 
   const balanceAmountEl = document.getElementById('kiosk-balance-amount');
@@ -82,26 +83,84 @@ document.addEventListener('DOMContentLoaded', () => {
       '#FDE047', '#FACC15', '#F59E0B', '#D97706', '#FEF08A', '#FFFFFF'
     ];
 
-    const particleCount = 42;
     confettiParticles = [];
 
-    for (let i = 0; i < particleCount; i++) {
-      confettiParticles.push({
-        x: width * 0.15 + Math.random() * (width * 0.7),
-        y: height + 10,
-        vx: (Math.random() - 0.5) * 6,
-        vy: -(9 + Math.random() * 7),
-        gravity: 0.32,
-        drag: 0.985,
-        wobble: Math.random() * Math.PI * 2,
-        wobbleSpeed: 0.08 + Math.random() * 0.08,
-        width: 8 + Math.random() * 6,
-        height: 6 + Math.random() * 6,
-        rotation: Math.random() * Math.PI * 2,
-        rotationSpeed: (Math.random() - 0.5) * 0.15,
-        opacity: 1,
-        color: palette[Math.floor(Math.random() * palette.length)]
-      });
+    if (tier === 'diamond') {
+      const countPerCannon = 28;
+      for (let i = 0; i < countPerCannon; i++) {
+        confettiParticles.push({
+          x: width * 0.08 + Math.random() * (width * 0.10),
+          y: height + 10,
+          vx: 3.5 + Math.random() * 5.5,
+          vy: -(13 + Math.random() * 6),
+          gravity: 0.32,
+          drag: 0.985,
+          wobble: Math.random() * Math.PI * 2,
+          wobbleSpeed: 0.08 + Math.random() * 0.08,
+          width: 8 + Math.random() * 6,
+          height: 6 + Math.random() * 6,
+          rotation: Math.random() * Math.PI * 2,
+          rotationSpeed: (Math.random() - 0.5) * 0.15,
+          opacity: 1,
+          color: palette[Math.floor(Math.random() * palette.length)]
+        });
+      }
+      for (let i = 0; i < countPerCannon; i++) {
+        confettiParticles.push({
+          x: width * 0.45 + Math.random() * (width * 0.10),
+          y: height + 10,
+          vx: (Math.random() - 0.5) * 6,
+          vy: -(14 + Math.random() * 7),
+          gravity: 0.32,
+          drag: 0.985,
+          wobble: Math.random() * Math.PI * 2,
+          wobbleSpeed: 0.08 + Math.random() * 0.08,
+          width: 8 + Math.random() * 6,
+          height: 6 + Math.random() * 6,
+          rotation: Math.random() * Math.PI * 2,
+          rotationSpeed: (Math.random() - 0.5) * 0.15,
+          opacity: 1,
+          color: palette[Math.floor(Math.random() * palette.length)]
+        });
+      }
+      for (let i = 0; i < countPerCannon; i++) {
+        confettiParticles.push({
+          x: width * 0.82 + Math.random() * (width * 0.10),
+          y: height + 10,
+          vx: -(3.5 + Math.random() * 5.5),
+          vy: -(13 + Math.random() * 6),
+          gravity: 0.32,
+          drag: 0.985,
+          wobble: Math.random() * Math.PI * 2,
+          wobbleSpeed: 0.08 + Math.random() * 0.08,
+          width: 8 + Math.random() * 6,
+          height: 6 + Math.random() * 6,
+          rotation: Math.random() * Math.PI * 2,
+          rotationSpeed: (Math.random() - 0.5) * 0.15,
+          opacity: 1,
+          color: palette[Math.floor(Math.random() * palette.length)]
+        });
+      }
+    } else {
+      const particleCount = 42;
+      for (let i = 0; i < particleCount; i++) {
+        confettiParticles.push({
+          x: width * 0.15 + Math.random() * (width * 0.7),
+          y: height + 10,
+          vx: (Math.random() - 0.5) * 6,
+          vy: -(9 + Math.random() * 7),
+          gravity: 0.32,
+          drag: 0.985,
+          wobble: Math.random() * Math.PI * 2,
+          wobbleSpeed: 0.08 + Math.random() * 0.08,
+          width: 8 + Math.random() * 6,
+          height: 6 + Math.random() * 6,
+          rotation: Math.random() * Math.PI * 2,
+          rotationSpeed: (Math.random() - 0.5) * 0.15,
+          opacity: 1,
+          color: palette[Math.floor(Math.random() * palette.length)]
+        });
+      }
     }
 
     function renderConfetti() {
@@ -144,32 +203,43 @@ document.addEventListener('DOMContentLoaded', () => {
     confettiRafId = requestAnimationFrame(renderConfetti);
   }
 
-  function triggerShiningSweep() {
-    if (!balanceDigitsHolder) return;
-    balanceDigitsHolder.classList.remove('has-shining');
-    void balanceDigitsHolder.offsetWidth;
-    balanceDigitsHolder.classList.add('has-shining');
+  function triggerShiningSweep(amountText) {
+    if (!balanceDigitsShine) return;
+    if (amountText) balanceDigitsShine.textContent = amountText;
+    balanceDigitsShine.classList.remove('has-shining');
+    void balanceDigitsShine.offsetWidth;
+    balanceDigitsShine.classList.add('has-shining');
   }
 
   function applyBalanceTier(amount) {
     const silverThreshold = (CONFIG.tiers && CONFIG.tiers.silverThreshold) || 100000;
     const goldThreshold = (CONFIG.tiers && CONFIG.tiers.goldThreshold) || 250000;
+    const diamondThreshold = (CONFIG.tiers && CONFIG.tiers.diamondThreshold) || 400000;
 
     let tier = 'standard';
-    if (amount > goldThreshold) {
+    if (amount > diamondThreshold) {
+      tier = 'diamond';
+    } else if (amount > goldThreshold) {
       tier = 'gold';
     } else if (amount >= silverThreshold) {
       tier = 'silver';
     }
 
     if (heroBalancePlate) {
-      heroBalancePlate.classList.remove('tier-silver', 'tier-gold', 'tier-standard');
+      heroBalancePlate.classList.remove('tier-diamond', 'tier-silver', 'tier-gold', 'tier-standard');
       heroBalancePlate.classList.add(`tier-${tier}`);
     }
 
-    triggerShiningSweep();
+    if (tier === 'diamond') {
+      document.body.classList.add('tier-diamond');
+    } else {
+      document.body.classList.remove('tier-diamond');
+    }
 
-    if (tier === 'gold' || tier === 'silver') {
+    const formatted = window.SantriKioskAPI.formatRupiah(amount);
+    triggerShiningSweep(formatted);
+
+    if (tier === 'diamond' || tier === 'gold' || tier === 'silver') {
       triggerConfetti(tier);
     } else {
       clearConfetti();
@@ -178,12 +248,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function resetBalanceTier() {
     clearConfetti();
+    document.body.classList.remove('tier-diamond');
     if (heroBalancePlate) {
-      heroBalancePlate.classList.remove('tier-silver', 'tier-gold');
+      heroBalancePlate.classList.remove('tier-diamond', 'tier-silver', 'tier-gold');
       heroBalancePlate.classList.add('tier-standard');
     }
-    if (balanceDigitsHolder) {
-      balanceDigitsHolder.classList.remove('has-shining');
+    if (balanceDigitsShine) {
+      balanceDigitsShine.classList.remove('has-shining');
     }
   }
 
@@ -228,6 +299,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!hasGsap) {
       balanceAmountEl.textContent = finalFormatted;
+      if (balanceDigitsShine) balanceDigitsShine.textContent = finalFormatted;
+      triggerShiningSweep(finalFormatted);
       return;
     }
 
@@ -244,16 +317,19 @@ document.addEventListener('DOMContentLoaded', () => {
       duration: counterSpeed,
       ease: counterEasing,
       onUpdate: () => {
-        balanceAmountEl.textContent = window.SantriKioskAPI.formatRupiah(counterState.val);
+        const currentVal = window.SantriKioskAPI.formatRupiah(counterState.val);
+        balanceAmountEl.textContent = currentVal;
+        if (balanceDigitsShine) balanceDigitsShine.textContent = currentVal;
       },
       onComplete: () => {
         const splitChars = splitTextToChars(balanceAmountEl, finalFormatted);
+        if (balanceDigitsShine) balanceDigitsShine.textContent = finalFormatted;
         gsap.fromTo(
           splitChars,
           { y: 14, opacity: 0.35, scale: 0.94 },
           { y: 0, opacity: 1, scale: 1, duration: bounceSpeed, stagger: 0.018, ease: bounceEasing }
         );
-        triggerShiningSweep();
+        triggerShiningSweep(finalFormatted);
       }
     });
   }
