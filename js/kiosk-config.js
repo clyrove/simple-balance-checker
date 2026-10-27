@@ -115,6 +115,16 @@
       scanMinChars: 5,
       scanCooldownMs: 600
     },
+    tiers: {
+      silverThreshold: 100000,
+      goldThreshold: 250000,
+      silver: {
+        confettiColors: ['#F1F5F9', '#E2E8F0', '#CBD5E1', '#94A3B8', '#64748B', '#38BDF8', '#FFFFFF']
+      },
+      gold: {
+        confettiColors: ['#FDE047', '#FACC15', '#F59E0B', '#D97706', '#FEF08A', '#FFFFFF']
+      }
+    },
     api: {
       productionBaseUrl: PRODUCTION_BASE_URL,
       remoteEndpoint: PRODUCTION_BASE_URL + '/api/lookup.php',

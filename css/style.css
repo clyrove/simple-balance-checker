@@ -439,13 +439,66 @@ body.kiosk-locked * {
    -------------------------------------------------------------------------- */
 /* PENTING: HERO TOTAL BALANCE PLATE */
 .hero-balance-plate {
-  background: var(--surface-hero-balance); /* Soft Pastel Butter Yellow */
+  background: var(--surface-hero-balance);
   border-radius: var(--radius-squircle-md);
   corner-shape: squircle;
   padding: 20px 26px;
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
+  transition: background var(--duration-normal) var(--ease-smooth);
+}
+
+.hero-balance-plate.tier-silver {
+  background: var(--surface-hero-balance-silver);
+}
+
+.hero-balance-plate.tier-silver .balance-caption-title,
+.hero-balance-plate.tier-silver .balance-time-stamp {
+  color: #475569;
+}
+
+.hero-balance-plate.tier-silver .currency-tag {
+  color: #334155;
+}
+
+.hero-balance-plate.tier-silver .balance-digits {
+  color: #0F172A;
+}
+
+.hero-balance-plate.tier-silver .hero-limit-badge {
+  background: rgba(15, 23, 42, 0.08);
+  color: #0F172A;
+}
+
+.hero-balance-plate.tier-silver .hero-limit-badge strong {
+  color: #0F172A;
+}
+
+.hero-balance-plate.tier-gold {
+  background: var(--surface-hero-balance-gold);
+}
+
+.hero-balance-plate.tier-gold .balance-caption-title,
+.hero-balance-plate.tier-gold .balance-time-stamp {
+  color: #713F12;
+}
+
+.hero-balance-plate.tier-gold .currency-tag {
+  color: #713F12;
+}
+
+.hero-balance-plate.tier-gold .balance-digits {
+  color: #3F2104;
+}
+
+.hero-balance-plate.tier-gold .hero-limit-badge {
+  background: rgba(113, 63, 18, 0.12);
+  color: #3F2104;
+}
+
+.hero-balance-plate.tier-gold .hero-limit-badge strong {
+  color: #271402;
 }
 
 .balance-meta-header {
@@ -496,7 +549,51 @@ body.kiosk-locked * {
   line-height: 0.95;
   font-variant-numeric: tabular-nums;
   overflow: hidden;
+  position: relative;
   height: 1.15em;
+}
+
+.balance-digits-holder::after {
+  content: '';
+  position: absolute;
+  top: -60%;
+  left: -60%;
+  width: 220%;
+  height: 220%;
+  pointer-events: none;
+  background: linear-gradient(
+    45deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.25) 45%,
+    rgba(255, 255, 255, 0.95) 50%,
+    rgba(255, 255, 255, 0.25) 55%,
+    transparent 65%
+  );
+  transform: translate3d(-130%, 130%, 0);
+  opacity: 0;
+  mix-blend-mode: screen;
+  z-index: 5;
+}
+
+.balance-digits-holder.has-shining::after {
+  animation: shine-sweep-diagonal 1.25s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes shine-sweep-diagonal {
+  0% {
+    transform: translate3d(-130%, 130%, 0);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(130%, -130%, 0);
+    opacity: 0;
+  }
 }
 
 .balance-digits {
@@ -918,4 +1015,13 @@ body.kiosk-locked * {
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
+}
+
+.kiosk-confetti-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9998;
 }

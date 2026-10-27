@@ -9,6 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const activeView = document.getElementById('kiosk-active-view');
   const rfidSensorArea = document.getElementById('kiosk-rfid-sensor-area');
   const btnDone = document.getElementById('kiosk-btn-done');
+  const heroBalancePlate = document.querySelector('.hero-balance-plate');
+  const balanceDigitsHolder = document.getElementById('kiosk-balance-display-wrapper');
+  const confettiCanvas = document.getElementById('kiosk-confetti-canvas');
 
   const balanceAmountEl = document.getElementById('kiosk-balance-amount');
   const userNameEl = document.getElementById('kiosk-user-name');
@@ -41,6 +44,148 @@ document.addEventListener('DOMContentLoaded', () => {
   let countdownTimer = null;
   let countdownTween = null;
   let isTransitioning = false;
+
+  let confettiRafId = null;
+  let confettiParticles = [];
+
+  function clearConfetti() {
+    if (confettiRafId) {
+      cancelAnimationFrame(confettiRafId);
+      confettiRafId = null;
+    }
+    confettiParticles = [];
+    if (confettiCanvas) {
+      const ctx = confettiCanvas.getContext('2d');
+      if (ctx) ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+    }
+  }
+
+  function triggerConfetti(tier) {
+    if (!confettiCanvas) return;
+    clearConfetti();
+
+    const ctx = confettiCanvas.getContext('2d');
+    if (!ctx) return;
+
+    const dpr = window.devicePixelRatio || 1;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    confettiCanvas.width = width * dpr;
+    confettiCanvas.height = height * dpr;
+    confettiCanvas.style.width = width + 'px';
+    confettiCanvas.style.height = height + 'px';
+    ctx.scale(dpr, dpr);
+
+    const tierConfig = (CONFIG.tiers && CONFIG.tiers[tier]) || {};
+    const palette = tierConfig.confettiColors || [
+      '#FDE047', '#FACC15', '#F59E0B', '#D97706', '#FEF08A', '#FFFFFF'
+    ];
+
+    const particleCount = 42;
+    confettiParticles = [];
+
+    for (let i = 0; i < particleCount; i++) {
+      confettiParticles.push({
+        x: width * 0.15 + Math.random() * (width * 0.7),
+        y: height + 10,
+        vx: (Math.random() - 0.5) * 6,
+        vy: -(9 + Math.random() * 7),
+        gravity: 0.32,
+        drag: 0.985,
+        wobble: Math.random() * Math.PI * 2,
+        wobbleSpeed: 0.08 + Math.random() * 0.08,
+        width: 8 + Math.random() * 6,
+        height: 6 + Math.random() * 6,
+        rotation: Math.random() * Math.PI * 2,
+        rotationSpeed: (Math.random() - 0.5) * 0.15,
+        opacity: 1,
+        color: palette[Math.floor(Math.random() * palette.length)]
+      });
+    }
+
+    function renderConfetti() {
+      ctx.clearRect(0, 0, width, height);
+      let aliveCount = 0;
+
+      for (let i = 0; i < confettiParticles.length; i++) {
+        const p = confettiParticles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += p.gravity;
+        p.vx *= p.drag;
+        p.wobble += p.wobbleSpeed;
+        p.rotation += p.rotationSpeed;
+
+        if (p.vy > 0) {
+          p.opacity -= 0.015;
+        }
+
+        if (p.opacity > 0 && p.y < height + 40) {
+          aliveCount++;
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rotation);
+          ctx.scale(Math.cos(p.wobble), 1);
+          ctx.fillStyle = p.color;
+          ctx.globalAlpha = Math.max(0, p.opacity);
+          ctx.fillRect(-p.width / 2, -p.height / 2, p.width, p.height);
+          ctx.restore();
+        }
+      }
+
+      if (aliveCount > 0) {
+        confettiRafId = requestAnimationFrame(renderConfetti);
+      } else {
+        clearConfetti();
+      }
+    }
+
+    confettiRafId = requestAnimationFrame(renderConfetti);
+  }
+
+  function triggerShiningSweep() {
+    if (!balanceDigitsHolder) return;
+    balanceDigitsHolder.classList.remove('has-shining');
+    void balanceDigitsHolder.offsetWidth;
+    balanceDigitsHolder.classList.add('has-shining');
+  }
+
+  function applyBalanceTier(amount) {
+    const silverThreshold = (CONFIG.tiers && CONFIG.tiers.silverThreshold) || 100000;
+    const goldThreshold = (CONFIG.tiers && CONFIG.tiers.goldThreshold) || 250000;
+
+    let tier = 'standard';
+    if (amount > goldThreshold) {
+      tier = 'gold';
+    } else if (amount >= silverThreshold) {
+      tier = 'silver';
+    }
+
+    if (heroBalancePlate) {
+      heroBalancePlate.classList.remove('tier-silver', 'tier-gold', 'tier-standard');
+      heroBalancePlate.classList.add(`tier-${tier}`);
+    }
+
+    triggerShiningSweep();
+
+    if (tier === 'gold' || tier === 'silver') {
+      triggerConfetti(tier);
+    } else {
+      clearConfetti();
+    }
+  }
+
+  function resetBalanceTier() {
+    clearConfetti();
+    if (heroBalancePlate) {
+      heroBalancePlate.classList.remove('tier-silver', 'tier-gold');
+      heroBalancePlate.classList.add('tier-standard');
+    }
+    if (balanceDigitsHolder) {
+      balanceDigitsHolder.classList.remove('has-shining');
+    }
+  }
 
   function updateKioskClock() {
     const now = new Date();
@@ -108,6 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
           { y: 14, opacity: 0.35, scale: 0.94 },
           { y: 0, opacity: 1, scale: 1, duration: bounceSpeed, stagger: 0.018, ease: bounceEasing }
         );
+        triggerShiningSweep();
       }
     });
   }
@@ -173,6 +319,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function switchToActiveState(targetBalance, santriData) {
     if (isTransitioning) return;
     isTransitioning = true;
+    applyBalanceTier(targetBalance);
 
     if (!hasGsap) {
       waitingView.classList.remove('active');
@@ -213,6 +360,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function switchToWaitingState() {
     if (isTransitioning) return;
     isTransitioning = true;
+    resetBalanceTier();
     stopPrivacyCountdown();
 
     if (!hasGsap) {
