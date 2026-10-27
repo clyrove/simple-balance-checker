@@ -292,6 +292,199 @@ body.tier-diamond .kiosk-card-frame {
     linear-gradient(135deg, #BAE6FD 0%, #FFFFFF 22%, #7DD3FC 46%, #FFFFFF 62%, #C084FC 80%, #38BDF8 100%);
 }
 
+.kiosk-prism-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  overflow: hidden;
+  transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  background:
+    radial-gradient(ellipse 90% 70% at 50% 18%, rgba(255, 255, 255, 1) 0%, rgba(254, 240, 138, 0.45) 24%, rgba(186, 230, 253, 0.45) 48%, rgba(244, 114, 182, 0.35) 72%, transparent 88%),
+    radial-gradient(ellipse 80% 65% at 12% 88%, rgba(167, 139, 250, 0.75) 0%, transparent 65%),
+    radial-gradient(ellipse 80% 65% at 88% 88%, rgba(56, 189, 248, 0.75) 0%, transparent 65%),
+    linear-gradient(135deg, #FDF4FF 0%, #E0F2FE 20%, #FCE7F3 40%, #FEF9C3 60%, #DCFCE7 80%, #E0E7FF 100%);
+}
+
+body.tier-prism .kiosk-prism-backdrop {
+  opacity: 1;
+  animation: prism-bg-chromatic-pulse 4s ease-in-out infinite alternate;
+}
+
+@keyframes prism-bg-chromatic-pulse {
+  0% {
+    filter: brightness(1) saturate(1.1) hue-rotate(0deg);
+  }
+  50% {
+    filter: brightness(1.16) saturate(1.35) hue-rotate(18deg);
+  }
+  100% {
+    filter: brightness(1.06) saturate(1.15) hue-rotate(-12deg);
+  }
+}
+
+.prism-light-rays {
+  position: absolute;
+  inset: -50%;
+  background: conic-gradient(
+    from 0deg at 50% 15%,
+    transparent 0deg,
+    rgba(244, 63, 94, 0.5) 15deg,
+    transparent 32deg,
+    rgba(168, 85, 247, 0.55) 54deg,
+    transparent 72deg,
+    rgba(56, 189, 248, 0.6) 94deg,
+    transparent 112deg,
+    rgba(34, 197, 94, 0.5) 134deg,
+    transparent 154deg,
+    rgba(234, 179, 8, 0.55) 176deg,
+    transparent 198deg,
+    rgba(236, 72, 153, 0.55) 220deg,
+    transparent 244deg,
+    rgba(99, 102, 241, 0.55) 270deg,
+    transparent 295deg,
+    rgba(56, 189, 248, 0.5) 320deg,
+    transparent 340deg,
+    rgba(255, 255, 255, 0.7) 352deg,
+    transparent 360deg
+  );
+  filter: blur(14px);
+  animation: prism-rays-sway 6.5s ease-in-out infinite alternate, prism-hue-drift 12s linear infinite;
+  will-change: transform, filter;
+  opacity: 0.92;
+  pointer-events: none;
+}
+
+@keyframes prism-rays-sway {
+  0% {
+    transform: rotate(-6deg) scale(1);
+  }
+  100% {
+    transform: rotate(6deg) scale(1.08);
+  }
+}
+
+@keyframes prism-hue-drift {
+  0% {
+    filter: blur(14px) hue-rotate(0deg);
+  }
+  100% {
+    filter: blur(14px) hue-rotate(360deg);
+  }
+}
+
+.prism-glow-layer {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 28%, rgba(255, 255, 255, 0.98) 0%, rgba(254, 240, 138, 0.45) 30%, transparent 68%),
+    radial-gradient(circle at 18% 75%, rgba(192, 132, 252, 0.6) 0%, rgba(244, 114, 182, 0.35) 40%, transparent 70%),
+    radial-gradient(circle at 82% 75%, rgba(56, 189, 248, 0.6) 0%, rgba(52, 211, 153, 0.35) 40%, transparent 70%);
+  animation: prism-glow-breathe 3.2s ease-in-out infinite alternate;
+  will-change: opacity, filter;
+  pointer-events: none;
+}
+
+@keyframes prism-glow-breathe {
+  0% {
+    opacity: 0.65;
+    filter: hue-rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    filter: hue-rotate(24deg) brightness(1.15);
+  }
+  100% {
+    opacity: 0.75;
+    filter: hue-rotate(-16deg);
+  }
+}
+
+.prism-triangle-mosaic {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 1;
+}
+
+.prism-shard {
+  stroke: rgba(255, 255, 255, 0.92);
+  stroke-width: 1.5px;
+  stroke-linejoin: round;
+  will-change: opacity, filter;
+  filter: drop-shadow(0 0 3px rgba(192, 132, 252, 0.55));
+}
+
+.prism-shard.ps-1 {
+  animation: prism-shard-twinkle 2.1s ease-in-out infinite alternate;
+}
+.prism-shard.ps-2 {
+  animation: prism-shard-twinkle 2.6s ease-in-out 0.35s infinite alternate;
+}
+.prism-shard.ps-3 {
+  animation: prism-shard-twinkle 1.8s ease-in-out 0.7s infinite alternate;
+}
+.prism-shard.ps-4 {
+  animation: prism-shard-twinkle 2.4s ease-in-out 1.1s infinite alternate;
+}
+.prism-shard.ps-5 {
+  animation: prism-shard-twinkle 2.9s ease-in-out 1.5s infinite alternate;
+}
+
+@keyframes prism-shard-twinkle {
+  0% {
+    opacity: 0.68;
+    filter: brightness(0.95);
+  }
+  50% {
+    opacity: 1;
+    filter: brightness(1.4) saturate(1.3);
+  }
+  100% {
+    opacity: 0.75;
+    filter: brightness(1.1);
+  }
+}
+
+.prism-vertex-star {
+  fill: #FFFFFF;
+  filter: drop-shadow(0 0 5px rgba(236, 72, 153, 0.85));
+  transform-box: fill-box;
+  transform-origin: center center;
+  animation: prism-star-glint 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes prism-star-glint {
+  0% {
+    opacity: 0.4;
+    transform: scale(0.6) rotate(0deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.35) rotate(45deg);
+  }
+}
+
+.prism-crystal-glint-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    linear-gradient(125deg, rgba(255, 255, 255, 0.45) 0%, transparent 28%),
+    linear-gradient(235deg, rgba(244, 114, 182, 0.28) 0%, transparent 32%),
+    radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.5) 0%, transparent 45%);
+  pointer-events: none;
+}
+
+body.tier-prism .kiosk-card-frame {
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.98) 0%, transparent 26%),
+    linear-gradient(135deg, #F43F5E 0%, #A855F7 20%, #38BDF8 42%, #22C55E 65%, #EAB308 82%, #EC4899 100%);
+}
+
 /* Kiosk Security Lock: Sembunyikan Kursor Mouse saat Kios Terkunci */
 body.kiosk-locked,
 body.kiosk-locked * {
@@ -324,15 +517,80 @@ body.kiosk-locked * {
   flex-shrink: 0;
 }
 
-/* Big Colorful Clock Showcase */
+/* Big Colorful Clock Showcase (Draggable & Minimizable) */
 .kiosk-clock-showcase {
   display: flex;
   align-items: center;
   gap: var(--space-md);
   background: var(--color-white);
-  padding: 10px 24px;
+  padding: 10px 20px;
   border-radius: var(--radius-squircle-md);
   corner-shape: squircle;
+  user-select: none;
+  touch-action: none;
+  transition: padding 0.22s ease, border-radius 0.22s ease;
+}
+
+body:not(.kiosk-locked) .kiosk-clock-showcase {
+  cursor: grab;
+}
+
+body:not(.kiosk-locked) .kiosk-clock-showcase.is-dragging {
+  cursor: grabbing;
+  opacity: 0.94;
+  transition: none;
+}
+
+.clock-drag-handle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: var(--navy-muted);
+  font-size: 20px;
+  cursor: grab;
+  padding: 0;
+  margin-right: -4px;
+}
+
+body:not(.kiosk-locked) .clock-drag-handle {
+  display: inline-flex;
+}
+
+.clock-minimize-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: var(--navy-muted);
+  font-size: 18px;
+  cursor: pointer;
+  border-radius: var(--radius-squircle-xs);
+  padding: 0;
+  margin-left: 2px;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.clock-minimize-btn:hover {
+  background: var(--navy-tonal-100);
+  color: var(--navy-primary);
+}
+
+.kiosk-clock-showcase.is-minimized {
+  padding: 8px 14px;
+  gap: 10px;
+}
+
+.kiosk-clock-showcase.is-minimized .clock-date-chip,
+.kiosk-clock-showcase.is-minimized .time-sec-badge,
+.kiosk-clock-showcase.is-minimized .time-zone-label {
+  display: none !important;
 }
 
 .clock-date-chip {
@@ -869,7 +1127,71 @@ body.kiosk-locked * {
 .hero-balance-plate.tier-diamond .hero-limit-badge strong {
   color: #075985;
 }
-  color: #075985;
+
+.hero-balance-plate.tier-prism {
+  background:
+    linear-gradient(116deg, rgba(255, 255, 255, 0.98) 0%, rgba(254, 240, 138, 0.45) 22%, transparent 22.15%),
+    linear-gradient(244deg, rgba(255, 255, 255, 0.9) 0%, rgba(192, 132, 252, 0.45) 30%, transparent 30.15%),
+    linear-gradient(64deg, rgba(167, 243, 208, 0.75) 0%, transparent 22%, rgba(255, 255, 255, 0.7) 22.15%, transparent 45%),
+    linear-gradient(152deg, transparent 34%, rgba(255, 255, 255, 0.85) 34.15%, rgba(244, 114, 182, 0.4) 62%, transparent 62.15%),
+    linear-gradient(205deg, rgba(255, 255, 255, 0.96) 0%, rgba(56, 189, 248, 0.45) 18%, transparent 18.15%),
+    linear-gradient(135deg, #FDF4FF 0%, #E0F2FE 18%, #FCE7F3 36%, #FEF08A 54%, #DCFCE7 72%, #E0E7FF 90%, #FFFFFF 100%);
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.hero-balance-plate.tier-prism::before {
+  content: '';
+  position: absolute;
+  inset: -65%;
+  pointer-events: none;
+  background: linear-gradient(
+    52deg,
+    transparent 32%,
+    rgba(244, 63, 94, 0.6) 42%,
+    rgba(255, 255, 255, 1) 48%,
+    rgba(56, 189, 248, 0.7) 54%,
+    transparent 64%
+  );
+  transform: translate3d(-100%, 100%, 0);
+  animation: diamond-plate-sheen 1.65s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  z-index: 0;
+}
+
+.hero-balance-plate.tier-prism::after {
+  content: '';
+  position: absolute;
+  inset: -65%;
+  pointer-events: none;
+  background: linear-gradient(
+    132deg,
+    transparent 36%,
+    rgba(168, 85, 247, 0.6) 45%,
+    rgba(255, 255, 255, 0.95) 50%,
+    rgba(34, 197, 94, 0.6) 55%,
+    transparent 64%
+  );
+  transform: translate3d(-100%, -100%, 0);
+  animation: diamond-counter-sheen 2s cubic-bezier(0.22, 1, 0.36, 1) 0.3s infinite;
+  z-index: 0;
+}
+
+.hero-balance-plate.tier-prism .balance-caption-title,
+.hero-balance-plate.tier-prism .balance-time-stamp {
+  color: #6D28D9;
+}
+
+.hero-balance-plate.tier-prism .currency-tag {
+  color: #4338CA;
+}
+
+.hero-balance-plate.tier-prism .hero-limit-badge {
+  background: rgba(109, 40, 217, 0.12);
+  color: #6D28D9;
+}
+
+.hero-balance-plate.tier-prism .hero-limit-badge strong {
+  color: #4338CA;
 }
 
 .balance-meta-header {
@@ -1025,6 +1347,25 @@ body.kiosk-locked * {
     linear-gradient(180deg, #06182C 0%, #034870 46%, #022F4C 54%, #081B30 100%);
 }
 
+.hero-balance-plate.tier-prism .balance-digits {
+  background-image:
+    linear-gradient(
+      45deg,
+      transparent 0%,
+      transparent 28%,
+      rgba(244, 63, 94, 0.95) 32%,
+      rgba(168, 85, 247, 0.95) 37%,
+      rgba(255, 255, 255, 1) 42%,
+      rgba(56, 189, 248, 0.95) 47%,
+      rgba(34, 197, 94, 0.95) 52%,
+      rgba(255, 255, 255, 1) 57%,
+      rgba(234, 179, 8, 0.95) 62%,
+      transparent 67%,
+      transparent 100%
+    ),
+    linear-gradient(180deg, #18032E 0%, #0F172A 50%, #091524 100%);
+}
+
 .balance-digits.has-shining {
   animation: shine-sweep-text 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
@@ -1035,6 +1376,10 @@ body.kiosk-locked * {
 
 .hero-balance-plate.tier-diamond .balance-digits.has-shining {
   animation: shine-sweep-text 1.15s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+.hero-balance-plate.tier-prism .balance-digits.has-shining {
+  animation: shine-sweep-text 1.05s cubic-bezier(0.22, 1, 0.36, 1) infinite;
 }
 
 @keyframes shine-sweep-text {

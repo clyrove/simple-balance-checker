@@ -50,8 +50,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let confettiWaveTimer = null;
   let confettiParticles = [];
 
-  function initDiamondCrystalMosaic() {
-    const svg = document.getElementById('kiosk-diamond-mosaic');
+  function buildTriangularMosaic(svgId, shardClassPrefix, starClass, shardColors, starRadius, starInnerRadius) {
+    const svg = document.getElementById(svgId);
     if (!svg) return;
     const ns = 'http://www.w3.org/2000/svg';
     const cols = 8;
@@ -75,19 +75,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    const shardColors = [
-      'rgba(255, 255, 255, 0.75)',
-      'rgba(224, 242, 254, 0.60)',
-      'rgba(186, 230, 253, 0.50)',
-      'rgba(255, 255, 255, 0.88)',
-      'rgba(147, 197, 253, 0.45)',
-      'rgba(240, 249, 255, 0.70)',
-      'rgba(199, 210, 254, 0.48)',
-      'rgba(255, 255, 255, 0.58)',
-      'rgba(125, 211, 252, 0.55)',
-      'rgba(56, 189, 248, 0.35)'
-    ];
-
     const frag = document.createDocumentFragment();
     let idx = 0;
 
@@ -108,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
           poly.setAttribute('points', `${tr[0][0]},${tr[0][1]} ${tr[1][0]},${tr[1][1]} ${tr[2][0]},${tr[2][1]}`);
           const colorIdx = Math.abs(Math.floor(Math.sin(idx * 19.7 + c * 7.1) * shardColors.length)) % shardColors.length;
           poly.setAttribute('fill', shardColors[colorIdx]);
-          poly.setAttribute('class', `diamond-shard ds-${(idx % 5) + 1}`);
+          poly.setAttribute('class', `${shardClassPrefix} ${shardClassPrefix.slice(0, 2)}-${(idx % 5) + 1}`);
           poly.style.animationDelay = `${((idx * 0.23) % 2.4).toFixed(2)}s`;
           frag.appendChild(poly);
           idx++;
@@ -121,8 +108,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if ((r + c) % 2 !== 0) continue;
         const [vx, vy] = pts[r][c];
         const star = document.createElementNS(ns, 'polygon');
-        const sr = 10;
-        const ir = 2.4;
+        const sr = starRadius;
+        const ir = starInnerRadius;
         const sp = [
           `${vx},${vy - sr}`, `${vx + ir},${vy - ir}`,
           `${vx + sr},${vy}`, `${vx + ir},${vy + ir}`,
@@ -130,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
           `${vx - sr},${vy}`, `${vx - ir},${vy - ir}`
         ].join(' ');
         star.setAttribute('points', sp);
-        star.setAttribute('class', 'diamond-vertex-star');
+        star.setAttribute('class', starClass);
         star.style.animationDelay = `${((r * 0.41 + c * 0.29) % 2.1).toFixed(2)}s`;
         frag.appendChild(star);
       }
@@ -139,7 +126,21 @@ document.addEventListener('DOMContentLoaded', () => {
     svg.appendChild(frag);
   }
 
-  initDiamondCrystalMosaic();
+  const diamondShardColors = [
+    'rgba(255, 255, 255, 0.75)', 'rgba(224, 242, 254, 0.60)', 'rgba(186, 230, 253, 0.50)',
+    'rgba(255, 255, 255, 0.88)', 'rgba(147, 197, 253, 0.45)', 'rgba(240, 249, 255, 0.70)',
+    'rgba(199, 210, 254, 0.48)', 'rgba(255, 255, 255, 0.58)', 'rgba(125, 211, 252, 0.55)',
+    'rgba(56, 189, 248, 0.35)'
+  ];
+  buildTriangularMosaic('kiosk-diamond-mosaic', 'diamond-shard', 'diamond-vertex-star', diamondShardColors, 10, 2.4);
+
+  const prismShardColors = [
+    'rgba(244, 63, 94, 0.55)', 'rgba(168, 85, 247, 0.58)', 'rgba(56, 189, 248, 0.60)',
+    'rgba(34, 197, 94, 0.52)', 'rgba(234, 179, 8, 0.55)', 'rgba(236, 72, 153, 0.58)',
+    'rgba(99, 102, 241, 0.55)', 'rgba(255, 255, 255, 0.85)', 'rgba(14, 165, 233, 0.55)',
+    'rgba(251, 146, 60, 0.52)'
+  ];
+  buildTriangularMosaic('kiosk-prism-mosaic', 'prism-shard', 'prism-vertex-star', prismShardColors, 11, 2.6);
 
   function clearConfetti() {
     if (confettiWaveTimer) {
@@ -158,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function spawnThreeCannonBurst(width, height, palette, tier, countPerCannon) {
-    const shapes = tier === 'diamond'
+    const shapes = (tier === 'prism' || tier === 'diamond')
       ? ['triangle_shard', 'triangle_shard', 'crystal', 'sparkle']
       : ['crystal', 'crystal', 'crystal', 'sparkle'];
 
@@ -245,10 +246,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     confettiParticles = [];
 
-    if (tier === 'diamond') {
-      spawnThreeCannonBurst(width, height, palette, 'diamond', 26);
+    if (tier === 'prism' || tier === 'diamond') {
+      spawnThreeCannonBurst(width, height, palette, tier, 26);
       confettiWaveTimer = setTimeout(() => {
-        spawnThreeCannonBurst(width, height, palette, 'diamond', 22);
+        spawnThreeCannonBurst(width, height, palette, tier, 22);
       }, 620);
     } else if (tier === 'platinum') {
       spawnThreeCannonBurst(width, height, palette, 'platinum', 30);
@@ -386,12 +387,13 @@ document.addEventListener('DOMContentLoaded', () => {
       : 'standard';
 
     if (heroBalancePlate) {
-      heroBalancePlate.classList.remove('tier-diamond', 'tier-platinum', 'tier-gold', 'tier-silver', 'tier-standard');
+      heroBalancePlate.classList.remove('tier-prism', 'tier-diamond', 'tier-platinum', 'tier-gold', 'tier-silver', 'tier-standard');
       heroBalancePlate.classList.add(`tier-${tier}`);
     }
 
     document.body.classList.toggle('tier-platinum', tier === 'platinum');
     document.body.classList.toggle('tier-diamond', tier === 'diamond');
+    document.body.classList.toggle('tier-prism', tier === 'prism');
 
     triggerShiningSweep();
 
@@ -404,9 +406,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function resetBalanceTier() {
     clearConfetti();
-    document.body.classList.remove('tier-platinum', 'tier-diamond');
+    document.body.classList.remove('tier-platinum', 'tier-diamond', 'tier-prism');
     if (heroBalancePlate) {
-      heroBalancePlate.classList.remove('tier-diamond', 'tier-platinum', 'tier-gold', 'tier-silver');
+      heroBalancePlate.classList.remove('tier-prism', 'tier-diamond', 'tier-platinum', 'tier-gold', 'tier-silver');
       heroBalancePlate.classList.add('tier-standard');
     }
     if (balanceAmountEl) {
@@ -431,6 +433,166 @@ document.addEventListener('DOMContentLoaded', () => {
   updateKioskClock();
   setInterval(updateKioskClock, 1000);
 
+  function initDraggableClock() {
+    const clockWidget = document.getElementById('kiosk-clock-widget');
+    const dragHandle = document.getElementById('kiosk-clock-drag-handle');
+    const minBtn = document.getElementById('kiosk-clock-min-btn');
+    const minIcon = document.getElementById('kiosk-clock-min-icon');
+    if (!clockWidget) return;
+
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+    let initialLeft = 0;
+    let initialTop = 0;
+
+    function applyPosition(pos) {
+      if (!pos || typeof pos.left !== 'number' || typeof pos.top !== 'number') return;
+      const widgetWidth = clockWidget.offsetWidth || 300;
+      const widgetHeight = clockWidget.offsetHeight || 60;
+      const maxX = Math.max(10, window.innerWidth - widgetWidth - 10);
+      const maxY = Math.max(10, window.innerHeight - widgetHeight - 10);
+      const clampedX = Math.min(Math.max(10, pos.left), maxX);
+      const clampedY = Math.min(Math.max(10, pos.top), maxY);
+
+      clockWidget.style.position = 'fixed';
+      clockWidget.style.left = `${clampedX}px`;
+      clockWidget.style.top = `${clampedY}px`;
+      clockWidget.style.zIndex = '999';
+      clockWidget.style.margin = '0';
+    }
+
+    function resetPosition() {
+      clockWidget.style.position = '';
+      clockWidget.style.left = '';
+      clockWidget.style.top = '';
+      clockWidget.style.zIndex = '';
+      clockWidget.style.margin = '';
+      try {
+        localStorage.removeItem('kiosk_clock_position');
+      } catch (_) {}
+      document.cookie = 'kiosk_clock_pos=; path=/; max-age=0';
+    }
+
+    function setMinimized(minimized) {
+      clockWidget.classList.toggle('is-minimized', minimized);
+      if (minIcon) {
+        minIcon.className = minimized ? 'ri-expand-diagonal-line' : 'ri-subtract-line';
+      }
+      if (minBtn) {
+        minBtn.title = minimized ? 'Perbesar jam (tampilkan tanggal & detik)' : 'Minimize jam (tampilkan hanya jam & menit)';
+        minBtn.setAttribute('aria-label', minBtn.title);
+      }
+      try {
+        localStorage.setItem('kiosk_clock_minimized', minimized ? '1' : '0');
+      } catch (_) {}
+      document.cookie = `kiosk_clock_min=${minimized ? '1' : '0'}; path=/; max-age=31536000`;
+    }
+
+    try {
+      const savedMin = localStorage.getItem('kiosk_clock_minimized') === '1' || /kiosk_clock_min=1/.test(document.cookie);
+      if (savedMin) setMinimized(true);
+
+      const savedPosRaw = localStorage.getItem('kiosk_clock_position');
+      if (savedPosRaw) {
+        const savedPos = JSON.parse(savedPosRaw);
+        applyPosition(savedPos);
+      } else {
+        const match = document.cookie.match(/kiosk_clock_pos=([0-9.]+),([0-9.]+)/);
+        if (match) {
+          applyPosition({ left: parseFloat(match[1]), top: parseFloat(match[2]) });
+        }
+      }
+    } catch (_) {}
+
+    if (minBtn) {
+      minBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const nextMin = !clockWidget.classList.contains('is-minimized');
+        setMinimized(nextMin);
+        if (clockWidget.style.position === 'fixed') {
+          const rect = clockWidget.getBoundingClientRect();
+          applyPosition({ left: rect.left, top: rect.top });
+        }
+      });
+    }
+
+    function onPointerDown(e) {
+      if (document.body.classList.contains('kiosk-locked') || (window.KioskSecurity && window.KioskSecurity.isLocked())) {
+        return;
+      }
+      if (e.target.closest('#kiosk-clock-min-btn')) return;
+
+      isDragging = true;
+      clockWidget.classList.add('is-dragging');
+
+      const rect = clockWidget.getBoundingClientRect();
+      startX = e.clientX || 0;
+      startY = e.clientY || 0;
+      initialLeft = rect.left;
+      initialTop = rect.top;
+
+      clockWidget.style.position = 'fixed';
+      clockWidget.style.left = `${initialLeft}px`;
+      clockWidget.style.top = `${initialTop}px`;
+      clockWidget.style.zIndex = '999';
+      clockWidget.style.margin = '0';
+
+      document.addEventListener('pointermove', onPointerMove);
+      document.addEventListener('pointerup', onPointerUp);
+      document.addEventListener('pointercancel', onPointerUp);
+    }
+
+    function onPointerMove(e) {
+      if (!isDragging) return;
+      e.preventDefault();
+      const currentX = e.clientX || 0;
+      const currentY = e.clientY || 0;
+      const deltaX = currentX - startX;
+      const deltaY = currentY - startY;
+
+      applyPosition({ left: initialLeft + deltaX, top: initialTop + deltaY });
+    }
+
+    function onPointerUp() {
+      if (!isDragging) return;
+      isDragging = false;
+      clockWidget.classList.remove('is-dragging');
+
+      document.removeEventListener('pointermove', onPointerMove);
+      document.removeEventListener('pointerup', onPointerUp);
+      document.removeEventListener('pointercancel', onPointerUp);
+
+      const rect = clockWidget.getBoundingClientRect();
+      const pos = { left: Math.round(rect.left), top: Math.round(rect.top) };
+      try {
+        localStorage.setItem('kiosk_clock_position', JSON.stringify(pos));
+      } catch (_) {}
+      document.cookie = `kiosk_clock_pos=${pos.left},${pos.top}; path=/; max-age=31536000`;
+    }
+
+    clockWidget.addEventListener('pointerdown', onPointerDown);
+
+    if (dragHandle) {
+      dragHandle.addEventListener('dblclick', (e) => {
+        if (document.body.classList.contains('kiosk-locked') || (window.KioskSecurity && window.KioskSecurity.isLocked())) {
+          return;
+        }
+        e.stopPropagation();
+        resetPosition();
+      });
+    }
+
+    window.addEventListener('resize', () => {
+      if (clockWidget.style.position === 'fixed') {
+        const rect = clockWidget.getBoundingClientRect();
+        applyPosition({ left: rect.left, top: rect.top });
+      }
+    });
+  }
+
+  initDraggableClock();
+
   function animateBalanceNumber(targetAmount) {
     if (!balanceAmountEl) return;
     const finalFormatted = window.SantriKioskAPI.formatRupiah(targetAmount);
@@ -444,9 +606,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const tier = (CONFIG.tiers && typeof CONFIG.tiers.getTierKey === 'function')
       ? CONFIG.tiers.getTierKey(targetAmount)
       : 'standard';
-    const isDiamond = tier === 'diamond';
-    const counterSpeed = isDiamond ? 0.86 : ((CONFIG.animation && CONFIG.animation.counterSpeed) || 0.4);
-    const counterEasing = isDiamond ? 'expo.out' : ((CONFIG.animation && CONFIG.animation.counterEasing) || 'power2.out');
+    const isSpecial = tier === 'diamond' || tier === 'prism';
+    const counterSpeed = isSpecial ? 0.86 : ((CONFIG.animation && CONFIG.animation.counterSpeed) || 0.4);
+    const counterEasing = isSpecial ? 'expo.out' : ((CONFIG.animation && CONFIG.animation.counterEasing) || 'power2.out');
     const bounceSpeed = (CONFIG.animation && CONFIG.animation.splitBounceSpeed) || 0.35;
     const bounceEasing = (CONFIG.animation && CONFIG.animation.splitBounceEasing) || 'back.out(2)';
 
@@ -456,8 +618,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     gsap.fromTo(
       balanceAmountEl,
-      { y: isDiamond ? 12 : 8, opacity: 0.85 },
-      { y: 0, opacity: 1, duration: counterSpeed, ease: isDiamond ? 'power3.out' : bounceEasing }
+      { y: isSpecial ? 12 : 8, opacity: 0.85 },
+      { y: 0, opacity: 1, duration: counterSpeed, ease: isSpecial ? 'power3.out' : bounceEasing }
     );
 
     gsap.to(counterState, {
@@ -592,7 +754,7 @@ document.addEventListener('DOMContentLoaded', () => {
       stateTransitionTl = null;
     }
     isTransitioning = true;
-    document.body.classList.remove('tier-platinum', 'tier-diamond');
+    document.body.classList.remove('tier-platinum', 'tier-diamond', 'tier-prism');
 
     if (!hasGsap) {
       activeView.classList.remove('active');

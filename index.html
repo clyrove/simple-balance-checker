@@ -20,9 +20,9 @@
     }
   </script>
   
-  <link rel="stylesheet" href="css/tokens.css?v=20261028c">
-  <link rel="stylesheet" href="css/style.css?v=20261028c">
-  <link rel="stylesheet" href="css/kiosk-extra.css?v=20261028c">
+  <link rel="stylesheet" href="css/tokens.css?v=20261028d">
+  <link rel="stylesheet" href="css/style.css?v=20261028d">
+  <link rel="stylesheet" href="css/kiosk-extra.css?v=20261028d">
 </head>
 <body class="kiosk-body">
 
@@ -38,11 +38,21 @@
     <div class="diamond-crystal-glint-layer"></div>
   </div>
 
+  <div id="kiosk-prism-backdrop" class="kiosk-prism-backdrop" aria-hidden="true">
+    <div class="prism-light-rays"></div>
+    <div class="prism-glow-layer"></div>
+    <svg id="kiosk-prism-mosaic" class="prism-triangle-mosaic" viewBox="0 0 1600 900" preserveAspectRatio="none"></svg>
+    <div class="prism-crystal-glint-layer"></div>
+  </div>
+
   <main class="kiosk-viewport" role="main" aria-label="Kios Pengecekan Saldo Santri">
 
     <header class="kiosk-top-bar" role="banner">
-      <div class="kiosk-clock-showcase" aria-label="Waktu Kios">
-        <div class="clock-date-chip">
+      <div class="kiosk-clock-showcase" id="kiosk-clock-widget" aria-label="Waktu Kios">
+        <button type="button" class="clock-drag-handle" id="kiosk-clock-drag-handle" aria-label="Geser posisi jam" title="Geser posisi jam (hanya saat mode IT terbuka, klik ganda untuk reset)">
+          <i class="ri-drag-move-2-line" aria-hidden="true"></i>
+        </button>
+        <div class="clock-date-chip" id="kiosk-clock-date-chip">
           <i class="ri-calendar-2-line" aria-hidden="true"></i>
           <span id="kiosk-live-date">Memuat tanggal...</span>
         </div>
@@ -51,8 +61,11 @@
           <span class="time-colon">:</span>
           <span id="kiosk-clock-minutes" class="time-main">--</span>
           <span id="kiosk-clock-seconds" class="time-sec-badge">--</span>
-          <span class="time-zone-label">WIB</span>
+          <span class="time-zone-label" id="kiosk-clock-timezone">WIB</span>
         </div>
+        <button type="button" class="clock-minimize-btn" id="kiosk-clock-min-btn" aria-label="Minimize jam" title="Minimize jam (tampilkan hanya jam & menit)">
+          <i class="ri-subtract-line" id="kiosk-clock-min-icon" aria-hidden="true"></i>
+        </button>
       </div>
 
       <div class="device-status-badge" id="kiosk-device-status" role="status" aria-label="Status Sensor RFID Siap">
@@ -287,9 +300,9 @@
     </div>
   </dialog>
 
-  <script src="js/kiosk-config.js?v=20261028c"></script>
-  <script src="js/kiosk-lock.js?v=20261028c"></script>
-  <script src="js/kiosk-api.js?v=20261028c"></script>
-  <script src="js/app.js?v=20261028c"></script>
+  <script src="js/kiosk-config.js?v=20261028d"></script>
+  <script src="js/kiosk-lock.js?v=20261028d"></script>
+  <script src="js/kiosk-api.js?v=20261028d"></script>
+  <script src="js/app.js?v=20261028d"></script>
 </body>
 </html>
