@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentToastType = '';
   let isToastShowing = false;
 
-  const COUNTDOWN_TOTAL_SECONDS = (CONFIG.timing && CONFIG.timing.autoCloseSeconds) || 10;
+  const COUNTDOWN_TOTAL_SECONDS = (CONFIG.timing && CONFIG.timing.autoCloseSeconds) || 5;
   let remainingSeconds = COUNTDOWN_TOTAL_SECONDS;
   let countdownTimer = null;
   let countdownTween = null;
@@ -127,20 +127,20 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const diamondShardColors = [
-    'rgba(255, 255, 255, 0.75)', 'rgba(224, 242, 254, 0.60)', 'rgba(186, 230, 253, 0.50)',
-    'rgba(255, 255, 255, 0.88)', 'rgba(147, 197, 253, 0.45)', 'rgba(240, 249, 255, 0.70)',
-    'rgba(199, 210, 254, 0.48)', 'rgba(255, 255, 255, 0.58)', 'rgba(125, 211, 252, 0.55)',
-    'rgba(56, 189, 248, 0.35)'
+    'rgba(255, 255, 255, 0.45)', 'rgba(224, 242, 254, 0.35)', 'rgba(186, 230, 253, 0.30)',
+    'rgba(255, 255, 255, 0.60)', 'rgba(147, 197, 253, 0.28)', 'rgba(240, 249, 255, 0.40)',
+    'rgba(199, 210, 254, 0.30)', 'rgba(255, 255, 255, 0.40)', 'rgba(125, 211, 252, 0.32)',
+    'rgba(56, 189, 248, 0.22)'
   ];
-  buildTriangularMosaic('kiosk-diamond-mosaic', 'diamond-shard', 'diamond-vertex-star', diamondShardColors, 10, 2.4);
+  buildTriangularMosaic('kiosk-diamond-mosaic', 'diamond-shard', 'diamond-vertex-star', diamondShardColors, 9, 2.2);
 
-  const prismShardColors = [
-    'rgba(244, 63, 94, 0.55)', 'rgba(168, 85, 247, 0.58)', 'rgba(56, 189, 248, 0.60)',
-    'rgba(34, 197, 94, 0.52)', 'rgba(234, 179, 8, 0.55)', 'rgba(236, 72, 153, 0.58)',
-    'rgba(99, 102, 241, 0.55)', 'rgba(255, 255, 255, 0.85)', 'rgba(14, 165, 233, 0.55)',
-    'rgba(251, 146, 60, 0.52)'
+  const rubyShardColors = [
+    'rgba(190, 18, 60, 0.45)', 'rgba(136, 19, 55, 0.50)', 'rgba(225, 29, 72, 0.40)',
+    'rgba(76, 5, 25, 0.55)', 'rgba(244, 63, 94, 0.35)', 'rgba(255, 228, 230, 0.50)',
+    'rgba(159, 18, 57, 0.45)', 'rgba(251, 113, 133, 0.38)', 'rgba(88, 28, 135, 0.35)',
+    'rgba(255, 255, 255, 0.55)'
   ];
-  buildTriangularMosaic('kiosk-prism-mosaic', 'prism-shard', 'prism-vertex-star', prismShardColors, 11, 2.6);
+  buildTriangularMosaic('kiosk-ruby-mosaic', 'ruby-shard', 'ruby-vertex-star', rubyShardColors, 9, 2.2);
 
   function clearConfetti() {
     if (confettiWaveTimer) {
@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function spawnThreeCannonBurst(width, height, palette, tier, countPerCannon) {
-    const shapes = (tier === 'prism' || tier === 'diamond')
+    const shapes = (tier === 'ruby' || tier === 'diamond')
       ? ['triangle_shard', 'triangle_shard', 'crystal', 'sparkle']
       : ['crystal', 'crystal', 'crystal', 'sparkle'];
 
@@ -246,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     confettiParticles = [];
 
-    if (tier === 'prism' || tier === 'diamond') {
+    if (tier === 'ruby' || tier === 'diamond') {
       spawnThreeCannonBurst(width, height, palette, tier, 26);
       confettiWaveTimer = setTimeout(() => {
         spawnThreeCannonBurst(width, height, palette, tier, 22);
@@ -387,13 +387,13 @@ document.addEventListener('DOMContentLoaded', () => {
       : 'standard';
 
     if (heroBalancePlate) {
-      heroBalancePlate.classList.remove('tier-prism', 'tier-diamond', 'tier-platinum', 'tier-gold', 'tier-silver', 'tier-standard');
+      heroBalancePlate.classList.remove('tier-ruby', 'tier-diamond', 'tier-platinum', 'tier-gold', 'tier-silver', 'tier-standard');
       heroBalancePlate.classList.add(`tier-${tier}`);
     }
 
     document.body.classList.toggle('tier-platinum', tier === 'platinum');
     document.body.classList.toggle('tier-diamond', tier === 'diamond');
-    document.body.classList.toggle('tier-prism', tier === 'prism');
+    document.body.classList.toggle('tier-ruby', tier === 'ruby');
 
     triggerShiningSweep();
 
@@ -406,9 +406,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function resetBalanceTier() {
     clearConfetti();
-    document.body.classList.remove('tier-platinum', 'tier-diamond', 'tier-prism');
+    document.body.classList.remove('tier-platinum', 'tier-diamond', 'tier-ruby');
     if (heroBalancePlate) {
-      heroBalancePlate.classList.remove('tier-prism', 'tier-diamond', 'tier-platinum', 'tier-gold', 'tier-silver');
+      heroBalancePlate.classList.remove('tier-ruby', 'tier-diamond', 'tier-platinum', 'tier-gold', 'tier-silver');
       heroBalancePlate.classList.add('tier-standard');
     }
     if (balanceAmountEl) {
@@ -463,6 +463,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function resetPosition() {
+      isDragging = false;
+      clockWidget.classList.remove('is-dragging');
+      document.removeEventListener('pointermove', onPointerMove);
+      document.removeEventListener('pointerup', onPointerUp);
+      document.removeEventListener('pointercancel', onPointerUp);
       clockWidget.style.position = '';
       clockWidget.style.left = '';
       clockWidget.style.top = '';
@@ -573,15 +578,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     clockWidget.addEventListener('pointerdown', onPointerDown);
 
-    if (dragHandle) {
-      dragHandle.addEventListener('dblclick', (e) => {
-        if (document.body.classList.contains('kiosk-locked') || (window.KioskSecurity && window.KioskSecurity.isLocked())) {
-          return;
-        }
-        e.stopPropagation();
-        resetPosition();
-      });
-    }
+    clockWidget.addEventListener('dblclick', (e) => {
+      if (e.target.closest('#kiosk-clock-min-btn')) return;
+      resetPosition();
+    });
 
     window.addEventListener('resize', () => {
       if (clockWidget.style.position === 'fixed') {
@@ -606,7 +606,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tier = (CONFIG.tiers && typeof CONFIG.tiers.getTierKey === 'function')
       ? CONFIG.tiers.getTierKey(targetAmount)
       : 'standard';
-    const isSpecial = tier === 'diamond' || tier === 'prism';
+    const isSpecial = tier === 'diamond' || tier === 'ruby';
     const counterSpeed = isSpecial ? 0.86 : ((CONFIG.animation && CONFIG.animation.counterSpeed) || 0.4);
     const counterEasing = isSpecial ? 'expo.out' : ((CONFIG.animation && CONFIG.animation.counterEasing) || 'power2.out');
     const bounceSpeed = (CONFIG.animation && CONFIG.animation.splitBounceSpeed) || 0.35;
@@ -754,7 +754,7 @@ document.addEventListener('DOMContentLoaded', () => {
       stateTransitionTl = null;
     }
     isTransitioning = true;
-    document.body.classList.remove('tier-platinum', 'tier-diamond', 'tier-prism');
+    document.body.classList.remove('tier-platinum', 'tier-diamond', 'tier-ruby');
 
     if (!hasGsap) {
       activeView.classList.remove('active');

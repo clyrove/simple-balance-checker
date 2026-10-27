@@ -214,11 +214,11 @@ body.tier-diamond .kiosk-diamond-backdrop {
 }
 
 .diamond-shard {
-  stroke: rgba(255, 255, 255, 0.9);
-  stroke-width: 1.5px;
+  stroke: rgba(255, 255, 255, 0.55);
+  stroke-width: 1px;
   stroke-linejoin: round;
   will-change: opacity, filter;
-  filter: drop-shadow(0 0 2px rgba(186, 230, 253, 0.5));
+  filter: drop-shadow(0 0 1.5px rgba(186, 230, 253, 0.32));
 }
 
 .diamond-shard.ds-1 {
@@ -243,16 +243,16 @@ body.tier-diamond .kiosk-diamond-backdrop {
 
 @keyframes diamond-shard-twinkle {
   0% {
-    opacity: 0.65;
-    filter: brightness(0.92);
+    opacity: 0.45;
+    filter: brightness(0.95);
   }
   50% {
-    opacity: 1;
-    filter: brightness(1.35) contrast(1.15);
+    opacity: 0.85;
+    filter: brightness(1.2) contrast(1.08);
   }
   100% {
-    opacity: 0.72;
-    filter: brightness(1.08);
+    opacity: 0.55;
+    filter: brightness(1.04);
   }
 }
 
@@ -292,7 +292,7 @@ body.tier-diamond .kiosk-card-frame {
     linear-gradient(135deg, #BAE6FD 0%, #FFFFFF 22%, #7DD3FC 46%, #FFFFFF 62%, #C084FC 80%, #38BDF8 100%);
 }
 
-.kiosk-prism-backdrop {
+.kiosk-ruby-backdrop {
   position: fixed;
   inset: 0;
   z-index: 0;
@@ -301,107 +301,98 @@ body.tier-diamond .kiosk-card-frame {
   overflow: hidden;
   transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1);
   background:
-    radial-gradient(ellipse 90% 70% at 50% 18%, rgba(255, 255, 255, 1) 0%, rgba(254, 240, 138, 0.45) 24%, rgba(186, 230, 253, 0.45) 48%, rgba(244, 114, 182, 0.35) 72%, transparent 88%),
-    radial-gradient(ellipse 80% 65% at 12% 88%, rgba(167, 139, 250, 0.75) 0%, transparent 65%),
-    radial-gradient(ellipse 80% 65% at 88% 88%, rgba(56, 189, 248, 0.75) 0%, transparent 65%),
-    linear-gradient(135deg, #FDF4FF 0%, #E0F2FE 20%, #FCE7F3 40%, #FEF9C3 60%, #DCFCE7 80%, #E0E7FF 100%);
+    radial-gradient(ellipse 90% 70% at 50% 18%, rgba(255, 255, 255, 0.95) 0%, rgba(254, 205, 211, 0.45) 24%, rgba(244, 63, 94, 0.3) 48%, rgba(159, 18, 57, 0.25) 72%, transparent 88%),
+    radial-gradient(ellipse 80% 65% at 12% 88%, rgba(190, 18, 60, 0.6) 0%, transparent 65%),
+    radial-gradient(ellipse 80% 65% at 88% 88%, rgba(136, 19, 55, 0.6) 0%, transparent 65%),
+    linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 20%, #FECDD3 40%, #FDA4AF 60%, #FB7185 80%, #F43F5E 100%);
 }
 
-body.tier-prism .kiosk-prism-backdrop {
+body.tier-ruby .kiosk-ruby-backdrop {
   opacity: 1;
-  animation: prism-bg-chromatic-pulse 4s ease-in-out infinite alternate;
+  animation: ruby-bg-pulse 4s ease-in-out infinite alternate;
 }
 
-@keyframes prism-bg-chromatic-pulse {
+@keyframes ruby-bg-pulse {
   0% {
-    filter: brightness(1) saturate(1.1) hue-rotate(0deg);
+    filter: brightness(1) saturate(1.05);
   }
   50% {
-    filter: brightness(1.16) saturate(1.35) hue-rotate(18deg);
+    filter: brightness(1.12) saturate(1.22);
   }
   100% {
-    filter: brightness(1.06) saturate(1.15) hue-rotate(-12deg);
+    filter: brightness(1.04) saturate(1.1);
   }
 }
 
-.prism-light-rays {
+.ruby-light-rays {
   position: absolute;
   inset: -50%;
   background: conic-gradient(
     from 0deg at 50% 15%,
     transparent 0deg,
-    rgba(244, 63, 94, 0.5) 15deg,
+    rgba(244, 63, 94, 0.4) 15deg,
     transparent 32deg,
-    rgba(168, 85, 247, 0.55) 54deg,
+    rgba(225, 29, 72, 0.45) 54deg,
     transparent 72deg,
-    rgba(56, 189, 248, 0.6) 94deg,
+    rgba(251, 113, 133, 0.4) 94deg,
     transparent 112deg,
-    rgba(34, 197, 94, 0.5) 134deg,
+    rgba(190, 18, 60, 0.45) 134deg,
     transparent 154deg,
-    rgba(234, 179, 8, 0.55) 176deg,
+    rgba(244, 63, 94, 0.4) 176deg,
     transparent 198deg,
-    rgba(236, 72, 153, 0.55) 220deg,
+    rgba(225, 29, 72, 0.42) 220deg,
     transparent 244deg,
-    rgba(99, 102, 241, 0.55) 270deg,
+    rgba(159, 18, 57, 0.42) 270deg,
     transparent 295deg,
-    rgba(56, 189, 248, 0.5) 320deg,
+    rgba(251, 113, 133, 0.38) 320deg,
     transparent 340deg,
-    rgba(255, 255, 255, 0.7) 352deg,
+    rgba(255, 255, 255, 0.6) 352deg,
     transparent 360deg
   );
   filter: blur(14px);
-  animation: prism-rays-sway 6.5s ease-in-out infinite alternate, prism-hue-drift 12s linear infinite;
-  will-change: transform, filter;
-  opacity: 0.92;
+  animation: ruby-rays-sway 7s ease-in-out infinite alternate;
+  will-change: transform;
+  opacity: 0.85;
   pointer-events: none;
 }
 
-@keyframes prism-rays-sway {
+@keyframes ruby-rays-sway {
   0% {
-    transform: rotate(-6deg) scale(1);
+    transform: rotate(-5deg) scale(1);
   }
   100% {
-    transform: rotate(6deg) scale(1.08);
+    transform: rotate(5deg) scale(1.06);
   }
 }
 
-@keyframes prism-hue-drift {
-  0% {
-    filter: blur(14px) hue-rotate(0deg);
-  }
-  100% {
-    filter: blur(14px) hue-rotate(360deg);
-  }
-}
-
-.prism-glow-layer {
+.ruby-glow-layer {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 50% 28%, rgba(255, 255, 255, 0.98) 0%, rgba(254, 240, 138, 0.45) 30%, transparent 68%),
-    radial-gradient(circle at 18% 75%, rgba(192, 132, 252, 0.6) 0%, rgba(244, 114, 182, 0.35) 40%, transparent 70%),
-    radial-gradient(circle at 82% 75%, rgba(56, 189, 248, 0.6) 0%, rgba(52, 211, 153, 0.35) 40%, transparent 70%);
-  animation: prism-glow-breathe 3.2s ease-in-out infinite alternate;
-  will-change: opacity, filter;
+    radial-gradient(circle at 50% 28%, rgba(255, 255, 255, 0.95) 0%, rgba(254, 205, 211, 0.4) 30%, transparent 68%),
+    radial-gradient(circle at 18% 75%, rgba(225, 29, 72, 0.45) 0%, rgba(190, 18, 60, 0.25) 40%, transparent 70%),
+    radial-gradient(circle at 82% 75%, rgba(244, 63, 94, 0.45) 0%, rgba(159, 18, 57, 0.25) 40%, transparent 70%);
+  animation: ruby-glow-breathe 3.4s ease-in-out infinite alternate;
+  will-change: opacity;
   pointer-events: none;
 }
 
-@keyframes prism-glow-breathe {
+@keyframes ruby-glow-breathe {
   0% {
-    opacity: 0.65;
-    filter: hue-rotate(0deg);
+    opacity: 0.6;
+    filter: brightness(1);
   }
   50% {
-    opacity: 1;
-    filter: hue-rotate(24deg) brightness(1.15);
+    opacity: 0.95;
+    filter: brightness(1.15);
   }
   100% {
-    opacity: 0.75;
-    filter: hue-rotate(-16deg);
+    opacity: 0.7;
+    filter: brightness(1.05);
   }
 }
 
-.prism-triangle-mosaic {
+.ruby-triangle-mosaic {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -410,79 +401,79 @@ body.tier-prism .kiosk-prism-backdrop {
   z-index: 1;
 }
 
-.prism-shard {
-  stroke: rgba(255, 255, 255, 0.92);
-  stroke-width: 1.5px;
+.ruby-shard {
+  stroke: rgba(255, 228, 230, 0.48);
+  stroke-width: 1px;
   stroke-linejoin: round;
   will-change: opacity, filter;
-  filter: drop-shadow(0 0 3px rgba(192, 132, 252, 0.55));
+  filter: drop-shadow(0 0 1.5px rgba(225, 29, 72, 0.35));
 }
 
-.prism-shard.ps-1 {
-  animation: prism-shard-twinkle 2.1s ease-in-out infinite alternate;
+.ruby-shard.rs-1 {
+  animation: ruby-shard-twinkle 2.2s ease-in-out infinite alternate;
 }
-.prism-shard.ps-2 {
-  animation: prism-shard-twinkle 2.6s ease-in-out 0.35s infinite alternate;
+.ruby-shard.rs-2 {
+  animation: ruby-shard-twinkle 2.7s ease-in-out 0.35s infinite alternate;
 }
-.prism-shard.ps-3 {
-  animation: prism-shard-twinkle 1.8s ease-in-out 0.7s infinite alternate;
+.ruby-shard.rs-3 {
+  animation: ruby-shard-twinkle 1.9s ease-in-out 0.7s infinite alternate;
 }
-.prism-shard.ps-4 {
-  animation: prism-shard-twinkle 2.4s ease-in-out 1.1s infinite alternate;
+.ruby-shard.rs-4 {
+  animation: ruby-shard-twinkle 2.5s ease-in-out 1.1s infinite alternate;
 }
-.prism-shard.ps-5 {
-  animation: prism-shard-twinkle 2.9s ease-in-out 1.5s infinite alternate;
+.ruby-shard.rs-5 {
+  animation: ruby-shard-twinkle 3.0s ease-in-out 1.5s infinite alternate;
 }
 
-@keyframes prism-shard-twinkle {
+@keyframes ruby-shard-twinkle {
   0% {
-    opacity: 0.68;
+    opacity: 0.48;
     filter: brightness(0.95);
   }
   50% {
-    opacity: 1;
-    filter: brightness(1.4) saturate(1.3);
+    opacity: 0.88;
+    filter: brightness(1.2) saturate(1.18);
   }
   100% {
-    opacity: 0.75;
-    filter: brightness(1.1);
+    opacity: 0.58;
+    filter: brightness(1.05);
   }
 }
 
-.prism-vertex-star {
+.ruby-vertex-star {
   fill: #FFFFFF;
-  filter: drop-shadow(0 0 5px rgba(236, 72, 153, 0.85));
+  filter: drop-shadow(0 0 4px rgba(244, 63, 94, 0.8));
   transform-box: fill-box;
   transform-origin: center center;
-  animation: prism-star-glint 1.8s ease-in-out infinite alternate;
+  animation: ruby-star-glint 1.9s ease-in-out infinite alternate;
 }
 
-@keyframes prism-star-glint {
+@keyframes ruby-star-glint {
   0% {
-    opacity: 0.4;
+    opacity: 0.35;
     transform: scale(0.6) rotate(0deg);
   }
   100% {
     opacity: 1;
-    transform: scale(1.35) rotate(45deg);
+    transform: scale(1.3) rotate(45deg);
   }
 }
 
-.prism-crystal-glint-layer {
+.ruby-crystal-glint-layer {
   position: absolute;
   inset: 0;
   z-index: 2;
   background:
-    linear-gradient(125deg, rgba(255, 255, 255, 0.45) 0%, transparent 28%),
-    linear-gradient(235deg, rgba(244, 114, 182, 0.28) 0%, transparent 32%),
-    radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.5) 0%, transparent 45%);
+    linear-gradient(125deg, rgba(255, 255, 255, 0.38) 0%, transparent 28%),
+    linear-gradient(235deg, rgba(254, 205, 211, 0.25) 0%, transparent 32%),
+    radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.45) 0%, transparent 45%);
   pointer-events: none;
 }
 
-body.tier-prism .kiosk-card-frame {
+body.tier-ruby .kiosk-card-frame {
   background:
-    linear-gradient(120deg, rgba(255, 255, 255, 0.98) 0%, transparent 26%),
-    linear-gradient(135deg, #F43F5E 0%, #A855F7 20%, #38BDF8 42%, #22C55E 65%, #EAB308 82%, #EC4899 100%);
+    linear-gradient(120deg, rgba(255, 255, 255, 0.95) 0%, transparent 26%),
+    linear-gradient(135deg, #FFE4E6 0%, #FDA4AF 22%, #F43F5E 46%, #E11D48 68%, #BE123C 86%, #881337 100%);
 }
 
 /* Kiosk Security Lock: Sembunyikan Kursor Mouse saat Kios Terkunci */
@@ -1128,19 +1119,19 @@ body:not(.kiosk-locked) .clock-drag-handle {
   color: #075985;
 }
 
-.hero-balance-plate.tier-prism {
+.hero-balance-plate.tier-ruby {
   background:
-    linear-gradient(116deg, rgba(255, 255, 255, 0.98) 0%, rgba(254, 240, 138, 0.45) 22%, transparent 22.15%),
-    linear-gradient(244deg, rgba(255, 255, 255, 0.9) 0%, rgba(192, 132, 252, 0.45) 30%, transparent 30.15%),
-    linear-gradient(64deg, rgba(167, 243, 208, 0.75) 0%, transparent 22%, rgba(255, 255, 255, 0.7) 22.15%, transparent 45%),
-    linear-gradient(152deg, transparent 34%, rgba(255, 255, 255, 0.85) 34.15%, rgba(244, 114, 182, 0.4) 62%, transparent 62.15%),
-    linear-gradient(205deg, rgba(255, 255, 255, 0.96) 0%, rgba(56, 189, 248, 0.45) 18%, transparent 18.15%),
-    linear-gradient(135deg, #FDF4FF 0%, #E0F2FE 18%, #FCE7F3 36%, #FEF08A 54%, #DCFCE7 72%, #E0E7FF 90%, #FFFFFF 100%);
+    linear-gradient(116deg, rgba(255, 255, 255, 0.95) 0%, rgba(254, 205, 211, 0.4) 22%, transparent 22.15%),
+    linear-gradient(244deg, rgba(255, 255, 255, 0.9) 0%, rgba(251, 113, 133, 0.35) 30%, transparent 30.15%),
+    linear-gradient(64deg, rgba(254, 226, 226, 0.65) 0%, transparent 22%, rgba(255, 255, 255, 0.65) 22.15%, transparent 45%),
+    linear-gradient(152deg, transparent 34%, rgba(255, 255, 255, 0.8) 34.15%, rgba(244, 63, 94, 0.32) 62%, transparent 62.15%),
+    linear-gradient(205deg, rgba(255, 255, 255, 0.92) 0%, rgba(225, 29, 72, 0.35) 18%, transparent 18.15%),
+    linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 22%, #FECDD3 48%, #FFFFFF 64%, #FDA4AF 84%, #FFE4E6 100%);
   transform-origin: center center;
   will-change: transform;
 }
 
-.hero-balance-plate.tier-prism::before {
+.hero-balance-plate.tier-ruby::before {
   content: '';
   position: absolute;
   inset: -65%;
@@ -1148,9 +1139,9 @@ body:not(.kiosk-locked) .clock-drag-handle {
   background: linear-gradient(
     52deg,
     transparent 32%,
-    rgba(244, 63, 94, 0.6) 42%,
-    rgba(255, 255, 255, 1) 48%,
-    rgba(56, 189, 248, 0.7) 54%,
+    rgba(244, 63, 94, 0.55) 42%,
+    rgba(255, 255, 255, 0.98) 48%,
+    rgba(225, 29, 72, 0.6) 54%,
     transparent 64%
   );
   transform: translate3d(-100%, 100%, 0);
@@ -1158,7 +1149,7 @@ body:not(.kiosk-locked) .clock-drag-handle {
   z-index: 0;
 }
 
-.hero-balance-plate.tier-prism::after {
+.hero-balance-plate.tier-ruby::after {
   content: '';
   position: absolute;
   inset: -65%;
@@ -1166,9 +1157,9 @@ body:not(.kiosk-locked) .clock-drag-handle {
   background: linear-gradient(
     132deg,
     transparent 36%,
-    rgba(168, 85, 247, 0.6) 45%,
-    rgba(255, 255, 255, 0.95) 50%,
-    rgba(34, 197, 94, 0.6) 55%,
+    rgba(251, 113, 133, 0.55) 45%,
+    rgba(255, 255, 255, 0.92) 50%,
+    rgba(190, 18, 60, 0.55) 55%,
     transparent 64%
   );
   transform: translate3d(-100%, -100%, 0);
@@ -1176,22 +1167,22 @@ body:not(.kiosk-locked) .clock-drag-handle {
   z-index: 0;
 }
 
-.hero-balance-plate.tier-prism .balance-caption-title,
-.hero-balance-plate.tier-prism .balance-time-stamp {
-  color: #6D28D9;
+.hero-balance-plate.tier-ruby .balance-caption-title,
+.hero-balance-plate.tier-ruby .balance-time-stamp {
+  color: #9F1239;
 }
 
-.hero-balance-plate.tier-prism .currency-tag {
-  color: #4338CA;
+.hero-balance-plate.tier-ruby .currency-tag {
+  color: #881337;
 }
 
-.hero-balance-plate.tier-prism .hero-limit-badge {
-  background: rgba(109, 40, 217, 0.12);
-  color: #6D28D9;
+.hero-balance-plate.tier-ruby .hero-limit-badge {
+  background: rgba(190, 18, 60, 0.12);
+  color: #9F1239;
 }
 
-.hero-balance-plate.tier-prism .hero-limit-badge strong {
-  color: #4338CA;
+.hero-balance-plate.tier-ruby .hero-limit-badge strong {
+  color: #881337;
 }
 
 .balance-meta-header {
@@ -1347,23 +1338,25 @@ body:not(.kiosk-locked) .clock-drag-handle {
     linear-gradient(180deg, #06182C 0%, #034870 46%, #022F4C 54%, #081B30 100%);
 }
 
-.hero-balance-plate.tier-prism .balance-digits {
+.hero-balance-plate.tier-ruby .balance-digits {
   background-image:
     linear-gradient(
       45deg,
       transparent 0%,
-      transparent 28%,
-      rgba(244, 63, 94, 0.95) 32%,
-      rgba(168, 85, 247, 0.95) 37%,
-      rgba(255, 255, 255, 1) 42%,
-      rgba(56, 189, 248, 0.95) 47%,
-      rgba(34, 197, 94, 0.95) 52%,
-      rgba(255, 255, 255, 1) 57%,
-      rgba(234, 179, 8, 0.95) 62%,
+      transparent 30%,
+      rgba(244, 63, 94, 0.92) 35%,
+      rgba(255, 255, 255, 1) 40%,
+      rgba(255, 255, 255, 1) 44%,
+      rgba(225, 29, 72, 0.95) 48%,
+      rgba(255, 255, 255, 1) 52%,
+      transparent 54%,
+      rgba(255, 255, 255, 1) 56%,
+      rgba(251, 113, 133, 0.95) 60%,
+      rgba(255, 255, 255, 1) 63%,
       transparent 67%,
       transparent 100%
     ),
-    linear-gradient(180deg, #18032E 0%, #0F172A 50%, #091524 100%);
+    linear-gradient(180deg, #4C0519 0%, #881337 46%, #9F1239 54%, #4C0519 100%);
 }
 
 .balance-digits.has-shining {
@@ -1378,8 +1371,8 @@ body:not(.kiosk-locked) .clock-drag-handle {
   animation: shine-sweep-text 1.15s cubic-bezier(0.22, 1, 0.36, 1) infinite;
 }
 
-.hero-balance-plate.tier-prism .balance-digits.has-shining {
-  animation: shine-sweep-text 1.05s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+.hero-balance-plate.tier-ruby .balance-digits.has-shining {
+  animation: shine-sweep-text 1.1s cubic-bezier(0.22, 1, 0.36, 1) infinite;
 }
 
 @keyframes shine-sweep-text {

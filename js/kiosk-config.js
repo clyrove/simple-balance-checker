@@ -108,7 +108,7 @@
       squircleRadiusFull: '9999px'
     },
     timing: {
-      autoCloseSeconds: 10,
+      autoCloseSeconds: 5,
       toastDurationMs: 3200,
       scanCharMaxIntervalMs: 55,
       scanSubmitMaxAgeMs: 120,
@@ -122,12 +122,12 @@
         goldMax: 499000,
         platinumMax: 899000,
         diamondMax: 1549999,
-        prismMin: 1550000
+        rubyMin: 1550000
       },
       getTierKey: function (amount) {
         const val = Math.round(Number(amount) || 0);
         const t = this.thresholds;
-        if (val >= t.prismMin) return 'prism';
+        if (val >= t.rubyMin) return 'ruby';
         if (val > t.platinumMax) return 'diamond';
         if (val > t.goldMax) return 'platinum';
         if (val > t.silverMax) return 'gold';
@@ -146,8 +146,8 @@
       diamond: {
         confettiColors: ['#FFFFFF', '#F0F9FF', '#E0F2FE', '#BAE6FD', '#7DD3FC', '#38BDF8', '#C084FC', '#E0E7FF', '#CBD5E1']
       },
-      prism: {
-        confettiColors: ['#F43F5E', '#EC4899', '#A855F7', '#6366F1', '#38BDF8', '#14B8A6', '#22C55E', '#EAB308', '#FFFFFF', '#FDF4FF']
+      ruby: {
+        confettiColors: ['#E11D48', '#F43F5E', '#FB7185', '#FDA4AF', '#9F1239', '#DC2626', '#FFE4E6', '#FDE047', '#FFFFFF']
       }
     },
     api: {
