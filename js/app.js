@@ -47,9 +47,97 @@ document.addEventListener('DOMContentLoaded', () => {
   const counterState = { val: 0 };
 
   let confettiRafId = null;
+  let confettiWaveTimer = null;
   let confettiParticles = [];
 
+  function initRubyCrystalMosaic() {
+    const svg = document.getElementById('kiosk-ruby-mosaic');
+    if (!svg) return;
+    const ns = 'http://www.w3.org/2000/svg';
+    const cols = 8;
+    const rows = 6;
+    const cellW = 1600 / cols;
+    const cellH = 900 / rows;
+    const pts = [];
+
+    for (let r = 0; r <= rows; r++) {
+      pts[r] = [];
+      for (let c = 0; c <= cols; c++) {
+        let x = c * cellW;
+        let y = r * cellH;
+        if (c > 0 && c < cols) {
+          x += Math.sin(c * 17.3 + r * 31.7) * 56;
+        }
+        if (r > 0 && r < rows) {
+          y += Math.cos(c * 23.1 + r * 13.9) * 42;
+        }
+        pts[r][c] = [Math.round(x), Math.round(y)];
+      }
+    }
+
+    const shardColors = [
+      '#3B040E', '#4C0519', '#670720', '#7F1D1D', '#881337',
+      '#9F1239', '#B91C1C', '#BE123C', '#E11D48', '#F43F5E'
+    ];
+
+    const frag = document.createDocumentFragment();
+    let idx = 0;
+
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const p00 = pts[r][c];
+        const p10 = pts[r][c + 1];
+        const p01 = pts[r + 1][c];
+        const p11 = pts[r + 1][c + 1];
+
+        const tris = (c + r) % 2 === 0
+          ? [[p00, p10, p11], [p00, p11, p01]]
+          : [[p00, p10, p01], [p10, p11, p01]];
+
+        for (let t = 0; t < 2; t++) {
+          const poly = document.createElementNS(ns, 'polygon');
+          const tr = tris[t];
+          poly.setAttribute('points', `${tr[0][0]},${tr[0][1]} ${tr[1][0]},${tr[1][1]} ${tr[2][0]},${tr[2][1]}`);
+          const colorIdx = Math.abs(Math.floor(Math.sin(idx * 19.7 + c * 7.1) * shardColors.length)) % shardColors.length;
+          poly.setAttribute('fill', shardColors[colorIdx]);
+          poly.setAttribute('class', `ruby-shard rs-${(idx % 5) + 1}`);
+          poly.style.animationDelay = `${((idx * 0.23) % 2.4).toFixed(2)}s`;
+          frag.appendChild(poly);
+          idx++;
+        }
+      }
+    }
+
+    for (let r = 1; r < rows; r++) {
+      for (let c = 1; c < cols; c++) {
+        if ((r + c) % 2 !== 0) continue;
+        const [vx, vy] = pts[r][c];
+        const star = document.createElementNS(ns, 'polygon');
+        const sr = 9;
+        const ir = 2.2;
+        const sp = [
+          `${vx},${vy - sr}`, `${vx + ir},${vy - ir}`,
+          `${vx + sr},${vy}`, `${vx + ir},${vy + ir}`,
+          `${vx},${vy + sr}`, `${vx - ir},${vy + ir}`,
+          `${vx - sr},${vy}`, `${vx - ir},${vy - ir}`
+        ].join(' ');
+        star.setAttribute('points', sp);
+        star.setAttribute('class', 'ruby-vertex-star');
+        star.style.animationDelay = `${((r * 0.41 + c * 0.29) % 2.1).toFixed(2)}s`;
+        frag.appendChild(star);
+      }
+    }
+
+    svg.appendChild(frag);
+  }
+
+  initRubyCrystalMosaic();
+
   function clearConfetti() {
+    if (confettiWaveTimer) {
+      clearTimeout(confettiWaveTimer);
+      confettiWaveTimer = null;
+    }
     if (confettiRafId) {
       cancelAnimationFrame(confettiRafId);
       confettiRafId = null;
@@ -58,6 +146,70 @@ document.addEventListener('DOMContentLoaded', () => {
     if (confettiCanvas) {
       const ctx = confettiCanvas.getContext('2d');
       if (ctx) ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+    }
+  }
+
+  function spawnThreeCannonBurst(width, height, palette, tier, countPerCannon) {
+    const shapes = tier === 'ruby'
+      ? ['triangle_shard', 'triangle_shard', 'crystal', 'sparkle']
+      : ['crystal', 'crystal', 'crystal', 'sparkle'];
+
+    for (let i = 0; i < countPerCannon; i++) {
+      confettiParticles.push({
+        x: width * 0.06 + Math.random() * (width * 0.12),
+        y: height + 10,
+        vx: 3.8 + Math.random() * 6.5,
+        vy: -(13.5 + Math.random() * 6.8),
+        gravity: 0.34,
+        drag: 0.986,
+        wobble: Math.random() * Math.PI * 2,
+        wobbleSpeed: 0.08 + Math.random() * 0.08,
+        width: 9 + Math.random() * 7,
+        height: 9 + Math.random() * 7,
+        rotation: Math.random() * Math.PI * 2,
+        rotationSpeed: (Math.random() - 0.5) * 0.16,
+        opacity: 1,
+        shape: shapes[i % shapes.length],
+        color: palette[Math.floor(Math.random() * palette.length)]
+      });
+    }
+    for (let i = 0; i < countPerCannon; i++) {
+      confettiParticles.push({
+        x: width * 0.44 + Math.random() * (width * 0.12),
+        y: height + 10,
+        vx: (Math.random() - 0.5) * 6.8,
+        vy: -(14.5 + Math.random() * 7.2),
+        gravity: 0.34,
+        drag: 0.986,
+        wobble: Math.random() * Math.PI * 2,
+        wobbleSpeed: 0.08 + Math.random() * 0.08,
+        width: 9 + Math.random() * 7,
+        height: 9 + Math.random() * 7,
+        rotation: Math.random() * Math.PI * 2,
+        rotationSpeed: (Math.random() - 0.5) * 0.16,
+        opacity: 1,
+        shape: shapes[i % shapes.length],
+        color: palette[Math.floor(Math.random() * palette.length)]
+      });
+    }
+    for (let i = 0; i < countPerCannon; i++) {
+      confettiParticles.push({
+        x: width * 0.82 + Math.random() * (width * 0.12),
+        y: height + 10,
+        vx: -(3.8 + Math.random() * 6.5),
+        vy: -(13.5 + Math.random() * 6.8),
+        gravity: 0.34,
+        drag: 0.986,
+        wobble: Math.random() * Math.PI * 2,
+        wobbleSpeed: 0.08 + Math.random() * 0.08,
+        width: 9 + Math.random() * 7,
+        height: 9 + Math.random() * 7,
+        rotation: Math.random() * Math.PI * 2,
+        rotationSpeed: (Math.random() - 0.5) * 0.16,
+        opacity: 1,
+        shape: shapes[i % shapes.length],
+        color: palette[Math.floor(Math.random() * palette.length)]
+      });
     }
   }
 
@@ -85,65 +237,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     confettiParticles = [];
 
-    if (tier === 'diamond') {
-      const countPerCannon = 30;
-      for (let i = 0; i < countPerCannon; i++) {
-        confettiParticles.push({
-          x: width * 0.06 + Math.random() * (width * 0.12),
-          y: height + 10,
-          vx: 3.8 + Math.random() * 6.2,
-          vy: -(13.5 + Math.random() * 6.5),
-          gravity: 0.34,
-          drag: 0.986,
-          wobble: Math.random() * Math.PI * 2,
-          wobbleSpeed: 0.08 + Math.random() * 0.08,
-          width: 9 + Math.random() * 7,
-          height: 9 + Math.random() * 7,
-          rotation: Math.random() * Math.PI * 2,
-          rotationSpeed: (Math.random() - 0.5) * 0.14,
-          opacity: 1,
-          shape: i % 4 === 0 ? 'sparkle' : 'crystal',
-          color: palette[Math.floor(Math.random() * palette.length)]
-        });
-      }
-      for (let i = 0; i < countPerCannon; i++) {
-        confettiParticles.push({
-          x: width * 0.44 + Math.random() * (width * 0.12),
-          y: height + 10,
-          vx: (Math.random() - 0.5) * 6.5,
-          vy: -(14.5 + Math.random() * 7),
-          gravity: 0.34,
-          drag: 0.986,
-          wobble: Math.random() * Math.PI * 2,
-          wobbleSpeed: 0.08 + Math.random() * 0.08,
-          width: 9 + Math.random() * 7,
-          height: 9 + Math.random() * 7,
-          rotation: Math.random() * Math.PI * 2,
-          rotationSpeed: (Math.random() - 0.5) * 0.14,
-          opacity: 1,
-          shape: i % 4 === 0 ? 'sparkle' : 'crystal',
-          color: palette[Math.floor(Math.random() * palette.length)]
-        });
-      }
-      for (let i = 0; i < countPerCannon; i++) {
-        confettiParticles.push({
-          x: width * 0.82 + Math.random() * (width * 0.12),
-          y: height + 10,
-          vx: -(3.8 + Math.random() * 6.2),
-          vy: -(13.5 + Math.random() * 6.5),
-          gravity: 0.34,
-          drag: 0.986,
-          wobble: Math.random() * Math.PI * 2,
-          wobbleSpeed: 0.08 + Math.random() * 0.08,
-          width: 9 + Math.random() * 7,
-          height: 9 + Math.random() * 7,
-          rotation: Math.random() * Math.PI * 2,
-          rotationSpeed: (Math.random() - 0.5) * 0.14,
-          opacity: 1,
-          shape: i % 4 === 0 ? 'sparkle' : 'crystal',
-          color: palette[Math.floor(Math.random() * palette.length)]
-        });
-      }
+    if (tier === 'ruby') {
+      spawnThreeCannonBurst(width, height, palette, 'ruby', 26);
+      confettiWaveTimer = setTimeout(() => {
+        spawnThreeCannonBurst(width, height, palette, 'ruby', 22);
+      }, 620);
+    } else if (tier === 'diamond') {
+      spawnThreeCannonBurst(width, height, palette, 'diamond', 30);
     } else {
       const particleCount = 42;
       for (let i = 0; i < particleCount; i++) {
@@ -191,7 +291,25 @@ document.addEventListener('DOMContentLoaded', () => {
           ctx.rotate(p.rotation);
           ctx.globalAlpha = Math.max(0, p.opacity);
 
-          if (p.shape === 'crystal') {
+          if (p.shape === 'triangle_shard') {
+            ctx.scale(Math.cos(p.wobble) * 0.85 + 0.15, 1);
+            const r = p.width * 1.1;
+            ctx.beginPath();
+            ctx.moveTo(0, -r);
+            ctx.lineTo(r * 0.9, r * 0.75);
+            ctx.lineTo(-r * 0.85, r * 0.55);
+            ctx.closePath();
+            ctx.fillStyle = p.color;
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.moveTo(0, -r);
+            ctx.lineTo(r * 0.9, r * 0.75);
+            ctx.lineTo(0, r * 0.1);
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(255, 228, 230, 0.82)';
+            ctx.fill();
+          } else if (p.shape === 'crystal') {
             ctx.scale(Math.cos(p.wobble) * 0.85 + 0.15, 1);
             const hw = p.width * 0.75;
             const hh = p.height * 1.15;
@@ -213,9 +331,9 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.fillStyle = 'rgba(255, 255, 255, 0.82)';
             ctx.fill();
           } else if (p.shape === 'sparkle') {
-            const pulse = 0.75 + Math.abs(Math.cos(p.wobble)) * 0.45;
+            const pulse = 0.75 + Math.abs(Math.cos(p.wobble)) * 0.5;
             ctx.scale(pulse, pulse);
-            const r = p.width * 0.95;
+            const r = p.width * 0.98;
             const ir = r * 0.22;
             ctx.beginPath();
             for (let s = 0; s < 4; s++) {
@@ -225,7 +343,7 @@ document.addEventListener('DOMContentLoaded', () => {
               ctx.lineTo(Math.cos(nextAng) * ir, Math.sin(nextAng) * ir);
             }
             ctx.closePath();
-            ctx.fillStyle = '#FFFFFF';
+            ctx.fillStyle = tier === 'ruby' ? '#FFE4E6' : '#FFFFFF';
             ctx.fill();
           } else {
             ctx.scale(Math.cos(p.wobble), 1);
@@ -237,7 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      if (aliveCount > 0) {
+      if (aliveCount > 0 || confettiWaveTimer) {
         confettiRafId = requestAnimationFrame(renderConfetti);
       } else {
         clearConfetti();
@@ -258,9 +376,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const silverThreshold = (CONFIG.tiers && CONFIG.tiers.silverThreshold) || 100000;
     const goldThreshold = (CONFIG.tiers && CONFIG.tiers.goldThreshold) || 250000;
     const diamondThreshold = (CONFIG.tiers && CONFIG.tiers.diamondThreshold) || 400000;
+    const rubyThreshold = (CONFIG.tiers && CONFIG.tiers.rubyThreshold) || 900000;
 
     let tier = 'standard';
-    if (amount > diamondThreshold) {
+    if (amount > rubyThreshold) {
+      tier = 'ruby';
+    } else if (amount > diamondThreshold) {
       tier = 'diamond';
     } else if (amount > goldThreshold) {
       tier = 'gold';
@@ -269,19 +390,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (heroBalancePlate) {
-      heroBalancePlate.classList.remove('tier-diamond', 'tier-silver', 'tier-gold', 'tier-standard');
+      heroBalancePlate.classList.remove('tier-ruby', 'tier-diamond', 'tier-silver', 'tier-gold', 'tier-standard');
       heroBalancePlate.classList.add(`tier-${tier}`);
     }
 
-    if (tier === 'diamond') {
-      document.body.classList.add('tier-diamond');
-    } else {
-      document.body.classList.remove('tier-diamond');
-    }
+    document.body.classList.toggle('tier-diamond', tier === 'diamond');
+    document.body.classList.toggle('tier-ruby', tier === 'ruby');
 
     triggerShiningSweep();
 
-    if (tier === 'diamond' || tier === 'gold' || tier === 'silver') {
+    if (tier === 'ruby' || tier === 'diamond' || tier === 'gold' || tier === 'silver') {
       triggerConfetti(tier);
     } else {
       clearConfetti();
@@ -290,9 +408,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function resetBalanceTier() {
     clearConfetti();
-    document.body.classList.remove('tier-diamond');
+    document.body.classList.remove('tier-diamond', 'tier-ruby');
     if (heroBalancePlate) {
-      heroBalancePlate.classList.remove('tier-diamond', 'tier-silver', 'tier-gold');
+      heroBalancePlate.classList.remove('tier-ruby', 'tier-diamond', 'tier-silver', 'tier-gold');
       heroBalancePlate.classList.add('tier-standard');
     }
     if (balanceAmountEl) {
@@ -327,8 +445,10 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const counterSpeed = (CONFIG.animation && CONFIG.animation.counterSpeed) || 0.4;
-    const counterEasing = (CONFIG.animation && CONFIG.animation.counterEasing) || 'power2.out';
+    const rubyThreshold = (CONFIG.tiers && CONFIG.tiers.rubyThreshold) || 900000;
+    const isRuby = targetAmount > rubyThreshold;
+    const counterSpeed = isRuby ? 0.86 : ((CONFIG.animation && CONFIG.animation.counterSpeed) || 0.4);
+    const counterEasing = isRuby ? 'expo.out' : ((CONFIG.animation && CONFIG.animation.counterEasing) || 'power2.out');
     const bounceSpeed = (CONFIG.animation && CONFIG.animation.splitBounceSpeed) || 0.35;
     const bounceEasing = (CONFIG.animation && CONFIG.animation.splitBounceEasing) || 'back.out(2)';
 
@@ -338,8 +458,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     gsap.fromTo(
       balanceAmountEl,
-      { y: 10, scale: 0.95 },
-      { y: 0, scale: 1, duration: counterSpeed + bounceSpeed * 0.5, ease: bounceEasing }
+      { y: isRuby ? 18 : 10, scale: isRuby ? 0.88 : 0.95 },
+      { y: 0, scale: 1, duration: counterSpeed, ease: isRuby ? 'power3.out' : bounceEasing }
     );
 
     gsap.to(counterState, {
@@ -352,6 +472,13 @@ document.addEventListener('DOMContentLoaded', () => {
       onComplete: () => {
         balanceAmountEl.textContent = finalFormatted;
         triggerShiningSweep();
+        if (isRuby) {
+          gsap.fromTo(
+            balanceAmountEl,
+            { scale: 1.075 },
+            { scale: 1, duration: 0.48, ease: 'elastic.out(1.2, 0.45)' }
+          );
+        }
       }
     });
   }
@@ -424,7 +551,17 @@ document.addEventListener('DOMContentLoaded', () => {
     isTransitioning = true;
     applyBalanceTier(targetBalance);
 
+    const rubyThreshold = (CONFIG.tiers && CONFIG.tiers.rubyThreshold) || 900000;
+    const isRuby = targetBalance > rubyThreshold;
     const alreadyActive = stateContainer.classList.contains('state-active') && activeView.classList.contains('active');
+
+    if (hasGsap && isRuby && stateContainer) {
+      gsap.fromTo(
+        stateContainer,
+        { scale: 0.94 },
+        { scale: 1, duration: 0.55, ease: 'back.out(1.7)' }
+      );
+    }
 
     if (!hasGsap || alreadyActive) {
       waitingView.classList.remove('active');
@@ -474,7 +611,7 @@ document.addEventListener('DOMContentLoaded', () => {
       stateTransitionTl = null;
     }
     isTransitioning = true;
-    document.body.classList.remove('tier-diamond');
+    document.body.classList.remove('tier-diamond', 'tier-ruby');
 
     if (!hasGsap) {
       activeView.classList.remove('active');
