@@ -130,7 +130,7 @@
         confettiColors: ['#38BDF8', '#7DD3FC', '#BAE6FD', '#C084FC', '#E0E7FF', '#FFFFFF', '#CBD5E1', '#93C5FD']
       },
       ruby: {
-        confettiColors: ['#E11D48', '#F43F5E', '#FB7185', '#FDA4AF', '#9F1239', '#DC2626', '#FFE4E6', '#FDE047', '#FFFFFF']
+        confettiColors: ['#FFFFFF', '#F0F9FF', '#E0F2FE', '#BAE6FD', '#7DD3FC', '#38BDF8', '#C084FC', '#E0E7FF', '#CBD5E1']
       }
     },
     api: {

@@ -76,8 +76,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const shardColors = [
-      '#3B040E', '#4C0519', '#670720', '#7F1D1D', '#881337',
-      '#9F1239', '#B91C1C', '#BE123C', '#E11D48', '#F43F5E'
+      'rgba(255, 255, 255, 0.08)',
+      'rgba(240, 249, 255, 0.06)',
+      'rgba(224, 242, 254, 0.11)',
+      'rgba(186, 230, 253, 0.07)',
+      'rgba(255, 255, 255, 0.13)',
+      'rgba(224, 231, 255, 0.08)',
+      'rgba(199, 210, 254, 0.06)',
+      'rgba(255, 255, 255, 0.05)',
+      'rgba(147, 197, 253, 0.09)',
+      'rgba(248, 250, 252, 0.07)'
     ];
 
     const frag = document.createDocumentFragment();
@@ -113,8 +121,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if ((r + c) % 2 !== 0) continue;
         const [vx, vy] = pts[r][c];
         const star = document.createElementNS(ns, 'polygon');
-        const sr = 9;
-        const ir = 2.2;
+        const sr = 7;
+        const ir = 1.8;
         const sp = [
           `${vx},${vy - sr}`, `${vx + ir},${vy - ir}`,
           `${vx + sr},${vy}`, `${vx + ir},${vy + ir}`,
@@ -343,7 +351,7 @@ document.addEventListener('DOMContentLoaded', () => {
               ctx.lineTo(Math.cos(nextAng) * ir, Math.sin(nextAng) * ir);
             }
             ctx.closePath();
-            ctx.fillStyle = tier === 'ruby' ? '#FFE4E6' : '#FFFFFF';
+            ctx.fillStyle = '#FFFFFF';
             ctx.fill();
           } else {
             ctx.scale(Math.cos(p.wobble), 1);
@@ -458,8 +466,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     gsap.fromTo(
       balanceAmountEl,
-      { y: isRuby ? 18 : 10, scale: isRuby ? 0.88 : 0.95 },
-      { y: 0, scale: 1, duration: counterSpeed, ease: isRuby ? 'power3.out' : bounceEasing }
+      { y: isRuby ? 12 : 8, opacity: 0.85 },
+      { y: 0, opacity: 1, duration: counterSpeed, ease: isRuby ? 'power3.out' : bounceEasing }
     );
 
     gsap.to(counterState, {
@@ -472,13 +480,6 @@ document.addEventListener('DOMContentLoaded', () => {
       onComplete: () => {
         balanceAmountEl.textContent = finalFormatted;
         triggerShiningSweep();
-        if (isRuby) {
-          gsap.fromTo(
-            balanceAmountEl,
-            { scale: 1.075 },
-            { scale: 1, duration: 0.48, ease: 'elastic.out(1.2, 0.45)' }
-          );
-        }
       }
     });
   }
@@ -554,14 +555,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const rubyThreshold = (CONFIG.tiers && CONFIG.tiers.rubyThreshold) || 900000;
     const isRuby = targetBalance > rubyThreshold;
     const alreadyActive = stateContainer.classList.contains('state-active') && activeView.classList.contains('active');
-
-    if (hasGsap && isRuby && stateContainer) {
-      gsap.fromTo(
-        stateContainer,
-        { scale: 0.94 },
-        { scale: 1, duration: 0.55, ease: 'back.out(1.7)' }
-      );
-    }
 
     if (!hasGsap || alreadyActive) {
       waitingView.classList.remove('active');

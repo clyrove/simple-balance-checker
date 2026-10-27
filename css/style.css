@@ -64,6 +64,16 @@ h1, h2, h3, h4, p, span, button, input, label, div {
 
 body.tier-diamond .kiosk-diamond-backdrop {
   opacity: 1;
+  animation: diamond-400-bg-pulse 4.5s ease-in-out infinite alternate;
+}
+
+@keyframes diamond-400-bg-pulse {
+  0% {
+    filter: brightness(1) saturate(1);
+  }
+  100% {
+    filter: brightness(1.08) saturate(1.12);
+  }
 }
 
 .diamond-light-rays {
@@ -144,11 +154,54 @@ body.tier-diamond .kiosk-card-frame {
   overflow: hidden;
   transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1);
   background:
-    radial-gradient(ellipse 85% 65% at 50% 25%, #BE123C 0%, #881337 45%, #4C0519 82%, #2A020D 100%);
+    radial-gradient(ellipse 85% 65% at 50% 22%, rgba(255, 255, 255, 1) 0%, rgba(224, 242, 254, 0.85) 30%, rgba(186, 230, 253, 0.48) 58%, transparent 82%),
+    radial-gradient(ellipse 75% 60% at 14% 86%, rgba(199, 210, 254, 0.8) 0%, transparent 65%),
+    radial-gradient(ellipse 75% 60% at 86% 86%, rgba(125, 211, 252, 0.8) 0%, transparent 65%),
+    linear-gradient(135deg, #CBD5E1 0%, #E2E8F0 20%, #F0F9FF 45%, #FFFFFF 55%, #DBEAFE 75%, #C7D2FE 90%, #CBD5E1 100%);
 }
 
 body.tier-ruby .kiosk-ruby-backdrop {
   opacity: 1;
+  animation: diamond-crown-bg-pulse 3.6s ease-in-out infinite alternate;
+}
+
+@keyframes diamond-crown-bg-pulse {
+  0% {
+    filter: brightness(1) saturate(1);
+  }
+  50% {
+    filter: brightness(1.14) saturate(1.24);
+  }
+  100% {
+    filter: brightness(1.04) saturate(1.08);
+  }
+}
+
+.diamond-crown-glow-layer {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 32%, rgba(255, 255, 255, 0.95) 0%, rgba(224, 242, 254, 0.5) 35%, transparent 68%),
+    radial-gradient(circle at 20% 75%, rgba(186, 230, 253, 0.65) 0%, rgba(224, 231, 255, 0.35) 40%, transparent 70%),
+    radial-gradient(circle at 80% 75%, rgba(199, 210, 254, 0.6) 0%, rgba(165, 243, 252, 0.4) 40%, transparent 70%);
+  animation: diamond-glow-breathe 2.8s ease-in-out infinite alternate;
+  will-change: opacity, filter;
+  pointer-events: none;
+}
+
+@keyframes diamond-glow-breathe {
+  0% {
+    opacity: 0.5;
+    filter: hue-rotate(0deg);
+  }
+  50% {
+    opacity: 0.9;
+    filter: hue-rotate(12deg);
+  }
+  100% {
+    opacity: 0.6;
+    filter: hue-rotate(-8deg);
+  }
 }
 
 .ruby-triangle-mosaic {
@@ -160,62 +213,62 @@ body.tier-ruby .kiosk-ruby-backdrop {
 }
 
 .ruby-shard {
-  stroke: rgba(255, 228, 230, 0.28);
-  stroke-width: 1.2px;
+  stroke: rgba(255, 255, 255, 0.16);
+  stroke-width: 0.8px;
   stroke-linejoin: bevel;
   will-change: opacity, filter;
 }
 
 .ruby-shard.rs-1 {
-  animation: ruby-shard-twinkle 2.1s ease-in-out infinite alternate;
+  animation: ruby-shard-twinkle 2.4s ease-in-out infinite alternate;
 }
 
 .ruby-shard.rs-2 {
-  animation: ruby-shard-twinkle 2.6s ease-in-out 0.4s infinite alternate;
+  animation: ruby-shard-twinkle 2.9s ease-in-out 0.4s infinite alternate;
 }
 
 .ruby-shard.rs-3 {
-  animation: ruby-shard-twinkle 1.8s ease-in-out 0.9s infinite alternate;
+  animation: ruby-shard-twinkle 2.1s ease-in-out 0.9s infinite alternate;
 }
 
 .ruby-shard.rs-4 {
-  animation: ruby-shard-twinkle 2.4s ease-in-out 1.3s infinite alternate;
+  animation: ruby-shard-twinkle 2.7s ease-in-out 1.3s infinite alternate;
 }
 
 .ruby-shard.rs-5 {
-  animation: ruby-shard-twinkle 2.9s ease-in-out 1.7s infinite alternate;
+  animation: ruby-shard-twinkle 3.2s ease-in-out 1.7s infinite alternate;
 }
 
 @keyframes ruby-shard-twinkle {
   0% {
-    opacity: 0.78;
-    filter: brightness(0.88);
+    opacity: 0.35;
+    filter: brightness(0.95);
   }
   50% {
-    opacity: 0.95;
-    filter: brightness(1.12);
+    opacity: 0.72;
+    filter: brightness(1.2);
   }
   100% {
-    opacity: 1;
-    filter: brightness(1.55);
+    opacity: 0.45;
+    filter: brightness(1.02);
   }
 }
 
 .ruby-vertex-star {
-  fill: #FFF1F2;
+  fill: rgba(255, 255, 255, 0.8);
   transform-box: fill-box;
   transform-origin: center center;
-  animation: ruby-star-glint 1.9s ease-in-out infinite alternate;
+  animation: ruby-star-glint 2.2s ease-in-out infinite alternate;
 }
 
 @keyframes ruby-star-glint {
   0% {
-    opacity: 0.15;
-    transform: scale(0.45) rotate(0deg);
+    opacity: 0.12;
+    transform: scale(0.4) rotate(0deg);
   }
   100% {
-    opacity: 0.95;
-    transform: scale(1.25) rotate(45deg);
+    opacity: 0.82;
+    transform: scale(1.05) rotate(45deg);
   }
 }
 
@@ -223,49 +276,16 @@ body.tier-ruby .kiosk-ruby-backdrop {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(125deg, rgba(255, 228, 230, 0.28) 0%, transparent 26%),
-    linear-gradient(235deg, rgba(251, 113, 133, 0.26) 0%, transparent 30%),
-    radial-gradient(circle at 50% 15%, rgba(255, 255, 255, 0.35) 0%, transparent 45%);
-}
-
-.kiosk-ruby-vignette {
-  position: fixed;
-  inset: 0;
-  z-index: 9990;
+    linear-gradient(125deg, rgba(255, 255, 255, 0.22) 0%, transparent 30%),
+    linear-gradient(235deg, rgba(186, 230, 253, 0.18) 0%, transparent 32%),
+    radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.32) 0%, transparent 45%);
   pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.42s cubic-bezier(0.22, 1, 0.36, 1);
-  background:
-    radial-gradient(
-      ellipse 68% 64% at 50% 50%,
-      transparent 44%,
-      rgba(225, 29, 72, 0.25) 70%,
-      rgba(136, 19, 55, 0.68) 87%,
-      rgba(38, 2, 12, 0.94) 100%
-    );
-  will-change: transform, opacity;
-}
-
-body.tier-ruby .kiosk-ruby-vignette {
-  opacity: 1;
-  animation: ruby-vignette-pulse 1.45s cubic-bezier(0.37, 0, 0.63, 1) infinite;
-}
-
-@keyframes ruby-vignette-pulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 0.82;
-  }
-  50% {
-    transform: scale(1.045);
-    opacity: 1;
-  }
 }
 
 body.tier-ruby .kiosk-card-frame {
   background:
-    linear-gradient(120deg, rgba(255, 255, 255, 0.85) 0%, transparent 28%),
-    linear-gradient(135deg, #FDA4AF 0%, #E11D48 28%, #FFF1F2 50%, #9F1239 74%, #FB7185 100%);
+    linear-gradient(120deg, rgba(255, 255, 255, 0.95) 0%, transparent 28%),
+    linear-gradient(135deg, #BAE6FD 0%, #FFFFFF 22%, #7DD3FC 46%, #FFFFFF 62%, #C084FC 80%, #38BDF8 100%);
 }
 
 /* Kiosk Security Lock: Sembunyikan Kursor Mouse saat Kios Terkunci */
@@ -723,7 +743,6 @@ body.kiosk-locked * {
     linear-gradient(32deg, rgba(224, 231, 255, 0.65) 0%, rgba(255, 255, 255, 0.4) 24%, transparent 24.2%),
     linear-gradient(205deg, rgba(255, 255, 255, 0.88) 0%, rgba(186, 230, 253, 0.3) 18%, transparent 18.2%),
     linear-gradient(135deg, #CBD5E1 0%, #F1F5F9 18%, #E0F2FE 40%, #FFFFFF 55%, #DBEAFE 75%, #E0E7FF 90%, #CBD5E1 100%);
-  animation: diamond-card-pulse 2.2s cubic-bezier(0.37, 0, 0.63, 1) infinite;
   transform-origin: center center;
   will-change: transform;
 }
@@ -755,15 +774,6 @@ body.kiosk-locked * {
   }
 }
 
-@keyframes diamond-card-pulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.022);
-  }
-}
-
 .hero-balance-plate.tier-diamond .balance-caption-title,
 .hero-balance-plate.tier-diamond .balance-time-stamp {
   color: #0369A1;
@@ -784,13 +794,12 @@ body.kiosk-locked * {
 
 .hero-balance-plate.tier-ruby {
   background:
-    linear-gradient(122deg, rgba(255, 255, 255, 0.88) 0%, rgba(255, 228, 230, 0.25) 24%, transparent 24.15%),
-    linear-gradient(238deg, rgba(255, 255, 255, 0.78) 0%, rgba(251, 113, 133, 0.34) 30%, transparent 30.15%),
-    linear-gradient(62deg, rgba(254, 205, 211, 0.65) 0%, transparent 20%, rgba(255, 255, 255, 0.55) 20.15%, transparent 44%),
-    linear-gradient(148deg, transparent 36%, rgba(255, 255, 255, 0.7) 36.15%, rgba(253, 164, 175, 0.24) 62%, transparent 62.15%),
-    linear-gradient(202deg, rgba(255, 255, 255, 0.92) 0%, rgba(244, 63, 94, 0.28) 18%, transparent 18.15%),
-    linear-gradient(135deg, #FECDD3 0%, #FFF1F2 18%, #FDA4AF 38%, #FFFFFF 54%, #FECDD3 74%, #FB7185 92%, #FFE4E6 100%);
-  animation: ruby-card-luxury-pulse 1.85s cubic-bezier(0.37, 0, 0.63, 1) infinite;
+    linear-gradient(116deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.35) 24%, transparent 24.15%),
+    linear-gradient(244deg, rgba(255, 255, 255, 0.88) 0%, rgba(186, 230, 253, 0.45) 30%, transparent 30.15%),
+    linear-gradient(64deg, rgba(224, 231, 255, 0.75) 0%, transparent 22%, rgba(255, 255, 255, 0.7) 22.15%, transparent 45%),
+    linear-gradient(152deg, transparent 34%, rgba(255, 255, 255, 0.82) 34.15%, rgba(224, 242, 254, 0.35) 62%, transparent 62.15%),
+    linear-gradient(205deg, rgba(255, 255, 255, 0.96) 0%, rgba(165, 243, 252, 0.4) 18%, transparent 18.15%),
+    linear-gradient(135deg, #E0F2FE 0%, #FFFFFF 16%, #BAE6FD 36%, #FFFFFF 52%, #DDD6FE 72%, #7DD3FC 90%, #F0F9FF 100%);
   transform-origin: center center;
   will-change: transform;
 }
@@ -803,13 +812,13 @@ body.kiosk-locked * {
   background: linear-gradient(
     52deg,
     transparent 36%,
-    rgba(255, 228, 230, 0.5) 45%,
-    rgba(255, 255, 255, 0.95) 50%,
-    rgba(251, 113, 133, 0.55) 55%,
+    rgba(255, 255, 255, 0.6) 44%,
+    rgba(255, 255, 255, 1) 50%,
+    rgba(186, 230, 253, 0.65) 55%,
     transparent 64%
   );
   transform: translate3d(-100%, 100%, 0);
-  animation: diamond-plate-sheen 1.95s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  animation: diamond-plate-sheen 1.75s cubic-bezier(0.22, 1, 0.36, 1) infinite;
   z-index: 0;
 }
 
@@ -819,17 +828,18 @@ body.kiosk-locked * {
   inset: -65%;
   pointer-events: none;
   background: linear-gradient(
-    128deg,
-    transparent 42%,
-    rgba(255, 255, 255, 0.75) 50%,
-    transparent 58%
+    132deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.85) 50%,
+    rgba(199, 210, 254, 0.5) 55%,
+    transparent 62%
   );
   transform: translate3d(-100%, -100%, 0);
-  animation: ruby-counter-sheen 2.5s cubic-bezier(0.22, 1, 0.36, 1) 0.6s infinite;
+  animation: diamond-counter-sheen 2.2s cubic-bezier(0.22, 1, 0.36, 1) 0.4s infinite;
   z-index: 0;
 }
 
-@keyframes ruby-counter-sheen {
+@keyframes diamond-counter-sheen {
   0% {
     transform: translate3d(-85%, -85%, 0);
   }
@@ -838,37 +848,22 @@ body.kiosk-locked * {
   }
 }
 
-@keyframes ruby-card-luxury-pulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  32% {
-    transform: scale(1.028);
-  }
-  56% {
-    transform: scale(1.008);
-  }
-  78% {
-    transform: scale(1.024);
-  }
-}
-
 .hero-balance-plate.tier-ruby .balance-caption-title,
 .hero-balance-plate.tier-ruby .balance-time-stamp {
-  color: #881337;
+  color: #0284C7;
 }
 
 .hero-balance-plate.tier-ruby .currency-tag {
-  color: #9F1239;
+  color: #0369A1;
 }
 
 .hero-balance-plate.tier-ruby .hero-limit-badge {
-  background: rgba(136, 19, 55, 0.12);
-  color: #4C0519;
+  background: rgba(2, 132, 199, 0.12);
+  color: #0369A1;
 }
 
 .hero-balance-plate.tier-ruby .hero-limit-badge strong {
-  color: #3B040E;
+  color: #075985;
 }
 
 .balance-meta-header {
@@ -1007,19 +1002,21 @@ body.kiosk-locked * {
     linear-gradient(
       45deg,
       transparent 0%,
-      transparent 34%,
-      rgba(251, 113, 133, 0.92) 39%,
+      transparent 32%,
+      rgba(56, 189, 248, 0.92) 36%,
+      rgba(255, 255, 255, 1) 40%,
       rgba(255, 255, 255, 1) 43%,
-      rgba(255, 255, 255, 1) 47%,
-      rgba(253, 224, 71, 0.95) 50%,
-      transparent 52.5%,
-      rgba(255, 255, 255, 1) 55.5%,
-      rgba(255, 255, 255, 1) 58.5%,
-      rgba(244, 63, 94, 0.92) 62%,
+      rgba(192, 132, 252, 0.95) 46%,
+      rgba(255, 255, 255, 1) 49%,
+      transparent 51%,
+      rgba(255, 255, 255, 1) 53%,
+      rgba(255, 255, 255, 1) 56%,
+      rgba(125, 211, 252, 0.95) 59%,
+      rgba(255, 255, 255, 1) 62%,
       transparent 66%,
       transparent 100%
     ),
-    linear-gradient(180deg, #3B040E 0%, #881337 46%, #4C0519 54%, #670720 100%);
+    linear-gradient(180deg, #06182C 0%, #034870 46%, #022F4C 54%, #081B30 100%);
 }
 
 .balance-digits.has-shining {
@@ -1031,7 +1028,7 @@ body.kiosk-locked * {
 }
 
 .hero-balance-plate.tier-ruby .balance-digits.has-shining {
-  animation: shine-sweep-text 1.25s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  animation: shine-sweep-text 1.15s cubic-bezier(0.22, 1, 0.36, 1) infinite;
 }
 
 @keyframes shine-sweep-text {
