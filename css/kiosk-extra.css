@@ -15,8 +15,8 @@
   padding: 14px 28px !important;
   border-radius: 9999px !important;
   corner-shape: squircle;
-  background-color: #10213A !important;
-  color: #FFFFFF !important;
+  background-color: #0B1120 !important;
+  color: #F8FAFC !important;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
   font-size: 1.125rem !important;
   font-weight: 600 !important;
@@ -46,18 +46,18 @@
 }
 
 .kiosk-toast[data-type="info"] {
-  background-color: #10213A !important;
-  color: #FFFFFF !important;
+  background-color: #0B1728 !important;
+  color: #BAE6FD !important;
 }
 
 .kiosk-toast[data-type="error"] {
-  background-color: #7F1D1D !important;
-  color: #FEF2F2 !important;
+  background-color: #2E0B0B !important;
+  color: #FECACA !important;
 }
 
 .kiosk-toast[data-type="success"] {
-  background-color: #15803D !important;
-  color: #F0FDF4 !important;
+  background-color: #062817 !important;
+  color: #BBF7D0 !important;
 }
 
 .kiosk-toast i {

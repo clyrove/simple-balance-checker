@@ -47,6 +47,28 @@ h1, h2, h3, h4, p, span, button, input, label, div {
   position: relative;
 }
 
+body.tier-silver {
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 0%, rgba(226, 232, 240, 0.14) 0%, transparent 70%),
+    #010101;
+}
+
+body.tier-silver .kiosk-card-frame {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0%, rgba(148, 163, 184, 0.35) 50%, rgba(255, 255, 255, 0.5) 100%);
+}
+
+body.tier-gold {
+  background:
+    radial-gradient(ellipse 75% 50% at 50% 0%, rgba(234, 179, 8, 0.15) 0%, rgba(180, 83, 9, 0.06) 42%, transparent 70%),
+    #010101;
+}
+
+body.tier-gold .kiosk-card-frame {
+  background:
+    linear-gradient(135deg, rgba(250, 204, 21, 0.7) 0%, rgba(234, 179, 8, 0.35) 50%, rgba(253, 224, 71, 0.6) 100%);
+}
+
 .kiosk-platinum-backdrop {
   position: fixed;
   inset: 0;
@@ -56,10 +78,10 @@ h1, h2, h3, h4, p, span, button, input, label, div {
   overflow: hidden;
   transition: opacity 0.42s cubic-bezier(0.22, 1, 0.36, 1);
   background:
-    radial-gradient(ellipse 95% 65% at 50% -5%, rgba(255, 255, 255, 0.96) 0%, rgba(186, 230, 253, 0.58) 38%, transparent 72%),
-    radial-gradient(ellipse 75% 55% at 12% 88%, rgba(224, 231, 255, 0.82) 0%, transparent 62%),
-    radial-gradient(ellipse 75% 55% at 88% 88%, rgba(165, 243, 252, 0.78) 0%, transparent 62%),
-    linear-gradient(145deg, #94A3B8 0%, #CBD5E1 22%, #E2E8F0 45%, #F8FAFC 65%, #BAE6FD 85%, #CBD5E1 100%);
+    radial-gradient(ellipse 95% 65% at 50% -5%, rgba(56, 189, 248, 0.25) 0%, rgba(14, 165, 233, 0.1) 40%, transparent 72%),
+    radial-gradient(ellipse 75% 55% at 12% 88%, rgba(99, 102, 241, 0.15) 0%, transparent 62%),
+    radial-gradient(ellipse 75% 55% at 88% 88%, rgba(56, 189, 248, 0.15) 0%, transparent 62%),
+    linear-gradient(145deg, #010101 0%, #060D17 35%, #0B1626 65%, #010101 100%);
 }
 
 body.tier-platinum .kiosk-platinum-backdrop {
@@ -83,27 +105,27 @@ body.tier-platinum .kiosk-platinum-backdrop {
     conic-gradient(
       from 195deg at 50% 15%,
       transparent 0deg,
-      rgba(255, 255, 255, 0.72) 7deg,
+      rgba(56, 189, 248, 0.35) 7deg,
       transparent 16deg,
-      rgba(255, 255, 255, 0.45) 28deg,
+      rgba(255, 255, 255, 0.25) 28deg,
       transparent 38deg,
-      rgba(186, 230, 253, 0.65) 52deg,
+      rgba(186, 230, 253, 0.32) 52deg,
       transparent 66deg,
-      rgba(255, 255, 255, 0.78) 82deg,
+      rgba(56, 189, 248, 0.38) 82deg,
       transparent 96deg,
-      rgba(224, 231, 255, 0.55) 114deg,
+      rgba(224, 231, 255, 0.28) 114deg,
       transparent 130deg,
-      rgba(255, 255, 255, 0.72) 148deg,
+      rgba(255, 255, 255, 0.35) 148deg,
       transparent 166deg,
-      rgba(186, 230, 253, 0.55) 202deg,
+      rgba(186, 230, 253, 0.28) 202deg,
       transparent 232deg,
-      rgba(255, 255, 255, 0.68) 268deg,
+      rgba(56, 189, 248, 0.32) 268deg,
       transparent 302deg,
-      rgba(255, 255, 255, 0.62) 334deg,
+      rgba(255, 255, 255, 0.3) 334deg,
       transparent 360deg
     );
   filter: blur(8px);
-  opacity: 0.9;
+  opacity: 0.55;
   animation: platinum-rays-sway 7s ease-in-out infinite alternate;
   will-change: transform;
 }
@@ -121,28 +143,26 @@ body.tier-platinum .kiosk-platinum-backdrop {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(122deg, rgba(255, 255, 255, 0.52) 0%, rgba(255, 255, 255, 0.1) 24%, transparent 24.15%),
-    linear-gradient(238deg, rgba(255, 255, 255, 0.48) 0%, rgba(186, 230, 253, 0.14) 28%, transparent 28.15%),
-    linear-gradient(58deg, rgba(255, 255, 255, 0.38) 0%, transparent 20%, rgba(255, 255, 255, 0.3) 20.15%, transparent 42%),
-    linear-gradient(152deg, transparent 52%, rgba(255, 255, 255, 0.42) 52.15%, rgba(224, 242, 254, 0.12) 76%, transparent 76.15%),
-    repeating-linear-gradient(60deg, rgba(255, 255, 255, 0.22) 0px, rgba(255, 255, 255, 0.22) 1px, transparent 1px, transparent 110px),
-    repeating-linear-gradient(-60deg, rgba(255, 255, 255, 0.22) 0px, rgba(255, 255, 255, 0.22) 1px, transparent 1px, transparent 110px);
+    linear-gradient(122deg, rgba(56, 189, 248, 0.22) 0%, rgba(56, 189, 248, 0.04) 24%, transparent 24.15%),
+    linear-gradient(238deg, rgba(186, 230, 253, 0.2) 0%, rgba(56, 189, 248, 0.05) 28%, transparent 28.15%),
+    linear-gradient(58deg, rgba(255, 255, 255, 0.15) 0%, transparent 20%, rgba(255, 255, 255, 0.12) 20.15%, transparent 42%),
+    repeating-linear-gradient(60deg, rgba(56, 189, 248, 0.08) 0px, rgba(56, 189, 248, 0.08) 1px, transparent 1px, transparent 110px),
+    repeating-linear-gradient(-60deg, rgba(56, 189, 248, 0.08) 0px, rgba(56, 189, 248, 0.08) 1px, transparent 1px, transparent 110px);
 }
 
 .platinum-shimmer-veil {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 25% 30%, rgba(255, 255, 255, 0.7) 0%, transparent 18%),
-    radial-gradient(circle at 78% 26%, rgba(255, 255, 255, 0.65) 0%, transparent 16%),
-    radial-gradient(circle at 82% 74%, rgba(186, 230, 253, 0.6) 0%, transparent 20%),
-    radial-gradient(circle at 18% 76%, rgba(224, 231, 255, 0.6) 0%, transparent 20%);
+    radial-gradient(circle at 25% 30%, rgba(56, 189, 248, 0.2) 0%, transparent 20%),
+    radial-gradient(circle at 78% 26%, rgba(186, 230, 253, 0.18) 0%, transparent 18%),
+    radial-gradient(circle at 82% 74%, rgba(56, 189, 248, 0.15) 0%, transparent 22%),
+    radial-gradient(circle at 18% 76%, rgba(99, 102, 241, 0.15) 0%, transparent 22%);
 }
 
 body.tier-platinum .kiosk-card-frame {
   background:
-    linear-gradient(125deg, rgba(255, 255, 255, 0.75) 0%, transparent 32%),
-    linear-gradient(135deg, #BAE6FD 0%, #E2E8F0 35%, #FFFFFF 50%, #C7D2FE 75%, #7DD3FC 100%);
+    linear-gradient(135deg, rgba(56, 189, 248, 0.75) 0%, rgba(255, 255, 255, 0.9) 35%, rgba(14, 165, 233, 0.45) 70%, rgba(99, 102, 241, 0.6) 100%);
 }
 
 .kiosk-diamond-backdrop {
@@ -154,10 +174,10 @@ body.tier-platinum .kiosk-card-frame {
   overflow: hidden;
   transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1);
   background:
-    radial-gradient(ellipse 85% 65% at 50% 20%, rgba(255, 255, 255, 1) 0%, rgba(224, 242, 254, 0.9) 28%, rgba(186, 230, 253, 0.6) 55%, transparent 85%),
-    radial-gradient(ellipse 75% 60% at 14% 86%, rgba(199, 210, 254, 0.85) 0%, transparent 65%),
-    radial-gradient(ellipse 75% 60% at 86% 86%, rgba(125, 211, 252, 0.85) 0%, transparent 65%),
-    linear-gradient(135deg, #CBD5E1 0%, #E2E8F0 18%, #F0F9FF 42%, #FFFFFF 55%, #DBEAFE 75%, #C7D2FE 90%, #CBD5E1 100%);
+    radial-gradient(ellipse 85% 65% at 50% 20%, rgba(186, 230, 253, 0.24) 0%, rgba(56, 189, 248, 0.12) 35%, transparent 75%),
+    radial-gradient(ellipse 75% 60% at 14% 86%, rgba(147, 197, 253, 0.16) 0%, transparent 65%),
+    radial-gradient(ellipse 75% 60% at 86% 86%, rgba(192, 132, 252, 0.16) 0%, transparent 65%),
+    linear-gradient(135deg, #010101 0%, #050C17 25%, #0B172B 55%, #050C17 80%, #010101 100%);
 }
 
 body.tier-diamond .kiosk-diamond-backdrop {
@@ -181,9 +201,9 @@ body.tier-diamond .kiosk-diamond-backdrop {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.98) 0%, rgba(224, 242, 254, 0.65) 32%, transparent 68%),
-    radial-gradient(circle at 18% 75%, rgba(186, 230, 253, 0.75) 0%, rgba(224, 231, 255, 0.4) 40%, transparent 70%),
-    radial-gradient(circle at 82% 75%, rgba(199, 210, 254, 0.7) 0%, rgba(165, 243, 252, 0.5) 40%, transparent 70%);
+    radial-gradient(circle at 50% 30%, rgba(186, 230, 253, 0.3) 0%, rgba(56, 189, 248, 0.12) 32%, transparent 68%),
+    radial-gradient(circle at 18% 75%, rgba(186, 230, 253, 0.18) 0%, rgba(99, 102, 241, 0.1) 40%, transparent 70%),
+    radial-gradient(circle at 82% 75%, rgba(147, 197, 253, 0.18) 0%, rgba(56, 189, 248, 0.1) 40%, transparent 70%);
   animation: diamond-glow-breathe 2.8s ease-in-out infinite alternate;
   will-change: opacity, filter;
   pointer-events: none;
@@ -288,8 +308,7 @@ body.tier-diamond .kiosk-diamond-backdrop {
 
 body.tier-diamond .kiosk-card-frame {
   background:
-    linear-gradient(120deg, rgba(255, 255, 255, 0.95) 0%, transparent 28%),
-    linear-gradient(135deg, #BAE6FD 0%, #FFFFFF 22%, #7DD3FC 46%, #FFFFFF 62%, #C084FC 80%, #38BDF8 100%);
+    linear-gradient(135deg, rgba(186, 230, 253, 0.8) 0%, #FFFFFF 25%, rgba(56, 189, 248, 0.7) 50%, rgba(192, 132, 252, 0.7) 75%, rgba(56, 189, 248, 0.85) 100%);
 }
 
 .kiosk-prismatic-backdrop {
@@ -301,10 +320,10 @@ body.tier-diamond .kiosk-card-frame {
   overflow: hidden;
   transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1);
   background:
-    radial-gradient(ellipse 90% 70% at 50% 18%, rgba(255, 255, 255, 0.98) 0%, rgba(254, 249, 195, 0.22) 24%, rgba(224, 242, 254, 0.22) 48%, rgba(245, 243, 255, 0.18) 72%, transparent 88%),
-    radial-gradient(ellipse 80% 65% at 12% 88%, rgba(245, 243, 255, 0.4) 0%, transparent 65%),
-    radial-gradient(ellipse 80% 65% at 88% 88%, rgba(224, 242, 254, 0.4) 0%, transparent 65%),
-    linear-gradient(135deg, #FCFBFC 0%, #F5F7FB 20%, #FAF5FF 40%, #FEFDF4 60%, #F0FDF4 80%, #F3F8FB 100%);
+    radial-gradient(ellipse 90% 70% at 50% 18%, rgba(244, 114, 182, 0.18) 0%, rgba(167, 139, 250, 0.14) 28%, rgba(56, 189, 248, 0.1) 55%, transparent 80%),
+    radial-gradient(ellipse 80% 65% at 12% 88%, rgba(167, 139, 250, 0.18) 0%, transparent 65%),
+    radial-gradient(ellipse 80% 65% at 88% 88%, rgba(56, 189, 248, 0.18) 0%, transparent 65%),
+    linear-gradient(135deg, #010101 0%, #090614 25%, #100C22 50%, #060F1A 75%, #010101 100%);
 }
 
 body.tier-prismatic .kiosk-prismatic-backdrop {
@@ -330,29 +349,29 @@ body.tier-prismatic .kiosk-prismatic-backdrop {
   background: conic-gradient(
     from 0deg at 50% 15%,
     transparent 0deg,
-    rgba(244, 114, 182, 0.15) 18deg,
+    rgba(244, 114, 182, 0.22) 18deg,
     transparent 36deg,
-    rgba(167, 139, 250, 0.16) 58deg,
+    rgba(167, 139, 250, 0.24) 58deg,
     transparent 76deg,
-    rgba(56, 189, 248, 0.18) 98deg,
+    rgba(56, 189, 248, 0.26) 98deg,
     transparent 118deg,
-    rgba(52, 211, 153, 0.15) 138deg,
+    rgba(52, 211, 153, 0.22) 138deg,
     transparent 158deg,
-    rgba(250, 204, 21, 0.16) 180deg,
+    rgba(250, 204, 21, 0.24) 180deg,
     transparent 202deg,
-    rgba(244, 114, 182, 0.15) 224deg,
+    rgba(244, 114, 182, 0.22) 224deg,
     transparent 248deg,
-    rgba(129, 140, 248, 0.16) 272deg,
+    rgba(129, 140, 248, 0.24) 272deg,
     transparent 298deg,
-    rgba(56, 189, 248, 0.15) 322deg,
+    rgba(56, 189, 248, 0.22) 322deg,
     transparent 342deg,
-    rgba(255, 255, 255, 0.3) 352deg,
+    rgba(255, 255, 255, 0.35) 352deg,
     transparent 360deg
   );
   filter: blur(28px);
   animation: prismatic-rays-sway 10s ease-in-out infinite alternate;
   will-change: transform;
-  opacity: 0.42;
+  opacity: 0.5;
   pointer-events: none;
 }
 
@@ -369,9 +388,9 @@ body.tier-prismatic .kiosk-prismatic-backdrop {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 50% 28%, rgba(255, 255, 255, 0.95) 0%, rgba(254, 249, 195, 0.22) 30%, transparent 68%),
-    radial-gradient(circle at 18% 75%, rgba(245, 243, 255, 0.32) 0%, rgba(244, 114, 182, 0.1) 40%, transparent 70%),
-    radial-gradient(circle at 82% 75%, rgba(224, 242, 254, 0.32) 0%, rgba(52, 211, 153, 0.1) 40%, transparent 70%);
+    radial-gradient(circle at 50% 28%, rgba(255, 255, 255, 0.2) 0%, rgba(254, 249, 195, 0.1) 30%, transparent 68%),
+    radial-gradient(circle at 18% 75%, rgba(167, 139, 250, 0.18) 0%, transparent 50%),
+    radial-gradient(circle at 82% 75%, rgba(56, 189, 248, 0.18) 0%, transparent 50%);
   animation: prismatic-glow-breathe 4s ease-in-out infinite alternate;
   will-change: opacity;
   pointer-events: none;
@@ -472,8 +491,7 @@ body.tier-prismatic .kiosk-prismatic-backdrop {
 
 body.tier-prismatic .kiosk-card-frame {
   background:
-    linear-gradient(120deg, rgba(255, 255, 255, 0.98) 0%, transparent 26%),
-    linear-gradient(135deg, #FFFFFF 0%, #E0F2FE 20%, #F5F3FF 40%, #FDF2F8 60%, #FEF9C3 80%, #E0F2FE 100%);
+    linear-gradient(135deg, #F43F5E 0%, #A855F7 20%, #38BDF8 42%, #22C55E 65%, #EAB308 82%, #EC4899 100%);
 }
 
 /* Kiosk Security Lock: Sembunyikan Kursor Mouse saat Kios Terkunci */
@@ -950,20 +968,20 @@ body:not(.kiosk-locked) .clock-drag-handle {
 
 .hero-balance-plate.tier-silver .balance-caption-title,
 .hero-balance-plate.tier-silver .balance-time-stamp {
-  color: #475569;
+  color: #94A3B8;
 }
 
 .hero-balance-plate.tier-silver .currency-tag {
-  color: #334155;
+  color: #CBD5E1;
 }
 
 .hero-balance-plate.tier-silver .hero-limit-badge {
-  background: rgba(15, 23, 42, 0.08);
-  color: #0F172A;
+  background: rgba(226, 232, 240, 0.1);
+  color: #CBD5E1;
 }
 
 .hero-balance-plate.tier-silver .hero-limit-badge strong {
-  color: #0F172A;
+  color: #FFFFFF;
 }
 
 .hero-balance-plate.tier-gold {
@@ -972,30 +990,24 @@ body:not(.kiosk-locked) .clock-drag-handle {
 
 .hero-balance-plate.tier-gold .balance-caption-title,
 .hero-balance-plate.tier-gold .balance-time-stamp {
-  color: #713F12;
+  color: #FDE047;
 }
 
 .hero-balance-plate.tier-gold .currency-tag {
-  color: #713F12;
+  color: #FACC15;
 }
 
 .hero-balance-plate.tier-gold .hero-limit-badge {
-  background: rgba(113, 63, 18, 0.12);
-  color: #3F2104;
+  background: rgba(234, 179, 8, 0.14);
+  color: #FDE047;
 }
 
 .hero-balance-plate.tier-gold .hero-limit-badge strong {
-  color: #271402;
+  color: #FEF08A;
 }
 
 .hero-balance-plate.tier-platinum {
-  background:
-    linear-gradient(118deg, rgba(255, 255, 255, 0.84) 0%, rgba(255, 255, 255, 0.22) 26%, transparent 26.2%),
-    linear-gradient(242deg, rgba(255, 255, 255, 0.74) 0%, rgba(186, 230, 253, 0.32) 32%, transparent 32.2%),
-    linear-gradient(148deg, transparent 38%, rgba(255, 255, 255, 0.6) 38.2%, rgba(224, 242, 254, 0.18) 64%, transparent 64.2%),
-    linear-gradient(32deg, rgba(224, 231, 255, 0.65) 0%, rgba(255, 255, 255, 0.4) 24%, transparent 24.2%),
-    linear-gradient(205deg, rgba(255, 255, 255, 0.88) 0%, rgba(186, 230, 253, 0.3) 18%, transparent 18.2%),
-    linear-gradient(135deg, #CBD5E1 0%, #F1F5F9 18%, #E0F2FE 40%, #FFFFFF 55%, #DBEAFE 75%, #E0E7FF 90%, #CBD5E1 100%);
+  background: var(--surface-hero-balance-platinum);
   transform-origin: center center;
   will-change: transform;
 }
@@ -1008,9 +1020,9 @@ body:not(.kiosk-locked) .clock-drag-handle {
   background: linear-gradient(
     55deg,
     transparent 40%,
-    rgba(255, 255, 255, 0.45) 47%,
+    rgba(56, 189, 248, 0.35) 47%,
     rgba(255, 255, 255, 0.85) 50%,
-    rgba(186, 230, 253, 0.45) 53%,
+    rgba(186, 230, 253, 0.35) 53%,
     transparent 60%
   );
   transform: translate3d(-100%, 100%, 0);
@@ -1029,30 +1041,24 @@ body:not(.kiosk-locked) .clock-drag-handle {
 
 .hero-balance-plate.tier-platinum .balance-caption-title,
 .hero-balance-plate.tier-platinum .balance-time-stamp {
-  color: #0369A1;
+  color: #7DD3FC;
 }
 
 .hero-balance-plate.tier-platinum .currency-tag {
-  color: #0284C7;
+  color: #38BDF8;
 }
 
 .hero-balance-plate.tier-platinum .hero-limit-badge {
-  background: rgba(12, 74, 110, 0.11);
-  color: #0C4A6E;
+  background: rgba(56, 189, 248, 0.12);
+  color: #7DD3FC;
 }
 
 .hero-balance-plate.tier-platinum .hero-limit-badge strong {
-  color: #082F49;
+  color: #E0F2FE;
 }
 
 .hero-balance-plate.tier-diamond {
-  background:
-    linear-gradient(116deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.35) 24%, transparent 24.15%),
-    linear-gradient(244deg, rgba(255, 255, 255, 0.88) 0%, rgba(186, 230, 253, 0.45) 30%, transparent 30.15%),
-    linear-gradient(64deg, rgba(224, 231, 255, 0.75) 0%, transparent 22%, rgba(255, 255, 255, 0.7) 22.15%, transparent 45%),
-    linear-gradient(152deg, transparent 34%, rgba(255, 255, 255, 0.82) 34.15%, rgba(224, 242, 254, 0.35) 62%, transparent 62.15%),
-    linear-gradient(205deg, rgba(255, 255, 255, 0.96) 0%, rgba(165, 243, 252, 0.4) 18%, transparent 18.15%),
-    linear-gradient(135deg, #E0F2FE 0%, #FFFFFF 16%, #BAE6FD 36%, #FFFFFF 52%, #DDD6FE 72%, #7DD3FC 90%, #F0F9FF 100%);
+  background: var(--surface-hero-balance-diamond);
   transform-origin: center center;
   will-change: transform;
 }
@@ -1065,9 +1071,9 @@ body:not(.kiosk-locked) .clock-drag-handle {
   background: linear-gradient(
     52deg,
     transparent 36%,
-    rgba(255, 255, 255, 0.6) 44%,
-    rgba(255, 255, 255, 1) 50%,
-    rgba(186, 230, 253, 0.65) 55%,
+    rgba(56, 189, 248, 0.45) 44%,
+    rgba(255, 255, 255, 0.95) 50%,
+    rgba(186, 230, 253, 0.5) 55%,
     transparent 64%
   );
   transform: translate3d(-100%, 100%, 0);
@@ -1083,8 +1089,8 @@ body:not(.kiosk-locked) .clock-drag-handle {
   background: linear-gradient(
     132deg,
     transparent 40%,
-    rgba(255, 255, 255, 0.85) 50%,
-    rgba(199, 210, 254, 0.5) 55%,
+    rgba(255, 255, 255, 0.8) 50%,
+    rgba(192, 132, 252, 0.45) 55%,
     transparent 62%
   );
   transform: translate3d(-100%, -100%, 0);
@@ -1103,30 +1109,24 @@ body:not(.kiosk-locked) .clock-drag-handle {
 
 .hero-balance-plate.tier-diamond .balance-caption-title,
 .hero-balance-plate.tier-diamond .balance-time-stamp {
-  color: #0284C7;
+  color: #93C5FD;
 }
 
 .hero-balance-plate.tier-diamond .currency-tag {
-  color: #0369A1;
+  color: #60A5FA;
 }
 
 .hero-balance-plate.tier-diamond .hero-limit-badge {
-  background: rgba(2, 132, 199, 0.12);
-  color: #0369A1;
+  background: rgba(96, 165, 250, 0.14);
+  color: #93C5FD;
 }
 
 .hero-balance-plate.tier-diamond .hero-limit-badge strong {
-  color: #075985;
+  color: #FFFFFF;
 }
 
 .hero-balance-plate.tier-prismatic {
-  background:
-    linear-gradient(116deg, rgba(255, 255, 255, 0.96) 0%, rgba(254, 249, 195, 0.2) 22%, transparent 22.15%),
-    linear-gradient(244deg, rgba(255, 255, 255, 0.92) 0%, rgba(245, 243, 255, 0.2) 30%, transparent 30.15%),
-    linear-gradient(64deg, rgba(240, 253, 244, 0.3) 0%, transparent 22%, rgba(255, 255, 255, 0.65) 22.15%, transparent 45%),
-    linear-gradient(152deg, transparent 34%, rgba(255, 255, 255, 0.8) 34.15%, rgba(253, 242, 248, 0.2) 62%, transparent 62.15%),
-    linear-gradient(205deg, rgba(255, 255, 255, 0.94) 0%, rgba(224, 242, 254, 0.25) 18%, transparent 18.15%),
-    linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 20%, #F5F3FF 40%, #FDF2F8 60%, #FEF9C3 80%, #F0FDF4 100%);
+  background: var(--surface-hero-balance-prismatic);
   transform-origin: center center;
   will-change: transform;
 }
@@ -1139,9 +1139,9 @@ body:not(.kiosk-locked) .clock-drag-handle {
   background: linear-gradient(
     52deg,
     transparent 34%,
-    rgba(244, 114, 182, 0.22) 43%,
+    rgba(244, 114, 182, 0.35) 43%,
     rgba(255, 255, 255, 0.95) 48%,
-    rgba(56, 189, 248, 0.25) 53%,
+    rgba(56, 189, 248, 0.35) 53%,
     transparent 62%
   );
   transform: translate3d(-100%, 100%, 0);
@@ -1157,9 +1157,9 @@ body:not(.kiosk-locked) .clock-drag-handle {
   background: linear-gradient(
     132deg,
     transparent 36%,
-    rgba(167, 139, 250, 0.22) 45%,
+    rgba(167, 139, 250, 0.35) 45%,
     rgba(255, 255, 255, 0.9) 50%,
-    rgba(52, 211, 153, 0.22) 55%,
+    rgba(52, 211, 153, 0.3) 55%,
     transparent 64%
   );
   transform: translate3d(-100%, -100%, 0);
@@ -1169,20 +1169,20 @@ body:not(.kiosk-locked) .clock-drag-handle {
 
 .hero-balance-plate.tier-prismatic .balance-caption-title,
 .hero-balance-plate.tier-prismatic .balance-time-stamp {
-  color: #475569;
+  color: #C084FC;
 }
 
 .hero-balance-plate.tier-prismatic .currency-tag {
-  color: #334155;
+  color: #A855F7;
 }
 
 .hero-balance-plate.tier-prismatic .hero-limit-badge {
-  background: rgba(99, 102, 241, 0.08);
-  color: #4338CA;
+  background: rgba(168, 85, 247, 0.16);
+  color: #E9D5FF;
 }
 
 .hero-balance-plate.tier-prismatic .hero-limit-badge strong {
-  color: #312E81;
+  color: #FFFFFF;
 }
 
 .balance-meta-header {
@@ -1197,7 +1197,7 @@ body:not(.kiosk-locked) .clock-drag-handle {
   font-size: 13px;
   font-weight: var(--font-weight-extrabold);
   letter-spacing: var(--tracking-tight);
-  color: var(--pastel-yellow-text);
+  color: #94A3B8;
   text-transform: uppercase;
 }
 
@@ -1205,7 +1205,7 @@ body:not(.kiosk-locked) .clock-drag-handle {
   font-size: 13px;
   font-weight: var(--font-weight-semibold);
   letter-spacing: var(--tracking-tight);
-  color: var(--pastel-yellow-text);
+  color: #64748B;
   opacity: 0.85;
 }
 
@@ -1223,7 +1223,7 @@ body:not(.kiosk-locked) .clock-drag-handle {
   font-size: clamp(2rem, 3vw, 3rem);
   font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-display);
-  color: var(--text-on-yellow);
+  color: #38BDF8;
   line-height: 1;
 }
 
@@ -1233,7 +1233,7 @@ body:not(.kiosk-locked) .clock-drag-handle {
   font-size: var(--text-hero);
   font-weight: var(--font-weight-extrabold);
   letter-spacing: var(--tracking-hero);
-  color: var(--navy-deep);
+  color: #F8FAFC;
   line-height: 0.95;
   font-variant-numeric: tabular-nums;
   position: relative;
@@ -1252,13 +1252,13 @@ body:not(.kiosk-locked) .clock-drag-handle {
       45deg,
       transparent 0%,
       transparent 41%,
-      rgba(255, 255, 255, 0.65) 46%,
+      rgba(255, 255, 255, 0.75) 46%,
       rgba(255, 255, 255, 1) 50%,
-      rgba(255, 255, 255, 0.65) 54%,
+      rgba(255, 255, 255, 0.75) 54%,
       transparent 59%,
       transparent 100%
     ),
-    linear-gradient(180deg, #091524 0%, #091524 100%);
+    linear-gradient(180deg, #FFFFFF 0%, #F1F5F9 50%, #CBD5E1 100%);
   background-size: 300% 300%, 100% 100%;
   background-position: 100% 0%, 0% 0%;
   background-repeat: no-repeat;
@@ -1273,13 +1273,13 @@ body:not(.kiosk-locked) .clock-drag-handle {
       45deg,
       transparent 0%,
       transparent 40%,
-      rgba(226, 232, 240, 0.7) 45%,
+      rgba(255, 255, 255, 0.8) 45%,
       rgba(255, 255, 255, 1) 50%,
-      rgba(226, 232, 240, 0.7) 55%,
+      rgba(226, 232, 240, 0.8) 55%,
       transparent 60%,
       transparent 100%
     ),
-    linear-gradient(180deg, #0F172A 0%, #1E293B 100%);
+    linear-gradient(180deg, #FFFFFF 0%, #E2E8F0 50%, #94A3B8 100%);
 }
 
 .hero-balance-plate.tier-gold .balance-digits {
@@ -1288,13 +1288,13 @@ body:not(.kiosk-locked) .clock-drag-handle {
       45deg,
       transparent 0%,
       transparent 40%,
-      rgba(254, 240, 138, 0.75) 45%,
-      rgba(255, 255, 255, 1) 50%,
-      rgba(253, 224, 71, 0.75) 55%,
+      rgba(255, 255, 255, 0.85) 45%,
+      rgba(254, 240, 138, 1) 50%,
+      rgba(253, 224, 71, 0.85) 55%,
       transparent 60%,
       transparent 100%
     ),
-    linear-gradient(180deg, #3F2104 0%, #271402 100%);
+    linear-gradient(180deg, #FEF9C3 0%, #FDE047 50%, #EAB308 100%);
 }
 
 .hero-balance-plate.tier-platinum .balance-digits {
@@ -1303,17 +1303,17 @@ body:not(.kiosk-locked) .clock-drag-handle {
       45deg,
       transparent 0%,
       transparent 36%,
-      rgba(56, 189, 248, 0.85) 41%,
+      rgba(186, 230, 253, 0.85) 41%,
       rgba(255, 255, 255, 1) 45%,
       rgba(255, 255, 255, 1) 48%,
-      rgba(196, 181, 253, 0.9) 51%,
+      rgba(56, 189, 248, 0.9) 51%,
       transparent 53.5%,
       rgba(255, 255, 255, 1) 56.5%,
       rgba(125, 211, 252, 0.9) 60%,
       transparent 64%,
       transparent 100%
     ),
-    linear-gradient(180deg, #091524 0%, #0C4A6E 48%, #082F49 52%, #0F172A 100%);
+    linear-gradient(180deg, #FFFFFF 0%, #BAE6FD 48%, #38BDF8 100%);
 }
 
 .hero-balance-plate.tier-diamond .balance-digits {
@@ -1322,7 +1322,7 @@ body:not(.kiosk-locked) .clock-drag-handle {
       45deg,
       transparent 0%,
       transparent 32%,
-      rgba(56, 189, 248, 0.92) 36%,
+      rgba(186, 230, 253, 0.9) 36%,
       rgba(255, 255, 255, 1) 40%,
       rgba(255, 255, 255, 1) 43%,
       rgba(192, 132, 252, 0.95) 46%,
@@ -1330,12 +1330,12 @@ body:not(.kiosk-locked) .clock-drag-handle {
       transparent 51%,
       rgba(255, 255, 255, 1) 53%,
       rgba(255, 255, 255, 1) 56%,
-      rgba(125, 211, 252, 0.95) 59%,
+      rgba(56, 189, 248, 0.95) 59%,
       rgba(255, 255, 255, 1) 62%,
       transparent 66%,
       transparent 100%
     ),
-    linear-gradient(180deg, #06182C 0%, #034870 46%, #022F4C 54%, #081B30 100%);
+    linear-gradient(180deg, #FFFFFF 0%, #BAE6FD 42%, #C084FC 80%, #60A5FA 100%);
 }
 
 .hero-balance-plate.tier-prismatic .balance-digits {
@@ -1344,17 +1344,17 @@ body:not(.kiosk-locked) .clock-drag-handle {
       45deg,
       transparent 0%,
       transparent 30%,
-      rgba(244, 114, 182, 0.42) 35%,
-      rgba(167, 139, 250, 0.45) 39%,
+      rgba(244, 114, 182, 0.6) 35%,
+      rgba(167, 139, 250, 0.65) 39%,
       rgba(255, 255, 255, 1) 43%,
-      rgba(56, 189, 248, 0.45) 47%,
-      rgba(52, 211, 153, 0.42) 51%,
+      rgba(56, 189, 248, 0.65) 47%,
+      rgba(52, 211, 153, 0.6) 51%,
       rgba(255, 255, 255, 1) 54%,
-      rgba(250, 204, 21, 0.42) 58%,
+      rgba(250, 204, 21, 0.6) 58%,
       transparent 64%,
       transparent 100%
     ),
-    linear-gradient(180deg, #0F172A 0%, #1E293B 48%, #0F172A 100%);
+    linear-gradient(180deg, #FFFFFF 0%, #F5D0FE 35%, #DDD6FE 65%, #38BDF8 100%);
 }
 
 .balance-digits.has-shining {
@@ -1435,7 +1435,7 @@ body:not(.kiosk-locked) .clock-drag-handle {
    8. LESS-PENTING: USER & SANTRI DETAILS SECTION
    -------------------------------------------------------------------------- */
 .user-identity-plate {
-  background: var(--navy-tonal-100);
+  background: rgba(255, 255, 255, 0.04);
   border-radius: var(--radius-squircle-md);
   corner-shape: squircle;
   padding: 16px 22px;
@@ -1447,8 +1447,8 @@ body:not(.kiosk-locked) .clock-drag-handle {
 .user-avatar-squircle {
   width: 56px;
   height: 56px;
-  background: var(--navy-primary);
-  color: var(--color-white);
+  background: #141B26;
+  color: #38BDF8;
   border-radius: var(--radius-squircle-sm);
   corner-shape: squircle;
   display: flex;
@@ -1470,14 +1470,14 @@ body:not(.kiosk-locked) .clock-drag-handle {
   font-size: 11px;
   font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-tight);
-  color: var(--navy-muted);
+  color: #64748B;
 }
 
 .user-display-name {
   font-size: var(--text-xl);
   font-weight: var(--font-weight-extrabold);
   letter-spacing: var(--tracking-tighter);
-  color: var(--navy-deep);
+  color: #F8FAFC;
   line-height: 1.2;
 }
 
@@ -1492,11 +1492,11 @@ body:not(.kiosk-locked) .clock-drag-handle {
   font-size: var(--text-base);
   font-weight: var(--font-weight-semibold);
   letter-spacing: var(--tracking-tight);
-  color: var(--navy-surface);
+  color: #94A3B8;
 }
 
 .tag-separator {
-  color: var(--navy-muted);
+  color: #475569;
   font-size: var(--text-sm);
 }
 
@@ -1521,7 +1521,7 @@ body:not(.kiosk-locked) .clock-drag-handle {
 .countdown-track {
   width: 100%;
   height: 8px;
-  background: var(--navy-tonal-100);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 6px;
   overflow: hidden;
 }
@@ -1529,7 +1529,7 @@ body:not(.kiosk-locked) .clock-drag-handle {
 .countdown-fill {
   width: 100%;
   height: 100%;
-  background: var(--navy-primary);
+  background: #38BDF8;
   border-radius: 6px;
   transform-origin: left center;
   transition: transform 100ms linear;
@@ -1539,11 +1539,11 @@ body:not(.kiosk-locked) .clock-drag-handle {
   font-size: var(--text-sm);
   font-weight: var(--font-weight-medium);
   letter-spacing: var(--tracking-tight);
-  color: var(--navy-muted);
+  color: #94A3B8;
 }
 
 .countdown-caption strong {
-  color: var(--navy-deep);
+  color: #F8FAFC;
   font-weight: var(--font-weight-extrabold);
 }
 
@@ -1552,8 +1552,8 @@ body:not(.kiosk-locked) .clock-drag-handle {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: var(--navy-primary);
-  color: var(--color-white);
+  background: #0284C7;
+  color: #FFFFFF;
   padding: 12px 30px;
   border-radius: var(--radius-squircle-full);
   corner-shape: squircle;
@@ -1566,7 +1566,7 @@ body:not(.kiosk-locked) .clock-drag-handle {
 }
 
 .btn-done-squircle:hover {
-  background: var(--navy-surface);
+  background: #0369A1;
   transform: translateY(-1px);
 }
 
@@ -1594,8 +1594,8 @@ body:not(.kiosk-locked) .clock-drag-handle {
   padding: 14px 28px !important;
   border-radius: 9999px !important;
   corner-shape: squircle;
-  background: #10213A !important;
-  color: #FFFFFF !important;
+  background: #0B1120 !important;
+  color: #F8FAFC !important;
   font-size: var(--text-base) !important;
   font-weight: var(--font-weight-semibold) !important;
   letter-spacing: var(--tracking-tight) !important;
@@ -1624,18 +1624,18 @@ body:not(.kiosk-locked) .clock-drag-handle {
 }
 
 .kiosk-toast[data-type="info"] {
-  background: #10213A !important;
-  color: #FFFFFF !important;
+  background: #0B1728 !important;
+  color: #BAE6FD !important;
 }
 
 .kiosk-toast[data-type="error"] {
-  background: #7F1D1D !important;
-  color: #FEF2F2 !important;
+  background: #2E0B0B !important;
+  color: #FECACA !important;
 }
 
 .kiosk-toast[data-type="success"] {
-  background: #15803D !important;
-  color: #F0FDF4 !important;
+  background: #062817 !important;
+  color: #BBF7D0 !important;
 }
 
 .kiosk-toast i {
@@ -1663,13 +1663,13 @@ body:not(.kiosk-locked) .clock-drag-handle {
 }
 
 .dev-squircle-dialog::backdrop {
-  background: rgba(9, 21, 36, 0.55);
+  background: rgba(0, 0, 0, 0.75);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
 
 .dev-dialog-surface {
-  background: var(--color-white);
+  background: #0B0E14;
   border-radius: var(--radius-squircle-lg);
   corner-shape: squircle;
   padding: var(--space-xl);
@@ -1691,7 +1691,7 @@ body:not(.kiosk-locked) .clock-drag-handle {
   font-size: var(--text-lg);
   font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-tight);
-  color: var(--navy-deep);
+  color: #F8FAFC;
 }
 
 .dev-modal-close {
@@ -1699,12 +1699,12 @@ body:not(.kiosk-locked) .clock-drag-handle {
   height: 36px;
   border-radius: var(--radius-squircle-full);
   corner-shape: squircle;
-  background: var(--navy-tonal-100);
+  background: rgba(255, 255, 255, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 20px;
-  color: var(--navy-primary);
+  color: #F1F5F9;
   cursor: pointer;
 }
 
@@ -1724,18 +1724,18 @@ body:not(.kiosk-locked) .clock-drag-handle {
   font-size: var(--text-xs);
   font-weight: var(--font-weight-semibold);
   letter-spacing: var(--tracking-tight);
-  color: var(--navy-muted);
+  color: #94A3B8;
 }
 
 .dev-input {
-  background: var(--navy-tonal-100);
+  background: #121620;
   border-radius: var(--radius-squircle-xs);
   corner-shape: squircle;
   padding: 12px 16px;
   font-size: var(--text-sm);
   font-weight: var(--font-weight-medium);
   letter-spacing: var(--tracking-normal);
-  color: var(--navy-deep);
+  color: #F8FAFC;
 }
 
 .dev-form-grid {
@@ -1767,18 +1767,18 @@ body:not(.kiosk-locked) .clock-drag-handle {
 }
 
 .dev-btn-primary {
-  background: var(--navy-primary);
-  color: var(--color-white);
+  background: #0284C7;
+  color: #FFFFFF;
 }
 
 .dev-btn-secondary {
-  background: var(--navy-tonal-100);
-  color: var(--navy-deep);
+  background: rgba(255, 255, 255, 0.08);
+  color: #F8FAFC;
 }
 
 .dev-btn-accent {
-  background: var(--pastel-yellow);
-  color: var(--pastel-yellow-text);
+  background: rgba(250, 204, 21, 0.16);
+  color: #FDE047;
 }
 
 /* Screen reader only utility */

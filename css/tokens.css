@@ -24,50 +24,50 @@
   --text-clock: clamp(3rem, 4.2vw, 4.2rem);
   --text-hero: clamp(4.5rem, 6.8vw, 6.6rem);
 
-  --color-canvas: #EAF0F7;
-  --color-canvas-subtle: #F4F7FB;
+  --color-canvas: #010101;
+  --color-canvas-subtle: #080A0E;
 
-  --navy-deep: #091524;
-  --navy-primary: #10213A;
-  --navy-surface: #1B3254;
-  --navy-tonal-100: #E1E8F2;
-  --navy-tonal-200: #CAD6E6;
-  --navy-tonal-300: #A2B7D3;
-  --navy-muted: #546B87;
+  --navy-deep: #F8FAFC;
+  --navy-primary: #38BDF8;
+  --navy-surface: #1E293B;
+  --navy-tonal-100: rgba(255, 255, 255, 0.07);
+  --navy-tonal-200: rgba(255, 255, 255, 0.12);
+  --navy-tonal-300: rgba(255, 255, 255, 0.2);
+  --navy-muted: #94A3B8;
 
-  --color-white: #FFFFFF;
-  --color-white-subtle: #F8FAFD;
-  --color-white-pressed: #EDF2F8;
+  --color-white: #0B0E14;
+  --color-white-subtle: #10141E;
+  --color-white-pressed: #171D2A;
 
-  --pastel-yellow: #FEF08A;
-  --pastel-yellow-light: #FEF9C3;
-  --pastel-yellow-deep: #FDE047;
-  --pastel-yellow-text: #713F12;
+  --pastel-yellow: rgba(250, 204, 21, 0.16);
+  --pastel-yellow-light: #1A1608;
+  --pastel-yellow-deep: #FACC15;
+  --pastel-yellow-text: #FDE047;
 
-  --surface-base: var(--color-canvas);
-  --surface-card-outer: var(--navy-tonal-100);
-  --surface-card-inner: var(--color-white);
-  --surface-hero-balance: var(--pastel-yellow-light);
-  --surface-hero-balance-silver: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 45%, #CBD5E1 100%);
-  --surface-hero-balance-gold: linear-gradient(135deg, #FEF9C3 0%, #FDE047 35%, #FACC15 70%, #EAB308 100%);
-  --surface-hero-balance-platinum: linear-gradient(135deg, #F0FDFA 0%, #E0F2FE 30%, #F5F3FF 70%, #CFFAFE 100%);
-  --surface-hero-balance-diamond: linear-gradient(135deg, #E0F2FE 0%, #FFFFFF 16%, #BAE6FD 36%, #FFFFFF 52%, #DDD6FE 72%, #7DD3FC 90%, #F0F9FF 100%);
-  --surface-hero-balance-prismatic: linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 20%, #F5F3FF 40%, #FDF2F8 60%, #FEF9C3 80%, #F0FDF4 100%);
-  --surface-chip-neutral: var(--navy-tonal-100);
-  --surface-chip-active: var(--navy-primary);
-  --surface-chip-success: #DCFCE7;
+  --surface-base: #010101;
+  --surface-card-outer: #0D121B;
+  --surface-card-inner: #06080D;
+  --surface-hero-balance: linear-gradient(135deg, #101622 0%, #161F30 50%, #0D121B 100%);
+  --surface-hero-balance-silver: linear-gradient(135deg, #131720 0%, #202634 45%, #161B24 100%);
+  --surface-hero-balance-gold: linear-gradient(135deg, #1D1808 0%, #2B230C 40%, #362D0F 70%, #181406 100%);
+  --surface-hero-balance-platinum: linear-gradient(135deg, #0A1626 0%, #112239 35%, #182F4E 70%, #0C1A2B 100%);
+  --surface-hero-balance-diamond: linear-gradient(135deg, #081223 0%, #0F1F39 25%, #172D4F 50%, #102038 75%, #07101E 100%);
+  --surface-hero-balance-prismatic: linear-gradient(135deg, #100C1F 0%, #191431 25%, #231B43 50%, #161734 75%, #0B1022 100%);
+  --surface-chip-neutral: rgba(255, 255, 255, 0.07);
+  --surface-chip-active: #0284C7;
+  --surface-chip-success: rgba(34, 197, 94, 0.16);
 
-  --text-primary: var(--navy-deep);
-  --text-secondary: var(--navy-muted);
-  --text-on-navy: var(--color-white);
-  --text-on-yellow: #3F2104;
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --text-on-navy: #FFFFFF;
+  --text-on-yellow: #FEF08A;
 
-  --status-success: #15803D;
-  --status-success-bg: #DCFCE7;
-  --status-error: #7F1D1D;
-  --status-error-bg: #FEF2F2;
-  --status-info: #10213A;
-  --status-info-bg: #E1E8F2;
+  --status-success: #4ADE80;
+  --status-success-bg: rgba(34, 197, 94, 0.16);
+  --status-error: #F87171;
+  --status-error-bg: rgba(239, 68, 68, 0.16);
+  --status-info: #38BDF8;
+  --status-info-bg: rgba(56, 189, 248, 0.16);
   --text-success: var(--status-success);
 
   --border-default: 0px solid transparent;

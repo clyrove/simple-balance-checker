@@ -127,18 +127,18 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const diamondShardColors = [
-    'rgba(255, 255, 255, 0.28)', 'rgba(224, 242, 254, 0.16)', 'rgba(186, 230, 253, 0.14)',
-    'rgba(255, 255, 255, 0.35)', 'rgba(147, 197, 253, 0.12)', 'rgba(240, 249, 255, 0.18)',
-    'rgba(199, 210, 254, 0.14)', 'rgba(255, 255, 255, 0.22)', 'rgba(125, 211, 252, 0.15)',
-    'rgba(56, 189, 248, 0.10)'
+    'rgba(186, 230, 253, 0.16)', 'rgba(56, 189, 248, 0.10)', 'rgba(224, 242, 254, 0.12)',
+    'rgba(255, 255, 255, 0.22)', 'rgba(147, 197, 253, 0.08)', 'rgba(199, 210, 254, 0.10)',
+    'rgba(125, 211, 252, 0.12)', 'rgba(255, 255, 255, 0.18)', 'rgba(56, 189, 248, 0.08)',
+    'rgba(186, 230, 253, 0.14)'
   ];
   buildTriangularMosaic('kiosk-diamond-mosaic', 'diamond-shard', 'diamond-vertex-star', diamondShardColors, 6, 1.5);
 
   const prismaticShardColors = [
-    'rgba(255, 255, 255, 0.28)', 'rgba(224, 242, 254, 0.16)', 'rgba(245, 243, 255, 0.16)',
-    'rgba(253, 242, 248, 0.15)', 'rgba(240, 253, 244, 0.14)', 'rgba(254, 249, 195, 0.15)',
-    'rgba(255, 255, 255, 0.35)', 'rgba(238, 242, 255, 0.16)', 'rgba(254, 242, 242, 0.14)',
-    'rgba(224, 231, 255, 0.15)'
+    'rgba(244, 114, 182, 0.14)', 'rgba(167, 139, 250, 0.14)', 'rgba(56, 189, 248, 0.14)',
+    'rgba(52, 211, 153, 0.12)', 'rgba(250, 204, 21, 0.12)', 'rgba(244, 114, 182, 0.10)',
+    'rgba(255, 255, 255, 0.22)', 'rgba(129, 140, 248, 0.12)', 'rgba(56, 189, 248, 0.10)',
+    'rgba(238, 242, 255, 0.12)'
   ];
   buildTriangularMosaic('kiosk-prismatic-mosaic', 'prismatic-shard', 'prismatic-vertex-star', prismaticShardColors, 6, 1.5);
 
@@ -391,6 +391,8 @@ document.addEventListener('DOMContentLoaded', () => {
       heroBalancePlate.classList.add(`tier-${tier}`);
     }
 
+    document.body.classList.toggle('tier-silver', tier === 'silver');
+    document.body.classList.toggle('tier-gold', tier === 'gold');
     document.body.classList.toggle('tier-platinum', tier === 'platinum');
     document.body.classList.toggle('tier-diamond', tier === 'diamond');
     document.body.classList.toggle('tier-prismatic', tier === 'prismatic');
@@ -406,7 +408,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function resetBalanceTier() {
     clearConfetti();
-    document.body.classList.remove('tier-platinum', 'tier-diamond', 'tier-prismatic');
+    document.body.classList.remove('tier-silver', 'tier-gold', 'tier-platinum', 'tier-diamond', 'tier-prismatic');
     if (heroBalancePlate) {
       heroBalancePlate.classList.remove('tier-prismatic', 'tier-diamond', 'tier-platinum', 'tier-gold', 'tier-silver');
       heroBalancePlate.classList.add('tier-standard');
@@ -754,7 +756,7 @@ document.addEventListener('DOMContentLoaded', () => {
       stateTransitionTl = null;
     }
     isTransitioning = true;
-    document.body.classList.remove('tier-platinum', 'tier-diamond', 'tier-prismatic');
+    document.body.classList.remove('tier-silver', 'tier-gold', 'tier-platinum', 'tier-diamond', 'tier-prismatic');
 
     if (!hasGsap) {
       activeView.classList.remove('active');

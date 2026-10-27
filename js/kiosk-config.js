@@ -144,10 +144,10 @@
         confettiColors: ['#38BDF8', '#7DD3FC', '#BAE6FD', '#C084FC', '#E0E7FF', '#FFFFFF', '#CBD5E1', '#93C5FD']
       },
       diamond: {
-        confettiColors: ['#FFFFFF', '#F0F9FF', '#E0F2FE', '#BAE6FD', '#7DD3FC', '#38BDF8', '#C084FC', '#E0E7FF', '#CBD5E1']
+        confettiColors: ['#FFFFFF', '#E0F2FE', '#BAE6FD', '#7DD3FC', '#38BDF8', '#C084FC', '#A78BFA']
       },
       prismatic: {
-        confettiColors: ['#FFFFFF', '#F8FAFC', '#E0F2FE', '#F5F3FF', '#FDF2F8', '#FEF9C3', '#DCFCE7', '#BAE6FD', '#DDD6FE', '#FBCFE8']
+        confettiColors: ['#FFFFFF', '#F43F5E', '#EC4899', '#C084FC', '#818CF8', '#38BDF8', '#34D399', '#FDE047']
       }
     },
     api: {
