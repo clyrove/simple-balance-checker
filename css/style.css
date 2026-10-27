@@ -45,15 +45,94 @@ h1, h2, h3, h4, p, span, button, input, label, div {
   background-color: var(--surface-base);
   overflow: hidden;
   position: relative;
-  transition: background var(--duration-normal) var(--ease-smooth);
 }
 
-body.tier-diamond {
-  background: radial-gradient(ellipse 120% 90% at 50% -10%, #E0F2FE 0%, #EFF6FF 35%, #E2E8F0 70%, #CBD5E1 100%);
+.kiosk-diamond-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  overflow: hidden;
+  transition: opacity 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+  background:
+    radial-gradient(ellipse 95% 65% at 50% -5%, rgba(255, 255, 255, 0.96) 0%, rgba(186, 230, 253, 0.58) 38%, transparent 72%),
+    radial-gradient(ellipse 75% 55% at 12% 88%, rgba(224, 231, 255, 0.82) 0%, transparent 62%),
+    radial-gradient(ellipse 75% 55% at 88% 88%, rgba(165, 243, 252, 0.78) 0%, transparent 62%),
+    linear-gradient(145deg, #94A3B8 0%, #CBD5E1 22%, #E2E8F0 45%, #F8FAFC 65%, #BAE6FD 85%, #CBD5E1 100%);
+}
+
+body.tier-diamond .kiosk-diamond-backdrop {
+  opacity: 1;
+}
+
+.diamond-light-rays {
+  position: absolute;
+  inset: -45%;
+  background:
+    conic-gradient(
+      from 195deg at 50% 15%,
+      transparent 0deg,
+      rgba(255, 255, 255, 0.72) 7deg,
+      transparent 16deg,
+      rgba(255, 255, 255, 0.45) 28deg,
+      transparent 38deg,
+      rgba(186, 230, 253, 0.65) 52deg,
+      transparent 66deg,
+      rgba(255, 255, 255, 0.78) 82deg,
+      transparent 96deg,
+      rgba(224, 231, 255, 0.55) 114deg,
+      transparent 130deg,
+      rgba(255, 255, 255, 0.72) 148deg,
+      transparent 166deg,
+      rgba(186, 230, 253, 0.55) 202deg,
+      transparent 232deg,
+      rgba(255, 255, 255, 0.68) 268deg,
+      transparent 302deg,
+      rgba(255, 255, 255, 0.62) 334deg,
+      transparent 360deg
+    );
+  filter: blur(8px);
+  opacity: 0.9;
+  animation: diamond-rays-sway 7s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes diamond-rays-sway {
+  0% {
+    transform: rotate(-4deg) scale(1);
+  }
+  100% {
+    transform: rotate(4deg) scale(1.05);
+  }
+}
+
+.diamond-crystal-lattice {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(122deg, rgba(255, 255, 255, 0.52) 0%, rgba(255, 255, 255, 0.1) 24%, transparent 24.15%),
+    linear-gradient(238deg, rgba(255, 255, 255, 0.48) 0%, rgba(186, 230, 253, 0.14) 28%, transparent 28.15%),
+    linear-gradient(58deg, rgba(255, 255, 255, 0.38) 0%, transparent 20%, rgba(255, 255, 255, 0.3) 20.15%, transparent 42%),
+    linear-gradient(152deg, transparent 52%, rgba(255, 255, 255, 0.42) 52.15%, rgba(224, 242, 254, 0.12) 76%, transparent 76.15%),
+    repeating-linear-gradient(60deg, rgba(255, 255, 255, 0.22) 0px, rgba(255, 255, 255, 0.22) 1px, transparent 1px, transparent 110px),
+    repeating-linear-gradient(-60deg, rgba(255, 255, 255, 0.22) 0px, rgba(255, 255, 255, 0.22) 1px, transparent 1px, transparent 110px);
+}
+
+.diamond-shimmer-veil {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 25% 30%, rgba(255, 255, 255, 0.7) 0%, transparent 18%),
+    radial-gradient(circle at 78% 26%, rgba(255, 255, 255, 0.65) 0%, transparent 16%),
+    radial-gradient(circle at 82% 74%, rgba(186, 230, 253, 0.6) 0%, transparent 20%),
+    radial-gradient(circle at 18% 76%, rgba(224, 231, 255, 0.6) 0%, transparent 20%);
 }
 
 body.tier-diamond .kiosk-card-frame {
-  background: linear-gradient(135deg, #BAE6FD 0%, #E0E7FF 50%, #C7D2FE 100%);
+  background:
+    linear-gradient(125deg, rgba(255, 255, 255, 0.75) 0%, transparent 32%),
+    linear-gradient(135deg, #BAE6FD 0%, #E2E8F0 35%, #FFFFFF 50%, #C7D2FE 75%, #7DD3FC 100%);
 }
 
 /* Kiosk Security Lock: Sembunyikan Kursor Mouse saat Kios Terkunci */
@@ -455,7 +534,8 @@ body.kiosk-locked * {
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
-  transition: background var(--duration-normal) var(--ease-smooth);
+  position: relative;
+  overflow: hidden;
 }
 
 .hero-balance-plate.tier-silver {
@@ -469,10 +549,6 @@ body.kiosk-locked * {
 
 .hero-balance-plate.tier-silver .currency-tag {
   color: #334155;
-}
-
-.hero-balance-plate.tier-silver .balance-digits {
-  color: #0F172A;
 }
 
 .hero-balance-plate.tier-silver .hero-limit-badge {
@@ -497,10 +573,6 @@ body.kiosk-locked * {
   color: #713F12;
 }
 
-.hero-balance-plate.tier-gold .balance-digits {
-  color: #3F2104;
-}
-
 .hero-balance-plate.tier-gold .hero-limit-badge {
   background: rgba(113, 63, 18, 0.12);
   color: #3F2104;
@@ -511,10 +583,43 @@ body.kiosk-locked * {
 }
 
 .hero-balance-plate.tier-diamond {
-  background: var(--surface-hero-balance-diamond);
-  animation: diamond-card-pulse 2.2s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+  background:
+    linear-gradient(118deg, rgba(255, 255, 255, 0.84) 0%, rgba(255, 255, 255, 0.22) 26%, transparent 26.2%),
+    linear-gradient(242deg, rgba(255, 255, 255, 0.74) 0%, rgba(186, 230, 253, 0.32) 32%, transparent 32.2%),
+    linear-gradient(148deg, transparent 38%, rgba(255, 255, 255, 0.6) 38.2%, rgba(224, 242, 254, 0.18) 64%, transparent 64.2%),
+    linear-gradient(32deg, rgba(224, 231, 255, 0.65) 0%, rgba(255, 255, 255, 0.4) 24%, transparent 24.2%),
+    linear-gradient(205deg, rgba(255, 255, 255, 0.88) 0%, rgba(186, 230, 253, 0.3) 18%, transparent 18.2%),
+    linear-gradient(135deg, #CBD5E1 0%, #F1F5F9 18%, #E0F2FE 40%, #FFFFFF 55%, #DBEAFE 75%, #E0E7FF 90%, #CBD5E1 100%);
+  animation: diamond-card-pulse 2.2s cubic-bezier(0.37, 0, 0.63, 1) infinite;
   transform-origin: center center;
   will-change: transform;
+}
+
+.hero-balance-plate.tier-diamond::before {
+  content: '';
+  position: absolute;
+  inset: -60%;
+  pointer-events: none;
+  background: linear-gradient(
+    55deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.45) 47%,
+    rgba(255, 255, 255, 0.85) 50%,
+    rgba(186, 230, 253, 0.45) 53%,
+    transparent 60%
+  );
+  transform: translate3d(-100%, 100%, 0);
+  animation: diamond-plate-sheen 2.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  z-index: 0;
+}
+
+@keyframes diamond-plate-sheen {
+  0% {
+    transform: translate3d(-90%, 90%, 0);
+  }
+  100% {
+    transform: translate3d(90%, -90%, 0);
+  }
 }
 
 @keyframes diamond-card-pulse {
@@ -522,7 +627,7 @@ body.kiosk-locked * {
     transform: scale(1);
   }
   50% {
-    transform: scale(1.026);
+    transform: scale(1.022);
   }
 }
 
@@ -535,12 +640,8 @@ body.kiosk-locked * {
   color: #0284C7;
 }
 
-.hero-balance-plate.tier-diamond .balance-digits {
-  color: #0F172A;
-}
-
 .hero-balance-plate.tier-diamond .hero-limit-badge {
-  background: rgba(12, 74, 110, 0.1);
+  background: rgba(12, 74, 110, 0.11);
   color: #0C4A6E;
 }
 
@@ -552,6 +653,8 @@ body.kiosk-locked * {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative;
+  z-index: 1;
 }
 
 .balance-caption-title {
@@ -576,6 +679,8 @@ body.kiosk-locked * {
   align-items: baseline;
   gap: 10px;
   margin: 2px 0 6px 0;
+  position: relative;
+  z-index: 1;
 }
 
 .currency-tag {
@@ -600,71 +705,95 @@ body.kiosk-locked * {
 }
 
 .balance-digits {
-  display: inline-flex;
-  align-items: baseline;
+  display: inline-block;
   letter-spacing: var(--tracking-hero);
-}
-
-.balance-digits-shine {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: inline-flex;
-  align-items: baseline;
-  letter-spacing: var(--tracking-hero);
-  pointer-events: none;
-  user-select: none;
+  padding: 0.04em 0.02em;
+  margin: -0.04em -0.02em;
   color: transparent;
   -webkit-text-fill-color: transparent;
-  background: linear-gradient(
-    45deg,
-    transparent 15%,
-    transparent 42%,
-    rgba(255, 255, 255, 0.95) 50%,
-    transparent 58%,
-    transparent 85%
-  );
-  background-size: 320% 320%;
-  background-position: 0% 100%;
+  background-image:
+    linear-gradient(
+      45deg,
+      transparent 0%,
+      transparent 41%,
+      rgba(255, 255, 255, 0.65) 46%,
+      rgba(255, 255, 255, 1) 50%,
+      rgba(255, 255, 255, 0.65) 54%,
+      transparent 59%,
+      transparent 100%
+    ),
+    linear-gradient(180deg, #091524 0%, #091524 100%);
+  background-size: 300% 300%, 100% 100%;
+  background-position: 100% 0%, 0% 0%;
+  background-repeat: no-repeat;
   -webkit-background-clip: text;
   background-clip: text;
-  opacity: 0;
-  z-index: 2;
+  will-change: transform, background-position;
 }
 
-.balance-digits-shine.has-shining {
-  animation: shine-sweep-text 1.25s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+.hero-balance-plate.tier-silver .balance-digits {
+  background-image:
+    linear-gradient(
+      45deg,
+      transparent 0%,
+      transparent 40%,
+      rgba(226, 232, 240, 0.7) 45%,
+      rgba(255, 255, 255, 1) 50%,
+      rgba(226, 232, 240, 0.7) 55%,
+      transparent 60%,
+      transparent 100%
+    ),
+    linear-gradient(180deg, #0F172A 0%, #1E293B 100%);
 }
 
-.hero-balance-plate.tier-diamond .balance-digits-shine {
-  background: linear-gradient(
-    45deg,
-    transparent 12%,
-    rgba(56, 189, 248, 0.55) 34%,
-    rgba(255, 255, 255, 1) 48%,
-    rgba(255, 255, 255, 1) 52%,
-    rgba(192, 132, 252, 0.8) 66%,
-    transparent 88%
-  );
-  background-size: 340% 340%;
+.hero-balance-plate.tier-gold .balance-digits {
+  background-image:
+    linear-gradient(
+      45deg,
+      transparent 0%,
+      transparent 40%,
+      rgba(254, 240, 138, 0.75) 45%,
+      rgba(255, 255, 255, 1) 50%,
+      rgba(253, 224, 71, 0.75) 55%,
+      transparent 60%,
+      transparent 100%
+    ),
+    linear-gradient(180deg, #3F2104 0%, #271402 100%);
+}
+
+.hero-balance-plate.tier-diamond .balance-digits {
+  background-image:
+    linear-gradient(
+      45deg,
+      transparent 0%,
+      transparent 36%,
+      rgba(56, 189, 248, 0.85) 41%,
+      rgba(255, 255, 255, 1) 45%,
+      rgba(255, 255, 255, 1) 48%,
+      rgba(196, 181, 253, 0.9) 51%,
+      transparent 53.5%,
+      rgba(255, 255, 255, 1) 56.5%,
+      rgba(125, 211, 252, 0.9) 60%,
+      transparent 64%,
+      transparent 100%
+    ),
+    linear-gradient(180deg, #091524 0%, #0C4A6E 48%, #082F49 52%, #0F172A 100%);
+}
+
+.balance-digits.has-shining {
+  animation: shine-sweep-text 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.hero-balance-plate.tier-diamond .balance-digits.has-shining {
+  animation: shine-sweep-text 1.65s cubic-bezier(0.22, 1, 0.36, 1) infinite;
 }
 
 @keyframes shine-sweep-text {
   0% {
-    background-position: 0% 100%;
-    opacity: 0;
-  }
-  15% {
-    opacity: 1;
-  }
-  85% {
-    opacity: 1;
+    background-position: 100% 0%, 0% 0%;
   }
   100% {
-    background-position: 100% 0%;
-    opacity: 0;
+    background-position: 0% 100%, 0% 0%;
   }
 }
 
@@ -681,6 +810,8 @@ body.kiosk-locked * {
   flex-wrap: wrap;
   gap: 10px;
   padding-top: 2px;
+  position: relative;
+  z-index: 1;
 }
 
 .hero-limit-badge {

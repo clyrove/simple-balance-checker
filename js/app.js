@@ -10,8 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const rfidSensorArea = document.getElementById('kiosk-rfid-sensor-area');
   const btnDone = document.getElementById('kiosk-btn-done');
   const heroBalancePlate = document.querySelector('.hero-balance-plate');
-  const balanceDigitsHolder = document.getElementById('kiosk-balance-display-wrapper');
-  const balanceDigitsShine = document.getElementById('kiosk-balance-shine');
   const confettiCanvas = document.getElementById('kiosk-confetti-canvas');
 
   const balanceAmountEl = document.getElementById('kiosk-balance-amount');
@@ -45,6 +43,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let countdownTimer = null;
   let countdownTween = null;
   let isTransitioning = false;
+  let stateTransitionTl = null;
+  const counterState = { val: 0 };
 
   let confettiRafId = null;
   let confettiParticles = [];
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
     confettiCanvas.height = height * dpr;
     confettiCanvas.style.width = width + 'px';
     confettiCanvas.style.height = height + 'px';
-    ctx.scale(dpr, dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     const tierConfig = (CONFIG.tiers && CONFIG.tiers[tier]) || {};
     const palette = tierConfig.confettiColors || [
@@ -86,58 +86,61 @@ document.addEventListener('DOMContentLoaded', () => {
     confettiParticles = [];
 
     if (tier === 'diamond') {
-      const countPerCannon = 28;
+      const countPerCannon = 30;
       for (let i = 0; i < countPerCannon; i++) {
         confettiParticles.push({
-          x: width * 0.08 + Math.random() * (width * 0.10),
+          x: width * 0.06 + Math.random() * (width * 0.12),
           y: height + 10,
-          vx: 3.5 + Math.random() * 5.5,
-          vy: -(13 + Math.random() * 6),
-          gravity: 0.32,
-          drag: 0.985,
+          vx: 3.8 + Math.random() * 6.2,
+          vy: -(13.5 + Math.random() * 6.5),
+          gravity: 0.34,
+          drag: 0.986,
           wobble: Math.random() * Math.PI * 2,
           wobbleSpeed: 0.08 + Math.random() * 0.08,
-          width: 8 + Math.random() * 6,
-          height: 6 + Math.random() * 6,
+          width: 9 + Math.random() * 7,
+          height: 9 + Math.random() * 7,
           rotation: Math.random() * Math.PI * 2,
-          rotationSpeed: (Math.random() - 0.5) * 0.15,
+          rotationSpeed: (Math.random() - 0.5) * 0.14,
           opacity: 1,
+          shape: i % 4 === 0 ? 'sparkle' : 'crystal',
           color: palette[Math.floor(Math.random() * palette.length)]
         });
       }
       for (let i = 0; i < countPerCannon; i++) {
         confettiParticles.push({
-          x: width * 0.45 + Math.random() * (width * 0.10),
+          x: width * 0.44 + Math.random() * (width * 0.12),
           y: height + 10,
-          vx: (Math.random() - 0.5) * 6,
-          vy: -(14 + Math.random() * 7),
-          gravity: 0.32,
-          drag: 0.985,
+          vx: (Math.random() - 0.5) * 6.5,
+          vy: -(14.5 + Math.random() * 7),
+          gravity: 0.34,
+          drag: 0.986,
           wobble: Math.random() * Math.PI * 2,
           wobbleSpeed: 0.08 + Math.random() * 0.08,
-          width: 8 + Math.random() * 6,
-          height: 6 + Math.random() * 6,
+          width: 9 + Math.random() * 7,
+          height: 9 + Math.random() * 7,
           rotation: Math.random() * Math.PI * 2,
-          rotationSpeed: (Math.random() - 0.5) * 0.15,
+          rotationSpeed: (Math.random() - 0.5) * 0.14,
           opacity: 1,
+          shape: i % 4 === 0 ? 'sparkle' : 'crystal',
           color: palette[Math.floor(Math.random() * palette.length)]
         });
       }
       for (let i = 0; i < countPerCannon; i++) {
         confettiParticles.push({
-          x: width * 0.82 + Math.random() * (width * 0.10),
+          x: width * 0.82 + Math.random() * (width * 0.12),
           y: height + 10,
-          vx: -(3.5 + Math.random() * 5.5),
-          vy: -(13 + Math.random() * 6),
-          gravity: 0.32,
-          drag: 0.985,
+          vx: -(3.8 + Math.random() * 6.2),
+          vy: -(13.5 + Math.random() * 6.5),
+          gravity: 0.34,
+          drag: 0.986,
           wobble: Math.random() * Math.PI * 2,
           wobbleSpeed: 0.08 + Math.random() * 0.08,
-          width: 8 + Math.random() * 6,
-          height: 6 + Math.random() * 6,
+          width: 9 + Math.random() * 7,
+          height: 9 + Math.random() * 7,
           rotation: Math.random() * Math.PI * 2,
-          rotationSpeed: (Math.random() - 0.5) * 0.15,
+          rotationSpeed: (Math.random() - 0.5) * 0.14,
           opacity: 1,
+          shape: i % 4 === 0 ? 'sparkle' : 'crystal',
           color: palette[Math.floor(Math.random() * palette.length)]
         });
       }
@@ -148,8 +151,8 @@ document.addEventListener('DOMContentLoaded', () => {
           x: width * 0.15 + Math.random() * (width * 0.7),
           y: height + 10,
           vx: (Math.random() - 0.5) * 6,
-          vy: -(9 + Math.random() * 7),
-          gravity: 0.32,
+          vy: -(9.5 + Math.random() * 7),
+          gravity: 0.34,
           drag: 0.985,
           wobble: Math.random() * Math.PI * 2,
           wobbleSpeed: 0.08 + Math.random() * 0.08,
@@ -158,6 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
           rotation: Math.random() * Math.PI * 2,
           rotationSpeed: (Math.random() - 0.5) * 0.15,
           opacity: 1,
+          shape: 'ribbon',
           color: palette[Math.floor(Math.random() * palette.length)]
         });
       }
@@ -177,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
         p.rotation += p.rotationSpeed;
 
         if (p.vy > 0) {
-          p.opacity -= 0.015;
+          p.opacity -= 0.016;
         }
 
         if (p.opacity > 0 && p.y < height + 40) {
@@ -185,10 +189,50 @@ document.addEventListener('DOMContentLoaded', () => {
           ctx.save();
           ctx.translate(p.x, p.y);
           ctx.rotate(p.rotation);
-          ctx.scale(Math.cos(p.wobble), 1);
-          ctx.fillStyle = p.color;
           ctx.globalAlpha = Math.max(0, p.opacity);
-          ctx.fillRect(-p.width / 2, -p.height / 2, p.width, p.height);
+
+          if (p.shape === 'crystal') {
+            ctx.scale(Math.cos(p.wobble) * 0.85 + 0.15, 1);
+            const hw = p.width * 0.75;
+            const hh = p.height * 1.15;
+            ctx.beginPath();
+            ctx.moveTo(0, -hh);
+            ctx.lineTo(hw, 0);
+            ctx.lineTo(0, hh);
+            ctx.lineTo(-hw, 0);
+            ctx.closePath();
+            ctx.fillStyle = p.color;
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.moveTo(0, -hh);
+            ctx.lineTo(hw, 0);
+            ctx.lineTo(0, hh * 0.15);
+            ctx.lineTo(-hw * 0.35, 0);
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.82)';
+            ctx.fill();
+          } else if (p.shape === 'sparkle') {
+            const pulse = 0.75 + Math.abs(Math.cos(p.wobble)) * 0.45;
+            ctx.scale(pulse, pulse);
+            const r = p.width * 0.95;
+            const ir = r * 0.22;
+            ctx.beginPath();
+            for (let s = 0; s < 4; s++) {
+              const ang = (s * Math.PI) / 2;
+              const nextAng = ang + Math.PI / 4;
+              ctx.lineTo(Math.cos(ang) * r, Math.sin(ang) * r);
+              ctx.lineTo(Math.cos(nextAng) * ir, Math.sin(nextAng) * ir);
+            }
+            ctx.closePath();
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fill();
+          } else {
+            ctx.scale(Math.cos(p.wobble), 1);
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.width / 2, -p.height / 2, p.width, p.height);
+          }
+
           ctx.restore();
         }
       }
@@ -203,12 +247,11 @@ document.addEventListener('DOMContentLoaded', () => {
     confettiRafId = requestAnimationFrame(renderConfetti);
   }
 
-  function triggerShiningSweep(amountText) {
-    if (!balanceDigitsShine) return;
-    if (amountText) balanceDigitsShine.textContent = amountText;
-    balanceDigitsShine.classList.remove('has-shining');
-    void balanceDigitsShine.offsetWidth;
-    balanceDigitsShine.classList.add('has-shining');
+  function triggerShiningSweep() {
+    if (!balanceAmountEl) return;
+    balanceAmountEl.classList.remove('has-shining');
+    void balanceAmountEl.offsetWidth;
+    balanceAmountEl.classList.add('has-shining');
   }
 
   function applyBalanceTier(amount) {
@@ -236,8 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.classList.remove('tier-diamond');
     }
 
-    const formatted = window.SantriKioskAPI.formatRupiah(amount);
-    triggerShiningSweep(formatted);
+    triggerShiningSweep();
 
     if (tier === 'diamond' || tier === 'gold' || tier === 'silver') {
       triggerConfetti(tier);
@@ -253,8 +295,8 @@ document.addEventListener('DOMContentLoaded', () => {
       heroBalancePlate.classList.remove('tier-diamond', 'tier-silver', 'tier-gold');
       heroBalancePlate.classList.add('tier-standard');
     }
-    if (balanceDigitsShine) {
-      balanceDigitsShine.classList.remove('has-shining');
+    if (balanceAmountEl) {
+      balanceAmountEl.classList.remove('has-shining');
     }
   }
 
@@ -275,61 +317,41 @@ document.addEventListener('DOMContentLoaded', () => {
   updateKioskClock();
   setInterval(updateKioskClock, 1000);
 
-  function splitTextToChars(element, text) {
-    if (!element) return [];
-    element.innerHTML = '';
-    const chars = text.split('');
-    const charElements = [];
-
-    chars.forEach((char) => {
-      const span = document.createElement('span');
-      span.className = 'split-char';
-      span.textContent = char;
-      if (char === ' ') span.style.width = '0.3em';
-      element.appendChild(span);
-      charElements.push(span);
-    });
-
-    return charElements;
-  }
-
   function animateBalanceNumber(targetAmount) {
     if (!balanceAmountEl) return;
     const finalFormatted = window.SantriKioskAPI.formatRupiah(targetAmount);
 
     if (!hasGsap) {
       balanceAmountEl.textContent = finalFormatted;
-      if (balanceDigitsShine) balanceDigitsShine.textContent = finalFormatted;
-      triggerShiningSweep(finalFormatted);
+      triggerShiningSweep();
       return;
     }
 
-    const counterState = { val: 0 };
     const counterSpeed = (CONFIG.animation && CONFIG.animation.counterSpeed) || 0.4;
     const counterEasing = (CONFIG.animation && CONFIG.animation.counterEasing) || 'power2.out';
     const bounceSpeed = (CONFIG.animation && CONFIG.animation.splitBounceSpeed) || 0.35;
     const bounceEasing = (CONFIG.animation && CONFIG.animation.splitBounceEasing) || 'back.out(2)';
 
     gsap.killTweensOf(counterState);
+    gsap.killTweensOf(balanceAmountEl);
+    counterState.val = 0;
+
+    gsap.fromTo(
+      balanceAmountEl,
+      { y: 10, scale: 0.95 },
+      { y: 0, scale: 1, duration: counterSpeed + bounceSpeed * 0.5, ease: bounceEasing }
+    );
 
     gsap.to(counterState, {
       val: targetAmount,
       duration: counterSpeed,
       ease: counterEasing,
       onUpdate: () => {
-        const currentVal = window.SantriKioskAPI.formatRupiah(counterState.val);
-        balanceAmountEl.textContent = currentVal;
-        if (balanceDigitsShine) balanceDigitsShine.textContent = currentVal;
+        balanceAmountEl.textContent = window.SantriKioskAPI.formatRupiah(counterState.val);
       },
       onComplete: () => {
-        const splitChars = splitTextToChars(balanceAmountEl, finalFormatted);
-        if (balanceDigitsShine) balanceDigitsShine.textContent = finalFormatted;
-        gsap.fromTo(
-          splitChars,
-          { y: 14, opacity: 0.35, scale: 0.94 },
-          { y: 0, opacity: 1, scale: 1, duration: bounceSpeed, stagger: 0.018, ease: bounceEasing }
-        );
-        triggerShiningSweep(finalFormatted);
+        balanceAmountEl.textContent = finalFormatted;
+        triggerShiningSweep();
       }
     });
   }
@@ -339,6 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
     userNameEl.textContent = nameText;
     if (!hasGsap) return;
 
+    gsap.killTweensOf(userNameEl);
     gsap.fromTo(
       userNameEl,
       { y: 8, opacity: 0 },
@@ -393,13 +416,23 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function switchToActiveState(targetBalance, santriData) {
-    if (isTransitioning) return;
+    stopPrivacyCountdown();
+    if (stateTransitionTl) {
+      stateTransitionTl.kill();
+      stateTransitionTl = null;
+    }
     isTransitioning = true;
     applyBalanceTier(targetBalance);
 
-    if (!hasGsap) {
+    const alreadyActive = stateContainer.classList.contains('state-active') && activeView.classList.contains('active');
+
+    if (!hasGsap || alreadyActive) {
       waitingView.classList.remove('active');
       waitingView.setAttribute('aria-hidden', 'true');
+      if (hasGsap) {
+        gsap.set(waitingView, { opacity: 0 });
+        gsap.set(activeView, { opacity: 1 });
+      }
       activeView.classList.add('active');
       activeView.setAttribute('aria-hidden', 'false');
       stateContainer.classList.remove('state-waiting');
@@ -415,29 +448,33 @@ document.addEventListener('DOMContentLoaded', () => {
     activeView.setAttribute('aria-hidden', 'false');
 
     const fadeSpeed = (CONFIG.animation && CONFIG.animation.stateCrossFadeSpeed) || 0.18;
-    const tl = gsap.timeline({
+    stateTransitionTl = gsap.timeline({
       onComplete: () => {
         waitingView.classList.remove('active');
         waitingView.setAttribute('aria-hidden', 'true');
         stateContainer.classList.remove('state-waiting');
         stateContainer.classList.add('state-active');
         isTransitioning = false;
+        stateTransitionTl = null;
         startPrivacyCountdown();
       }
     });
 
-    tl.to(waitingView, { opacity: 0, duration: fadeSpeed, ease: 'power1.in' });
-    tl.fromTo(activeView, { opacity: 0 }, { opacity: 1, duration: fadeSpeed * 1.2, ease: 'power2.out' }, '-=0.06');
+    stateTransitionTl.to(waitingView, { opacity: 0, duration: fadeSpeed, ease: 'power1.in' });
+    stateTransitionTl.fromTo(activeView, { opacity: 0 }, { opacity: 1, duration: fadeSpeed * 1.2, ease: 'power2.out' }, '-=0.06');
 
     animateBalanceNumber(targetBalance);
     if (santriData && santriData.name) animateUserName(santriData.name);
   }
 
   function switchToWaitingState() {
-    if (isTransitioning) return;
-    isTransitioning = true;
-    resetBalanceTier();
     stopPrivacyCountdown();
+    if (stateTransitionTl) {
+      stateTransitionTl.kill();
+      stateTransitionTl = null;
+    }
+    isTransitioning = true;
+    document.body.classList.remove('tier-diamond');
 
     if (!hasGsap) {
       activeView.classList.remove('active');
@@ -446,6 +483,7 @@ document.addEventListener('DOMContentLoaded', () => {
       waitingView.setAttribute('aria-hidden', 'false');
       stateContainer.classList.remove('state-active');
       stateContainer.classList.add('state-waiting');
+      resetBalanceTier();
       isTransitioning = false;
       return;
     }
@@ -454,18 +492,20 @@ document.addEventListener('DOMContentLoaded', () => {
     waitingView.setAttribute('aria-hidden', 'false');
 
     const fadeSpeed = (CONFIG.animation && CONFIG.animation.stateCrossFadeSpeed) || 0.18;
-    const tl = gsap.timeline({
+    stateTransitionTl = gsap.timeline({
       onComplete: () => {
         activeView.classList.remove('active');
         activeView.setAttribute('aria-hidden', 'true');
         stateContainer.classList.remove('state-active');
         stateContainer.classList.add('state-waiting');
+        resetBalanceTier();
         isTransitioning = false;
+        stateTransitionTl = null;
       }
     });
 
-    tl.to(activeView, { opacity: 0, duration: fadeSpeed, ease: 'power1.in' });
-    tl.fromTo(waitingView, { opacity: 0 }, { opacity: 1, duration: fadeSpeed * 1.2, ease: 'power2.out' }, '-=0.06');
+    stateTransitionTl.to(activeView, { opacity: 0, duration: fadeSpeed, ease: 'power1.in' });
+    stateTransitionTl.fromTo(waitingView, { opacity: 0 }, { opacity: 1, duration: fadeSpeed * 1.2, ease: 'power2.out' }, '-=0.06');
   }
 
   if (rfidSensorArea) {
