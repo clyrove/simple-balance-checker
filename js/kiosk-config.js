@@ -122,12 +122,12 @@
         goldMax: 499000,
         platinumMax: 899000,
         diamondMax: 1549999,
-        rubyMin: 1550000
+        prismaticMin: 1550000
       },
       getTierKey: function (amount) {
         const val = Math.round(Number(amount) || 0);
         const t = this.thresholds;
-        if (val >= t.rubyMin) return 'ruby';
+        if (val >= t.prismaticMin) return 'prismatic';
         if (val > t.platinumMax) return 'diamond';
         if (val > t.goldMax) return 'platinum';
         if (val > t.silverMax) return 'gold';
@@ -146,8 +146,8 @@
       diamond: {
         confettiColors: ['#FFFFFF', '#F0F9FF', '#E0F2FE', '#BAE6FD', '#7DD3FC', '#38BDF8', '#C084FC', '#E0E7FF', '#CBD5E1']
       },
-      ruby: {
-        confettiColors: ['#E11D48', '#F43F5E', '#FB7185', '#FDA4AF', '#9F1239', '#DC2626', '#FFE4E6', '#FDE047', '#FFFFFF']
+      prismatic: {
+        confettiColors: ['#FFFFFF', '#F8FAFC', '#E0F2FE', '#F5F3FF', '#FDF2F8', '#FEF9C3', '#DCFCE7', '#BAE6FD', '#DDD6FE', '#FBCFE8']
       }
     },
     api: {
