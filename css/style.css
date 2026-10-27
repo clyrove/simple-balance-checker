@@ -47,7 +47,7 @@ h1, h2, h3, h4, p, span, button, input, label, div {
   position: relative;
 }
 
-.kiosk-diamond-backdrop {
+.kiosk-platinum-backdrop {
   position: fixed;
   inset: 0;
   z-index: 0;
@@ -62,12 +62,12 @@ h1, h2, h3, h4, p, span, button, input, label, div {
     linear-gradient(145deg, #94A3B8 0%, #CBD5E1 22%, #E2E8F0 45%, #F8FAFC 65%, #BAE6FD 85%, #CBD5E1 100%);
 }
 
-body.tier-diamond .kiosk-diamond-backdrop {
+body.tier-platinum .kiosk-platinum-backdrop {
   opacity: 1;
-  animation: diamond-400-bg-pulse 4.5s ease-in-out infinite alternate;
+  animation: platinum-bg-pulse 4.5s ease-in-out infinite alternate;
 }
 
-@keyframes diamond-400-bg-pulse {
+@keyframes platinum-bg-pulse {
   0% {
     filter: brightness(1) saturate(1);
   }
@@ -76,7 +76,7 @@ body.tier-diamond .kiosk-diamond-backdrop {
   }
 }
 
-.diamond-light-rays {
+.platinum-light-rays {
   position: absolute;
   inset: -45%;
   background:
@@ -104,11 +104,11 @@ body.tier-diamond .kiosk-diamond-backdrop {
     );
   filter: blur(8px);
   opacity: 0.9;
-  animation: diamond-rays-sway 7s ease-in-out infinite alternate;
+  animation: platinum-rays-sway 7s ease-in-out infinite alternate;
   will-change: transform;
 }
 
-@keyframes diamond-rays-sway {
+@keyframes platinum-rays-sway {
   0% {
     transform: rotate(-4deg) scale(1);
   }
@@ -117,7 +117,7 @@ body.tier-diamond .kiosk-diamond-backdrop {
   }
 }
 
-.diamond-crystal-lattice {
+.platinum-crystal-lattice {
   position: absolute;
   inset: 0;
   background:
@@ -129,7 +129,7 @@ body.tier-diamond .kiosk-diamond-backdrop {
     repeating-linear-gradient(-60deg, rgba(255, 255, 255, 0.22) 0px, rgba(255, 255, 255, 0.22) 1px, transparent 1px, transparent 110px);
 }
 
-.diamond-shimmer-veil {
+.platinum-shimmer-veil {
   position: absolute;
   inset: 0;
   background:
@@ -139,13 +139,13 @@ body.tier-diamond .kiosk-diamond-backdrop {
     radial-gradient(circle at 18% 76%, rgba(224, 231, 255, 0.6) 0%, transparent 20%);
 }
 
-body.tier-diamond .kiosk-card-frame {
+body.tier-platinum .kiosk-card-frame {
   background:
     linear-gradient(125deg, rgba(255, 255, 255, 0.75) 0%, transparent 32%),
     linear-gradient(135deg, #BAE6FD 0%, #E2E8F0 35%, #FFFFFF 50%, #C7D2FE 75%, #7DD3FC 100%);
 }
 
-.kiosk-ruby-backdrop {
+.kiosk-diamond-backdrop {
   position: fixed;
   inset: 0;
   z-index: 0;
@@ -154,36 +154,36 @@ body.tier-diamond .kiosk-card-frame {
   overflow: hidden;
   transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1);
   background:
-    radial-gradient(ellipse 85% 65% at 50% 22%, rgba(255, 255, 255, 1) 0%, rgba(224, 242, 254, 0.85) 30%, rgba(186, 230, 253, 0.48) 58%, transparent 82%),
-    radial-gradient(ellipse 75% 60% at 14% 86%, rgba(199, 210, 254, 0.8) 0%, transparent 65%),
-    radial-gradient(ellipse 75% 60% at 86% 86%, rgba(125, 211, 252, 0.8) 0%, transparent 65%),
-    linear-gradient(135deg, #CBD5E1 0%, #E2E8F0 20%, #F0F9FF 45%, #FFFFFF 55%, #DBEAFE 75%, #C7D2FE 90%, #CBD5E1 100%);
+    radial-gradient(ellipse 85% 65% at 50% 20%, rgba(255, 255, 255, 1) 0%, rgba(224, 242, 254, 0.9) 28%, rgba(186, 230, 253, 0.6) 55%, transparent 85%),
+    radial-gradient(ellipse 75% 60% at 14% 86%, rgba(199, 210, 254, 0.85) 0%, transparent 65%),
+    radial-gradient(ellipse 75% 60% at 86% 86%, rgba(125, 211, 252, 0.85) 0%, transparent 65%),
+    linear-gradient(135deg, #CBD5E1 0%, #E2E8F0 18%, #F0F9FF 42%, #FFFFFF 55%, #DBEAFE 75%, #C7D2FE 90%, #CBD5E1 100%);
 }
 
-body.tier-ruby .kiosk-ruby-backdrop {
+body.tier-diamond .kiosk-diamond-backdrop {
   opacity: 1;
-  animation: diamond-crown-bg-pulse 3.6s ease-in-out infinite alternate;
+  animation: diamond-bg-radiance 3.6s ease-in-out infinite alternate;
 }
 
-@keyframes diamond-crown-bg-pulse {
+@keyframes diamond-bg-radiance {
   0% {
     filter: brightness(1) saturate(1);
   }
   50% {
-    filter: brightness(1.14) saturate(1.24);
+    filter: brightness(1.15) saturate(1.25);
   }
   100% {
-    filter: brightness(1.04) saturate(1.08);
+    filter: brightness(1.05) saturate(1.1);
   }
 }
 
-.diamond-crown-glow-layer {
+.diamond-glow-layer {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 50% 32%, rgba(255, 255, 255, 0.95) 0%, rgba(224, 242, 254, 0.5) 35%, transparent 68%),
-    radial-gradient(circle at 20% 75%, rgba(186, 230, 253, 0.65) 0%, rgba(224, 231, 255, 0.35) 40%, transparent 70%),
-    radial-gradient(circle at 80% 75%, rgba(199, 210, 254, 0.6) 0%, rgba(165, 243, 252, 0.4) 40%, transparent 70%);
+    radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.98) 0%, rgba(224, 242, 254, 0.65) 32%, transparent 68%),
+    radial-gradient(circle at 18% 75%, rgba(186, 230, 253, 0.75) 0%, rgba(224, 231, 255, 0.4) 40%, transparent 70%),
+    radial-gradient(circle at 82% 75%, rgba(199, 210, 254, 0.7) 0%, rgba(165, 243, 252, 0.5) 40%, transparent 70%);
   animation: diamond-glow-breathe 2.8s ease-in-out infinite alternate;
   will-change: opacity, filter;
   pointer-events: none;
@@ -191,98 +191,102 @@ body.tier-ruby .kiosk-ruby-backdrop {
 
 @keyframes diamond-glow-breathe {
   0% {
-    opacity: 0.5;
+    opacity: 0.6;
     filter: hue-rotate(0deg);
   }
   50% {
-    opacity: 0.9;
-    filter: hue-rotate(12deg);
+    opacity: 1;
+    filter: hue-rotate(14deg);
   }
   100% {
-    opacity: 0.6;
+    opacity: 0.7;
     filter: hue-rotate(-8deg);
   }
 }
 
-.ruby-triangle-mosaic {
+.diamond-triangle-mosaic {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   display: block;
+  z-index: 1;
 }
 
-.ruby-shard {
-  stroke: rgba(255, 255, 255, 0.16);
-  stroke-width: 0.8px;
-  stroke-linejoin: bevel;
+.diamond-shard {
+  stroke: rgba(255, 255, 255, 0.9);
+  stroke-width: 1.5px;
+  stroke-linejoin: round;
   will-change: opacity, filter;
+  filter: drop-shadow(0 0 2px rgba(186, 230, 253, 0.5));
 }
 
-.ruby-shard.rs-1 {
-  animation: ruby-shard-twinkle 2.4s ease-in-out infinite alternate;
+.diamond-shard.ds-1 {
+  animation: diamond-shard-twinkle 2.2s ease-in-out infinite alternate;
 }
 
-.ruby-shard.rs-2 {
-  animation: ruby-shard-twinkle 2.9s ease-in-out 0.4s infinite alternate;
+.diamond-shard.ds-2 {
+  animation: diamond-shard-twinkle 2.7s ease-in-out 0.4s infinite alternate;
 }
 
-.ruby-shard.rs-3 {
-  animation: ruby-shard-twinkle 2.1s ease-in-out 0.9s infinite alternate;
+.diamond-shard.ds-3 {
+  animation: diamond-shard-twinkle 1.9s ease-in-out 0.8s infinite alternate;
 }
 
-.ruby-shard.rs-4 {
-  animation: ruby-shard-twinkle 2.7s ease-in-out 1.3s infinite alternate;
+.diamond-shard.ds-4 {
+  animation: diamond-shard-twinkle 2.5s ease-in-out 1.2s infinite alternate;
 }
 
-.ruby-shard.rs-5 {
-  animation: ruby-shard-twinkle 3.2s ease-in-out 1.7s infinite alternate;
+.diamond-shard.ds-5 {
+  animation: diamond-shard-twinkle 3.0s ease-in-out 1.6s infinite alternate;
 }
 
-@keyframes ruby-shard-twinkle {
+@keyframes diamond-shard-twinkle {
   0% {
-    opacity: 0.35;
-    filter: brightness(0.95);
+    opacity: 0.65;
+    filter: brightness(0.92);
   }
   50% {
-    opacity: 0.72;
-    filter: brightness(1.2);
+    opacity: 1;
+    filter: brightness(1.35) contrast(1.15);
   }
   100% {
-    opacity: 0.45;
-    filter: brightness(1.02);
+    opacity: 0.72;
+    filter: brightness(1.08);
   }
 }
 
-.ruby-vertex-star {
-  fill: rgba(255, 255, 255, 0.8);
+.diamond-vertex-star {
+  fill: #FFFFFF;
+  filter: drop-shadow(0 0 4px rgba(56, 189, 248, 0.85));
   transform-box: fill-box;
   transform-origin: center center;
-  animation: ruby-star-glint 2.2s ease-in-out infinite alternate;
+  animation: diamond-star-glint 2s ease-in-out infinite alternate;
 }
 
-@keyframes ruby-star-glint {
+@keyframes diamond-star-glint {
   0% {
-    opacity: 0.12;
-    transform: scale(0.4) rotate(0deg);
+    opacity: 0.35;
+    transform: scale(0.6) rotate(0deg);
   }
   100% {
-    opacity: 0.82;
-    transform: scale(1.05) rotate(45deg);
+    opacity: 1;
+    transform: scale(1.3) rotate(45deg);
   }
 }
 
-.ruby-crystal-glint-layer {
+.diamond-crystal-glint-layer {
   position: absolute;
   inset: 0;
+  z-index: 2;
   background:
-    linear-gradient(125deg, rgba(255, 255, 255, 0.22) 0%, transparent 30%),
-    linear-gradient(235deg, rgba(186, 230, 253, 0.18) 0%, transparent 32%),
-    radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.32) 0%, transparent 45%);
+    linear-gradient(125deg, rgba(255, 255, 255, 0.35) 0%, transparent 30%),
+    linear-gradient(235deg, rgba(186, 230, 253, 0.3) 0%, transparent 32%),
+    radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.45) 0%, transparent 45%);
   pointer-events: none;
 }
 
-body.tier-ruby .kiosk-card-frame {
+body.tier-diamond .kiosk-card-frame {
   background:
     linear-gradient(120deg, rgba(255, 255, 255, 0.95) 0%, transparent 28%),
     linear-gradient(135deg, #BAE6FD 0%, #FFFFFF 22%, #7DD3FC 46%, #FFFFFF 62%, #C084FC 80%, #38BDF8 100%);
@@ -735,7 +739,7 @@ body.kiosk-locked * {
   color: #271402;
 }
 
-.hero-balance-plate.tier-diamond {
+.hero-balance-plate.tier-platinum {
   background:
     linear-gradient(118deg, rgba(255, 255, 255, 0.84) 0%, rgba(255, 255, 255, 0.22) 26%, transparent 26.2%),
     linear-gradient(242deg, rgba(255, 255, 255, 0.74) 0%, rgba(186, 230, 253, 0.32) 32%, transparent 32.2%),
@@ -747,7 +751,7 @@ body.kiosk-locked * {
   will-change: transform;
 }
 
-.hero-balance-plate.tier-diamond::before {
+.hero-balance-plate.tier-platinum::before {
   content: '';
   position: absolute;
   inset: -60%;
@@ -774,25 +778,25 @@ body.kiosk-locked * {
   }
 }
 
-.hero-balance-plate.tier-diamond .balance-caption-title,
-.hero-balance-plate.tier-diamond .balance-time-stamp {
+.hero-balance-plate.tier-platinum .balance-caption-title,
+.hero-balance-plate.tier-platinum .balance-time-stamp {
   color: #0369A1;
 }
 
-.hero-balance-plate.tier-diamond .currency-tag {
+.hero-balance-plate.tier-platinum .currency-tag {
   color: #0284C7;
 }
 
-.hero-balance-plate.tier-diamond .hero-limit-badge {
+.hero-balance-plate.tier-platinum .hero-limit-badge {
   background: rgba(12, 74, 110, 0.11);
   color: #0C4A6E;
 }
 
-.hero-balance-plate.tier-diamond .hero-limit-badge strong {
+.hero-balance-plate.tier-platinum .hero-limit-badge strong {
   color: #082F49;
 }
 
-.hero-balance-plate.tier-ruby {
+.hero-balance-plate.tier-diamond {
   background:
     linear-gradient(116deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.35) 24%, transparent 24.15%),
     linear-gradient(244deg, rgba(255, 255, 255, 0.88) 0%, rgba(186, 230, 253, 0.45) 30%, transparent 30.15%),
@@ -804,7 +808,7 @@ body.kiosk-locked * {
   will-change: transform;
 }
 
-.hero-balance-plate.tier-ruby::before {
+.hero-balance-plate.tier-diamond::before {
   content: '';
   position: absolute;
   inset: -65%;
@@ -822,7 +826,7 @@ body.kiosk-locked * {
   z-index: 0;
 }
 
-.hero-balance-plate.tier-ruby::after {
+.hero-balance-plate.tier-diamond::after {
   content: '';
   position: absolute;
   inset: -65%;
@@ -848,21 +852,23 @@ body.kiosk-locked * {
   }
 }
 
-.hero-balance-plate.tier-ruby .balance-caption-title,
-.hero-balance-plate.tier-ruby .balance-time-stamp {
+.hero-balance-plate.tier-diamond .balance-caption-title,
+.hero-balance-plate.tier-diamond .balance-time-stamp {
   color: #0284C7;
 }
 
-.hero-balance-plate.tier-ruby .currency-tag {
+.hero-balance-plate.tier-diamond .currency-tag {
   color: #0369A1;
 }
 
-.hero-balance-plate.tier-ruby .hero-limit-badge {
+.hero-balance-plate.tier-diamond .hero-limit-badge {
   background: rgba(2, 132, 199, 0.12);
   color: #0369A1;
 }
 
-.hero-balance-plate.tier-ruby .hero-limit-badge strong {
+.hero-balance-plate.tier-diamond .hero-limit-badge strong {
+  color: #075985;
+}
   color: #075985;
 }
 
@@ -978,7 +984,7 @@ body.kiosk-locked * {
     linear-gradient(180deg, #3F2104 0%, #271402 100%);
 }
 
-.hero-balance-plate.tier-diamond .balance-digits {
+.hero-balance-plate.tier-platinum .balance-digits {
   background-image:
     linear-gradient(
       45deg,
@@ -997,7 +1003,7 @@ body.kiosk-locked * {
     linear-gradient(180deg, #091524 0%, #0C4A6E 48%, #082F49 52%, #0F172A 100%);
 }
 
-.hero-balance-plate.tier-ruby .balance-digits {
+.hero-balance-plate.tier-diamond .balance-digits {
   background-image:
     linear-gradient(
       45deg,
@@ -1023,11 +1029,11 @@ body.kiosk-locked * {
   animation: shine-sweep-text 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-.hero-balance-plate.tier-diamond .balance-digits.has-shining {
+.hero-balance-plate.tier-platinum .balance-digits.has-shining {
   animation: shine-sweep-text 1.65s cubic-bezier(0.22, 1, 0.36, 1) infinite;
 }
 
-.hero-balance-plate.tier-ruby .balance-digits.has-shining {
+.hero-balance-plate.tier-diamond .balance-digits.has-shining {
   animation: shine-sweep-text 1.15s cubic-bezier(0.22, 1, 0.36, 1) infinite;
 }
 

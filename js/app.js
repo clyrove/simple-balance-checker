@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentToastType = '';
   let isToastShowing = false;
 
-  const COUNTDOWN_TOTAL_SECONDS = (CONFIG.timing && CONFIG.timing.autoCloseSeconds) || 3;
+  const COUNTDOWN_TOTAL_SECONDS = (CONFIG.timing && CONFIG.timing.autoCloseSeconds) || 10;
   let remainingSeconds = COUNTDOWN_TOTAL_SECONDS;
   let countdownTimer = null;
   let countdownTween = null;
@@ -50,8 +50,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let confettiWaveTimer = null;
   let confettiParticles = [];
 
-  function initRubyCrystalMosaic() {
-    const svg = document.getElementById('kiosk-ruby-mosaic');
+  function initDiamondCrystalMosaic() {
+    const svg = document.getElementById('kiosk-diamond-mosaic');
     if (!svg) return;
     const ns = 'http://www.w3.org/2000/svg';
     const cols = 8;
@@ -76,16 +76,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const shardColors = [
-      'rgba(255, 255, 255, 0.08)',
-      'rgba(240, 249, 255, 0.06)',
-      'rgba(224, 242, 254, 0.11)',
-      'rgba(186, 230, 253, 0.07)',
-      'rgba(255, 255, 255, 0.13)',
-      'rgba(224, 231, 255, 0.08)',
-      'rgba(199, 210, 254, 0.06)',
-      'rgba(255, 255, 255, 0.05)',
-      'rgba(147, 197, 253, 0.09)',
-      'rgba(248, 250, 252, 0.07)'
+      'rgba(255, 255, 255, 0.75)',
+      'rgba(224, 242, 254, 0.60)',
+      'rgba(186, 230, 253, 0.50)',
+      'rgba(255, 255, 255, 0.88)',
+      'rgba(147, 197, 253, 0.45)',
+      'rgba(240, 249, 255, 0.70)',
+      'rgba(199, 210, 254, 0.48)',
+      'rgba(255, 255, 255, 0.58)',
+      'rgba(125, 211, 252, 0.55)',
+      'rgba(56, 189, 248, 0.35)'
     ];
 
     const frag = document.createDocumentFragment();
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
           poly.setAttribute('points', `${tr[0][0]},${tr[0][1]} ${tr[1][0]},${tr[1][1]} ${tr[2][0]},${tr[2][1]}`);
           const colorIdx = Math.abs(Math.floor(Math.sin(idx * 19.7 + c * 7.1) * shardColors.length)) % shardColors.length;
           poly.setAttribute('fill', shardColors[colorIdx]);
-          poly.setAttribute('class', `ruby-shard rs-${(idx % 5) + 1}`);
+          poly.setAttribute('class', `diamond-shard ds-${(idx % 5) + 1}`);
           poly.style.animationDelay = `${((idx * 0.23) % 2.4).toFixed(2)}s`;
           frag.appendChild(poly);
           idx++;
@@ -121,8 +121,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if ((r + c) % 2 !== 0) continue;
         const [vx, vy] = pts[r][c];
         const star = document.createElementNS(ns, 'polygon');
-        const sr = 7;
-        const ir = 1.8;
+        const sr = 10;
+        const ir = 2.4;
         const sp = [
           `${vx},${vy - sr}`, `${vx + ir},${vy - ir}`,
           `${vx + sr},${vy}`, `${vx + ir},${vy + ir}`,
@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
           `${vx - sr},${vy}`, `${vx - ir},${vy - ir}`
         ].join(' ');
         star.setAttribute('points', sp);
-        star.setAttribute('class', 'ruby-vertex-star');
+        star.setAttribute('class', 'diamond-vertex-star');
         star.style.animationDelay = `${((r * 0.41 + c * 0.29) % 2.1).toFixed(2)}s`;
         frag.appendChild(star);
       }
@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
     svg.appendChild(frag);
   }
 
-  initRubyCrystalMosaic();
+  initDiamondCrystalMosaic();
 
   function clearConfetti() {
     if (confettiWaveTimer) {
@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function spawnThreeCannonBurst(width, height, palette, tier, countPerCannon) {
-    const shapes = tier === 'ruby'
+    const shapes = tier === 'diamond'
       ? ['triangle_shard', 'triangle_shard', 'crystal', 'sparkle']
       : ['crystal', 'crystal', 'crystal', 'sparkle'];
 
@@ -245,13 +245,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     confettiParticles = [];
 
-    if (tier === 'ruby') {
-      spawnThreeCannonBurst(width, height, palette, 'ruby', 26);
+    if (tier === 'diamond') {
+      spawnThreeCannonBurst(width, height, palette, 'diamond', 26);
       confettiWaveTimer = setTimeout(() => {
-        spawnThreeCannonBurst(width, height, palette, 'ruby', 22);
+        spawnThreeCannonBurst(width, height, palette, 'diamond', 22);
       }, 620);
-    } else if (tier === 'diamond') {
-      spawnThreeCannonBurst(width, height, palette, 'diamond', 30);
+    } else if (tier === 'platinum') {
+      spawnThreeCannonBurst(width, height, palette, 'platinum', 30);
     } else {
       const particleCount = 42;
       for (let i = 0; i < particleCount; i++) {
@@ -381,33 +381,21 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function applyBalanceTier(amount) {
-    const silverThreshold = (CONFIG.tiers && CONFIG.tiers.silverThreshold) || 100000;
-    const goldThreshold = (CONFIG.tiers && CONFIG.tiers.goldThreshold) || 250000;
-    const diamondThreshold = (CONFIG.tiers && CONFIG.tiers.diamondThreshold) || 400000;
-    const rubyThreshold = (CONFIG.tiers && CONFIG.tiers.rubyThreshold) || 900000;
-
-    let tier = 'standard';
-    if (amount > rubyThreshold) {
-      tier = 'ruby';
-    } else if (amount > diamondThreshold) {
-      tier = 'diamond';
-    } else if (amount > goldThreshold) {
-      tier = 'gold';
-    } else if (amount >= silverThreshold) {
-      tier = 'silver';
-    }
+    const tier = (CONFIG.tiers && typeof CONFIG.tiers.getTierKey === 'function')
+      ? CONFIG.tiers.getTierKey(amount)
+      : 'standard';
 
     if (heroBalancePlate) {
-      heroBalancePlate.classList.remove('tier-ruby', 'tier-diamond', 'tier-silver', 'tier-gold', 'tier-standard');
+      heroBalancePlate.classList.remove('tier-diamond', 'tier-platinum', 'tier-gold', 'tier-silver', 'tier-standard');
       heroBalancePlate.classList.add(`tier-${tier}`);
     }
 
+    document.body.classList.toggle('tier-platinum', tier === 'platinum');
     document.body.classList.toggle('tier-diamond', tier === 'diamond');
-    document.body.classList.toggle('tier-ruby', tier === 'ruby');
 
     triggerShiningSweep();
 
-    if (tier === 'ruby' || tier === 'diamond' || tier === 'gold' || tier === 'silver') {
+    if (tier !== 'standard') {
       triggerConfetti(tier);
     } else {
       clearConfetti();
@@ -416,9 +404,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function resetBalanceTier() {
     clearConfetti();
-    document.body.classList.remove('tier-diamond', 'tier-ruby');
+    document.body.classList.remove('tier-platinum', 'tier-diamond');
     if (heroBalancePlate) {
-      heroBalancePlate.classList.remove('tier-ruby', 'tier-diamond', 'tier-silver', 'tier-gold');
+      heroBalancePlate.classList.remove('tier-diamond', 'tier-platinum', 'tier-gold', 'tier-silver');
       heroBalancePlate.classList.add('tier-standard');
     }
     if (balanceAmountEl) {
@@ -453,10 +441,12 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const rubyThreshold = (CONFIG.tiers && CONFIG.tiers.rubyThreshold) || 900000;
-    const isRuby = targetAmount > rubyThreshold;
-    const counterSpeed = isRuby ? 0.86 : ((CONFIG.animation && CONFIG.animation.counterSpeed) || 0.4);
-    const counterEasing = isRuby ? 'expo.out' : ((CONFIG.animation && CONFIG.animation.counterEasing) || 'power2.out');
+    const tier = (CONFIG.tiers && typeof CONFIG.tiers.getTierKey === 'function')
+      ? CONFIG.tiers.getTierKey(targetAmount)
+      : 'standard';
+    const isDiamond = tier === 'diamond';
+    const counterSpeed = isDiamond ? 0.86 : ((CONFIG.animation && CONFIG.animation.counterSpeed) || 0.4);
+    const counterEasing = isDiamond ? 'expo.out' : ((CONFIG.animation && CONFIG.animation.counterEasing) || 'power2.out');
     const bounceSpeed = (CONFIG.animation && CONFIG.animation.splitBounceSpeed) || 0.35;
     const bounceEasing = (CONFIG.animation && CONFIG.animation.splitBounceEasing) || 'back.out(2)';
 
@@ -466,8 +456,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     gsap.fromTo(
       balanceAmountEl,
-      { y: isRuby ? 12 : 8, opacity: 0.85 },
-      { y: 0, opacity: 1, duration: counterSpeed, ease: isRuby ? 'power3.out' : bounceEasing }
+      { y: isDiamond ? 12 : 8, opacity: 0.85 },
+      { y: 0, opacity: 1, duration: counterSpeed, ease: isDiamond ? 'power3.out' : bounceEasing }
     );
 
     gsap.to(counterState, {
@@ -552,8 +542,6 @@ document.addEventListener('DOMContentLoaded', () => {
     isTransitioning = true;
     applyBalanceTier(targetBalance);
 
-    const rubyThreshold = (CONFIG.tiers && CONFIG.tiers.rubyThreshold) || 900000;
-    const isRuby = targetBalance > rubyThreshold;
     const alreadyActive = stateContainer.classList.contains('state-active') && activeView.classList.contains('active');
 
     if (!hasGsap || alreadyActive) {
@@ -604,7 +592,7 @@ document.addEventListener('DOMContentLoaded', () => {
       stateTransitionTl = null;
     }
     isTransitioning = true;
-    document.body.classList.remove('tier-diamond', 'tier-ruby');
+    document.body.classList.remove('tier-platinum', 'tier-diamond');
 
     if (!hasGsap) {
       activeView.classList.remove('active');

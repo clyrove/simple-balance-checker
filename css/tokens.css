@@ -50,8 +50,8 @@
   --surface-hero-balance: var(--pastel-yellow-light);
   --surface-hero-balance-silver: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 45%, #CBD5E1 100%);
   --surface-hero-balance-gold: linear-gradient(135deg, #FEF9C3 0%, #FDE047 35%, #FACC15 70%, #EAB308 100%);
-  --surface-hero-balance-diamond: linear-gradient(135deg, #F0FDFA 0%, #E0F2FE 30%, #F5F3FF 70%, #CFFAFE 100%);
-  --surface-hero-balance-ruby: linear-gradient(135deg, #E0F2FE 0%, #FFFFFF 16%, #BAE6FD 36%, #FFFFFF 52%, #DDD6FE 72%, #7DD3FC 90%, #F0F9FF 100%);
+  --surface-hero-balance-platinum: linear-gradient(135deg, #F0FDFA 0%, #E0F2FE 30%, #F5F3FF 70%, #CFFAFE 100%);
+  --surface-hero-balance-diamond: linear-gradient(135deg, #E0F2FE 0%, #FFFFFF 16%, #BAE6FD 36%, #FFFFFF 52%, #DDD6FE 72%, #7DD3FC 90%, #F0F9FF 100%);
   --surface-chip-neutral: var(--navy-tonal-100);
   --surface-chip-active: var(--navy-primary);
   --surface-chip-success: #DCFCE7;

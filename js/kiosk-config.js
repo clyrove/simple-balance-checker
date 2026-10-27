@@ -108,7 +108,7 @@
       squircleRadiusFull: '9999px'
     },
     timing: {
-      autoCloseSeconds: 3,
+      autoCloseSeconds: 10,
       toastDurationMs: 3200,
       scanCharMaxIntervalMs: 55,
       scanSubmitMaxAgeMs: 120,
@@ -116,20 +116,32 @@
       scanCooldownMs: 600
     },
     tiers: {
-      silverThreshold: 100000,
-      goldThreshold: 250000,
-      diamondThreshold: 400000,
-      rubyThreshold: 900000,
+      thresholds: {
+        standardMax: 100000,
+        silverMax: 290000,
+        goldMax: 499000,
+        platinumMax: 899000,
+        diamondMin: 900000
+      },
+      getTierKey: function (amount) {
+        const val = Math.round(Number(amount) || 0);
+        const t = this.thresholds;
+        if (val >= t.diamondMin) return 'diamond';
+        if (val > t.goldMax) return 'platinum';
+        if (val > t.silverMax) return 'gold';
+        if (val > t.standardMax) return 'silver';
+        return 'standard';
+      },
       silver: {
         confettiColors: ['#F1F5F9', '#E2E8F0', '#CBD5E1', '#94A3B8', '#64748B', '#38BDF8', '#FFFFFF']
       },
       gold: {
         confettiColors: ['#FDE047', '#FACC15', '#F59E0B', '#D97706', '#FEF08A', '#FFFFFF']
       },
-      diamond: {
+      platinum: {
         confettiColors: ['#38BDF8', '#7DD3FC', '#BAE6FD', '#C084FC', '#E0E7FF', '#FFFFFF', '#CBD5E1', '#93C5FD']
       },
-      ruby: {
+      diamond: {
         confettiColors: ['#FFFFFF', '#F0F9FF', '#E0F2FE', '#BAE6FD', '#7DD3FC', '#38BDF8', '#C084FC', '#E0E7FF', '#CBD5E1']
       }
     },
