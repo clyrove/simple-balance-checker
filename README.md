@@ -15,20 +15,19 @@ Antarmuka UI/UX Kios Pengecekan Saldo Mandiri Santri berbasis **HTML, CSS murni,
      - **Limit Harian**: `data.limitHarian` / `data.dailyLimit` (contoh: `Rp 100.000 / hari`).
      - **Limit Bulanan**: `data.limitBulanan` / `data.monthlyLimit` (contoh: `Rp 500.000 / bulan`).
    - **Bebas Error jika Nilai Kosong**: Jika backend API tidak mengirimkan nilai limit (bernilai `null`, `undefined`, `0`, atau kosong), sistem secara anggun menampilkan **"Tidak ada data"** tanpa memunculkan error konsol.
-3. **Pengunci Kios, Layar Penuh & Blokir Mouse (`js/kiosk-lock.js`)**:
-   - **Force Fullscreen & Kunci Fullscreen**: Kios otomatis memaksa mode layar penuh (*Fullscreen/F11*) dan menguncinya. Santri tidak dapat keluar dari layar penuh menggunakan tombol `Esc` atau `F11`.
-   - **Blokir Seluruh Klik Tombol Mouse**: Seluruh klik tombol mouse (kiri, kanan, tengah, drag, dan menu klik kanan) dinonaktifkan total saat kios terkunci.
-   - **Kursor Mouse Disembunyikan**: Kursor mouse disembunyikan secara otomatis (`cursor: none !important;`) untuk display kiosk.
-   - **Blokir Total Keyboard Santri**: Menonaktifkan seluruh tombol fisik keyboard laptop/kios agar santri tidak dapat mengetik sembarangan atau menekan shortcut berbahaya (F5, F11, Ctrl+R, Alt+Tab, dll.).
-   - **Tetap Izinkan Scanner RFID**: Karakter cepat dari hardware reader RFID USB tetap dibaca secara otomatis.
-   - **Shortcut Rahasia Buka Kunci `[Alt + O]`**:
-     - Untuk membuka keyboard, memunculkan kursor, dan mengaktifkan kembali kontrol mouse & jendela (saat pemeliharaan oleh tim IT), cukup tekan kombinasi tombol **`Alt + O`**.
-     - Tekan **`Alt + O`** kembali untuk mengunci kios dan mengaktifkan kembali layar penuh otomatis.
-4. **Integrasi Backend API Riil (`api/lookup.php`)**:
-   - Terhubung via HTTP `POST` dengan parameter `wallet=<UID>`.
-   - Dilengkapi **Micro-Cache In-Memory (5 Detik)** untuk merespons instan (0 ms) jika santri menempelkan kartu dua kali berturut-turut.
-   - Proteksi **Timeout & AbortController** (6 detik).
-   - **Offline / Mock Fallback**: Otomatis beralih ke simulasi lokal jika jaringan terputus.
+3. **Pengunci Keyboard & Mouse Kios Ketat Tanpa Force Fullscreen (`js/kiosk-lock.js`)**:
+   - **Tanpa Force Fullscreen**: Tidak memaksa jendela browser masuk ke mode F11/fullscreen otomatis.
+   - **Blokir Mutlak Seluruh Tombol Keyboard (Termasuk Tombol Windows)**: Saat kios terkunci, seluruh tombol keyboard (`Meta`/`Windows`, `F1`–`F12`, `Tab`, `Esc`, `Ctrl`, `Alt`, spasi, huruf, dan angka) dikunci penuh (`preventDefault` + `stopImmediatePropagation` + Web `navigator.keyboard.lock`).
+   - **Hanya `[Alt + O]` yang Bisa Membuka Kunci**: Satu-satunya kombinasi tombol yang diizinkan saat terkunci adalah **`Alt + O`**.
+   - **`[Alt + S]` Terkunci Rapat**: Konsol simulator **`Alt + S`** tidak dapat dibuka sama sekali ketika keyboard sedang terkunci, dan otomatis tertutup jika kios dikunci kembali.
+   - **Blokir Seluruh Klik Tombol Mouse & Sembunyikan Kursor**: Klik kiri, kanan, tengah, drag, dan *context menu* dinonaktifkan total serta kursor disembunyikan (`cursor: none !important;`) saat terkunci.
+   - **Filter Ketat Scanner RFID USB**: Hanya *burst* pembacaan kartu dari hardware RFID USB ($\le 55\text{ms}$ antar karakter, minimal 5 karakter) yang diproses; ketikan tangan manusia diblokir 100%.
+4. **Integrasi Backend API di Development Lokal & Production (`https://ceksaldo.al-wafi.sch.id/api/lookup.php`)**:
+   - Otomatis mendeteksi apakah dijalankan di **Local Development** (`localhost`, `127.0.0.1`, Live Server, `file://`) atau di **Server Production** (`https://ceksaldo.al-wafi.sch.id`).
+   - Dilengkapi **`dev-server.js`** (`start-dev.bat`) pada `http://127.0.0.1:8787` dan **`.htaccess`** sehingga saat diuji di lokal (tanpa perlu di-upload ke server dulu), pemanggilan API langsung terhubung ke `https://ceksaldo.al-wafi.sch.id/api/lookup.php` bebas masalah CORS.
+   - Dilengkapi **Micro-Cache In-Memory (5 Detik)** dan proteksi **Timeout & AbortController** (6 detik).
+5. **Anti-Jitter Floating Toast**:
+   - Menggunakan *in-place DOM update*, deduplikasi pesan identik, penundaan cerdas (*delayed loading toast* 160ms), serta transisi GPU `translate3d` & `opacity` sehingga toast tidak pernah berkedip atau *jittering* saat menerima banyak input cepat.
 5. **Animasi Cepat & Responsif (GSAP 0.4s)**:
    - Durasi rolling counter dipersingkat ke **0.4 detik** (*snappy*) agar antrean santri bergerak lancar.
 6. **Masking Nomor Kartu RFID (Password-Style)**:

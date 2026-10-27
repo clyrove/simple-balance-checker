@@ -7,8 +7,8 @@
  * 2. GSAP SplitText Character & Rolling Counter Saldo (Kecepatan 0.4s Snappy).
  * 3. Transisi State 1 (Waiting RFID) <-> State 2 (Active Balance) tanpa pergeseran layout.
  * 4. Timer Privasi 3 Detik dengan visual progress bar.
- * 5. Toast Notifikasi Mengambang (Info, Error, Success).
- * 6. Shortcut Tersembunyi [Alt + S] untuk Simulator Kiosk & Direct API Lookup.
+ * 5. Anti-Jitter Toast Notifikasi Mengambang (Smooth In-Place Update & Deduplikasi).
+ * 6. Shortcut Tersembunyi [Alt + S] untuk Simulator Kiosk (HANYA saat tidak dikunci).
  * ============================================================================
  */
 
@@ -22,8 +22,14 @@ document.addEventListener('DOMContentLoaded', () => {
       touchPrompt: 'Tempelkan kartu pada reader RFID.',
       generalError: 'Gagal memeriksa saldo. Silakan hubungi tim IT.'
     },
-    animation: { counterSpeed: 0.4, counterEasing: 'power2.out', splitBounceSpeed: 0.35, splitBounceEasing: 'back.out(2)', stateCrossFadeSpeed: 0.18 },
-    timing: { autoCloseSeconds: 3, toastDurationMs: 4000 }
+    animation: {
+      counterSpeed: 0.4,
+      counterEasing: 'power2.out',
+      splitBounceSpeed: 0.35,
+      splitBounceEasing: 'back.out(2)',
+      stateCrossFadeSpeed: 0.18
+    },
+    timing: { autoCloseSeconds: 3, toastDurationMs: 3200 }
   };
 
   // --------------------------------------------------------------------------
@@ -56,11 +62,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const simBtnReset = document.getElementById('sim-btn-reset');
   const simBtnLookup = document.getElementById('sim-btn-lookup');
 
-  // Toast / Floating Status Message Elements
+  // Toast / Floating Status Message Elements (Anti-Jitter State)
   const toastEl = document.getElementById('kiosk-toast');
   const toastTextEl = document.getElementById('kiosk-toast-text');
   const toastIconEl = document.getElementById('kiosk-toast-icon');
   let toastTimer = null;
+  let toastHideAnimTimer = null;
+  let currentToastMsg = '';
+  let currentToastType = '';
+  let isToastShowing = false;
 
   // Timer Configuration
   const COUNTDOWN_TOTAL_SECONDS = CONFIG.timing.autoCloseSeconds || 3;
@@ -75,14 +85,12 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateKioskClock() {
     const now = new Date();
 
-    // Tanggal format Indonesia (Contoh: "Kamis, 26 Okt 2026")
     const dateOptions = { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' };
     const dateString = now.toLocaleDateString('id-ID', dateOptions);
     if (clockDateEl) {
       clockDateEl.textContent = dateString;
     }
 
-    // Jam, Menit, Detik
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
     const seconds = String(now.getSeconds()).padStart(2, '0');
@@ -98,9 +106,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // --------------------------------------------------------------------------
   // 3. SPLIT TEXT & GSAP ANIMATION COUNTER (SNAPPY & FAST)
   // --------------------------------------------------------------------------
-  /**
-   * Memecah string menjadi elemen span per karakter untuk animasi GSAP
-   */
   function splitTextToChars(element, text) {
     if (!element) return [];
     element.innerHTML = '';
@@ -121,89 +126,97 @@ document.addEventListener('DOMContentLoaded', () => {
     return charElements;
   }
 
-  /**
-   * Menjalankan animasi rolling counter dan staggered split text pada nominal saldo
-   * Menggunakan durasi cepat 0.4s sesuai rekomendasi efisiensi antrean
-   */
-  function animateBalanceNumber(targetBalance) {
+  function animateBalanceNumber(targetAmount) {
     if (!balanceAmountEl) return;
 
-    // Fallback jika GSAP tidak tersedia
+    const finalFormatted = window.SantriKioskAPI.formatRupiah(targetAmount);
+
     if (!hasGsap) {
-      balanceAmountEl.textContent = window.SantriKioskAPI.formatRupiah(targetBalance);
+      balanceAmountEl.textContent = finalFormatted;
       return;
     }
 
-    const counterObj = { value: 0 };
-    const duration = CONFIG.animation.counterSpeed || 0.4;
+    const counterState = { val: 0 };
+    const counterSpeed = CONFIG.animation.counterSpeed || 0.4;
+    const counterEasing = CONFIG.animation.counterEasing || 'power2.out';
+    const bounceSpeed = CONFIG.animation.splitBounceSpeed || 0.35;
+    const bounceEasing = CONFIG.animation.splitBounceEasing || 'back.out(2)';
 
-    gsap.to(counterObj, {
-      value: targetBalance,
-      duration: duration,
-      ease: CONFIG.animation.counterEasing || "power2.out",
+    gsap.killTweensOf(counterState);
+
+    gsap.to(counterState, {
+      val: targetAmount,
+      duration: counterSpeed,
+      ease: counterEasing,
       onUpdate: () => {
-        balanceAmountEl.textContent = window.SantriKioskAPI.formatRupiah(counterObj.value);
+        balanceAmountEl.textContent = window.SantriKioskAPI.formatRupiah(counterState.val);
       },
       onComplete: () => {
-        // Efek lenting karakter (split bounce) saat angka mencapai target
-        const finalFormatted = window.SantriKioskAPI.formatRupiah(targetBalance);
-        const spans = splitTextToChars(balanceAmountEl, finalFormatted);
+        const splitChars = splitTextToChars(balanceAmountEl, finalFormatted);
 
-        gsap.fromTo(spans, 
-          { y: 16, opacity: 0 }, 
+        gsap.fromTo(
+          splitChars,
+          {
+            y: 14,
+            opacity: 0.35,
+            scale: 0.94
+          },
           {
             y: 0,
             opacity: 1,
-            duration: CONFIG.animation.splitBounceSpeed || 0.35,
-            stagger: 0.02,
-            ease: CONFIG.animation.splitBounceEasing || "back.out(2)"
+            scale: 1,
+            duration: bounceSpeed,
+            stagger: 0.018,
+            ease: bounceEasing
           }
         );
       }
     });
   }
 
-  /**
-   * Animasi kemunculan nama santri secara halus
-   */
   function animateUserName(nameText) {
     if (!userNameEl) return;
-    if (!hasGsap) {
-      userNameEl.textContent = nameText;
-      return;
-    }
+    userNameEl.textContent = nameText;
 
-    const spans = splitTextToChars(userNameEl, nameText);
-    gsap.fromTo(spans,
-      { opacity: 0, y: 8 },
-      { opacity: 1, y: 0, duration: CONFIG.animation.userNameRevealSpeed || 0.25, stagger: 0.012, ease: "power2.out" }
+    if (!hasGsap) return;
+
+    gsap.fromTo(
+      userNameEl,
+      { y: 8, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: CONFIG.animation.userNameRevealSpeed || 0.25,
+        ease: CONFIG.animation.userNameRevealEasing || 'power2.out',
+        delay: 0.04
+      }
     );
   }
 
   // --------------------------------------------------------------------------
-  // 4. TIMER PRIVASI 3 DETIK (PROGRESS BAR HALUS)
+  // 4. PRIVACY AUTO-CLOSE COUNTDOWN (3 DETIK)
   // --------------------------------------------------------------------------
   function startPrivacyCountdown() {
     stopPrivacyCountdown();
     remainingSeconds = COUNTDOWN_TOTAL_SECONDS;
-    if (timerSecondsEl) timerSecondsEl.textContent = remainingSeconds;
 
-    // Reset dan jalankan progress bar menyusut
+    if (timerSecondsEl) {
+      timerSecondsEl.textContent = remainingSeconds;
+    }
+
     if (countdownProgressEl) {
       if (hasGsap) {
-        gsap.killTweensOf(countdownProgressEl);
         gsap.set(countdownProgressEl, { scaleX: 1 });
         countdownTween = gsap.to(countdownProgressEl, {
           scaleX: 0,
           duration: COUNTDOWN_TOTAL_SECONDS,
-          ease: "linear"
+          ease: 'none'
         });
       } else {
         countdownProgressEl.style.transform = 'scaleX(0)';
       }
     }
 
-    // Interval hitung mundur per detik
     countdownTimer = setInterval(() => {
       remainingSeconds -= 1;
       if (timerSecondsEl) {
@@ -235,7 +248,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isTransitioning) return;
     isTransitioning = true;
 
-    // Fallback tanpa GSAP
     if (!hasGsap) {
       waitingView.classList.remove('active');
       waitingView.setAttribute('aria-hidden', 'true');
@@ -261,26 +273,23 @@ document.addEventListener('DOMContentLoaded', () => {
         stateContainer.classList.remove('state-waiting');
         stateContainer.classList.add('state-active');
         isTransitioning = false;
-
-        // Mulai timer privasi 3 detik
         startPrivacyCountdown();
       }
     });
 
-    // Cross-fade murni dalam CSS Grid yang terkunci (Zero Shift)
     tl.to(waitingView, {
       opacity: 0,
       duration: fadeSpeed,
-      ease: "power1.in"
+      ease: 'power1.in'
     });
 
-    tl.fromTo(activeView,
+    tl.fromTo(
+      activeView,
       { opacity: 0 },
-      { opacity: 1, duration: fadeSpeed * 1.2, ease: "power2.out" },
-      "-=0.06"
+      { opacity: 1, duration: fadeSpeed * 1.2, ease: 'power2.out' },
+      '-=0.06'
     );
 
-    // Animasi Saldo & Nama
     animateBalanceNumber(targetBalance);
     if (santriData && santriData.name) {
       animateUserName(santriData.name);
@@ -292,7 +301,6 @@ document.addEventListener('DOMContentLoaded', () => {
     isTransitioning = true;
     stopPrivacyCountdown();
 
-    // Fallback tanpa GSAP
     if (!hasGsap) {
       activeView.classList.remove('active');
       activeView.setAttribute('aria-hidden', 'true');
@@ -321,28 +329,30 @@ document.addEventListener('DOMContentLoaded', () => {
     tl.to(activeView, {
       opacity: 0,
       duration: fadeSpeed,
-      ease: "power1.in"
+      ease: 'power1.in'
     });
 
-    tl.fromTo(waitingView,
+    tl.fromTo(
+      waitingView,
       { opacity: 0 },
-      { opacity: 1, duration: fadeSpeed * 1.2, ease: "power2.out" },
-      "-=0.06"
+      { opacity: 1, duration: fadeSpeed * 1.2, ease: 'power2.out' },
+      '-=0.06'
     );
   }
 
   // --------------------------------------------------------------------------
   // 6. EVENT LISTENERS
   // --------------------------------------------------------------------------
-  // Klik area sensor (pada layar sentuh / demo)
   if (rfidSensorArea) {
     rfidSensorArea.addEventListener('click', () => {
+      if (window.KioskSecurity && window.KioskSecurity.isLocked()) {
+        return;
+      }
       const promptMsg = (CONFIG.messages && CONFIG.messages.touchPrompt) || 'Tempelkan kartu pada reader RFID.';
-      showToast(promptMsg, 'info', 2500);
+      showToast(promptMsg, 'info', 2400);
     });
   }
 
-  // Tombol Selesai
   if (btnDone) {
     btnDone.addEventListener('click', () => {
       window.SantriKioskAPI.reset();
@@ -350,34 +360,94 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --------------------------------------------------------------------------
-  // 7. FLOATING STATUS TOAST
+  // 7. ANTI-JITTER FLOATING STATUS TOAST
   // --------------------------------------------------------------------------
+  /**
+   * Menyembunyikan toast secara mulus tanpa lonjakan layout (Zero Jitter)
+   */
   function hideToast() {
     if (toastTimer) {
       clearTimeout(toastTimer);
       toastTimer = null;
     }
-    if (toastEl) {
-      toastEl.hidden = true;
-      toastEl.removeAttribute('data-type');
+    if (toastHideAnimTimer) {
+      clearTimeout(toastHideAnimTimer);
+      toastHideAnimTimer = null;
     }
+    if (!toastEl || !isToastShowing) return;
+
+    isToastShowing = false;
+    currentToastMsg = '';
+    currentToastType = '';
+    toastEl.classList.remove('is-visible');
+
+    // Tunggu transisi fade-out selesai (200ms) baru sembunyikan atribut hidden
+    toastHideAnimTimer = setTimeout(() => {
+      if (!isToastShowing && toastEl) {
+        toastEl.hidden = true;
+      }
+    }, 210);
   }
 
+  /**
+   * Menampilkan atau memperbarui toast secara stabil tanpa jitter / berkedip
+   * meskipun menerima banyak input beruntun.
+   */
   function showToast(message, type, duration) {
     if (!toastEl) return;
+
+    const cleanMsg = String(message || '').trim();
+    const resolvedType = type || 'info';
+    if (!cleanMsg) return;
+
+    // Batalkan timer penutup yang sedang berjalan
     if (toastTimer) {
       clearTimeout(toastTimer);
       toastTimer = null;
     }
+    if (toastHideAnimTimer) {
+      clearTimeout(toastHideAnimTimer);
+      toastHideAnimTimer = null;
+    }
 
-    if (toastTextEl) toastTextEl.textContent = message || '';
-    toastEl.hidden = false;
-    toastEl.setAttribute('data-type', type || 'info');
+    // Jika pesan & tipe yang sama persis sudah tampil di layar,
+    // JANGAN render ulang / restart animasi (mencegah jitter 100%)!
+    // Cukup perpanjang durasi tampilnya saja.
+    if (isToastShowing && currentToastMsg === cleanMsg && currentToastType === resolvedType) {
+      if (duration && duration > 0) {
+        toastTimer = setTimeout(hideToast, duration);
+      }
+      return;
+    }
+
+    currentToastMsg = cleanMsg;
+    currentToastType = resolvedType;
+
+    // Perbarui teks & ikon di tempat (in-place update)
+    if (toastTextEl) {
+      toastTextEl.textContent = cleanMsg;
+    }
+    toastEl.setAttribute('data-type', resolvedType);
 
     if (toastIconEl) {
-      toastIconEl.className = type === 'error'
+      toastIconEl.className = resolvedType === 'error'
         ? 'ri-error-warning-line'
-        : (type === 'info' ? 'ri-information-line' : 'ri-check-line');
+        : (resolvedType === 'info' ? 'ri-information-line' : 'ri-check-line');
+    }
+
+    // Jika sebelumnya tersembunyi, munculkan dengan transisi CSS halus
+    if (!isToastShowing) {
+      toastEl.hidden = false;
+      isToastShowing = true;
+      // Gunakan requestAnimationFrame agar transisi opacity/transform berjalan mulus
+      requestAnimationFrame(() => {
+        if (toastEl && isToastShowing) {
+          toastEl.classList.add('is-visible');
+        }
+      });
+    } else {
+      toastEl.hidden = false;
+      toastEl.classList.add('is-visible');
     }
 
     if (duration && duration > 0) {
@@ -393,16 +463,24 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('kiosk:error', (event) => {
     const detail = event.detail || {};
     const errMsg = detail.message || (CONFIG.messages && CONFIG.messages.generalError) || 'Terjadi kesalahan. Silakan hubungi tim IT.';
-    showToast(errMsg, 'error', 4000);
+    showToast(errMsg, 'error', 3500);
   });
 
   // --------------------------------------------------------------------------
   // 8. SHORTCUT TERSEMBUNYI [ALT + S] UNTUK SIMULATOR KIOSK
-  // Catatan: Jika kiosk terkunci oleh kiosk-lock.js, buka dulu via [Alt + O]
+  // WAJIB: HANYA BISA DIAKSES KETIKA KEYBOARD TIDAK DIKUNCI (UNLOCKED VIA ALT + O)
   // --------------------------------------------------------------------------
   window.addEventListener('keydown', (e) => {
-    if (e.altKey && (e.key === 's' || e.key === 'S')) {
+    if (e.altKey && (e.key === 's' || e.key === 'S' || e.code === 'KeyS')) {
       e.preventDefault();
+
+      // Pastikan [Alt + S] TIDAK BISA diakses jika keyboard sedang dikunci!
+      if (window.KioskSecurity && window.KioskSecurity.isLocked()) {
+        return;
+      }
+
+      if (e.repeat) return;
+
       if (devModal) {
         if (devModal.open) {
           devModal.close();
@@ -419,7 +497,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Tombol 1: Cek ke Server API (Real Backend Test)
+  // Tombol 1: Cek ke Server API (Real Backend Test - Berfungsi di Local Dev & Prod)
   if (simBtnLookup) {
     simBtnLookup.addEventListener('click', () => {
       const cardUid = document.getElementById('sim-input-card-uid').value;

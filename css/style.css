@@ -720,19 +720,22 @@ body.kiosk-locked * {
 }
 
 /* --------------------------------------------------------------------------
-   10. FLOATING STATUS TOAST (ROBUST & CENTERED AT BOTTOM)
+   10. FLOATING STATUS TOAST (ANTI-JITTER, SMOOTH GPU TRANSITION)
    -------------------------------------------------------------------------- */
 .kiosk-toast {
   position: fixed !important;
   left: 50% !important;
   bottom: 28px !important;
-  transform: translateX(-50%) !important;
+  transform: translate3d(-50%, 10px, 0);
+  opacity: 0;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   gap: 12px !important;
+  min-width: 340px !important;
   width: max-content !important;
   max-width: min(90vw, 820px) !important;
+  min-height: 54px !important;
   padding: 14px 28px !important;
   border-radius: 9999px !important;
   corner-shape: squircle;
@@ -747,7 +750,18 @@ body.kiosk-locked * {
   box-sizing: border-box !important;
   white-space: normal !important;
   line-height: 1.4 !important;
-  animation: toast-fade-in 0.22s var(--ease-smooth);
+  will-change: opacity, transform;
+  backface-visibility: hidden;
+  transition:
+    opacity 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.kiosk-toast.is-visible {
+  opacity: 1;
+  transform: translate3d(-50%, 0, 0);
 }
 
 .kiosk-toast[hidden] {
@@ -777,11 +791,6 @@ body.kiosk-locked * {
 .kiosk-toast span {
   line-height: 1.35 !important;
   display: inline-block !important;
-}
-
-@keyframes toast-fade-in {
-  from { opacity: 0; transform: translate(-50%, 14px); }
-  to { opacity: 1; transform: translate(-50%, 0); }
 }
 
 /* --------------------------------------------------------------------------

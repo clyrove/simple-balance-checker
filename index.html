@@ -24,9 +24,9 @@
   </script>
   
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/tokens.css?v=20261026e">
-  <link rel="stylesheet" href="css/style.css?v=20261026e">
-  <link rel="stylesheet" href="css/kiosk-extra.css?v=20261026e">
+  <link rel="stylesheet" href="css/tokens.css?v=20261027a">
+  <link rel="stylesheet" href="css/style.css?v=20261027a">
+  <link rel="stylesheet" href="css/kiosk-extra.css?v=20261027a">
 </head>
 <body class="kiosk-body">
 
@@ -258,9 +258,9 @@
     </div>
 
     <!-- ==================================================================== -->
-    <!-- FLOATING STATUS TOAST (ROBUST & CENTERED AT BOTTOM)                  -->
+    <!-- FLOATING STATUS TOAST (ANTI-JITTER & CENTERED AT BOTTOM)             -->
     <!-- ==================================================================== -->
-    <div id="kiosk-toast" class="kiosk-toast" role="status" aria-live="polite" style="position:fixed!important;bottom:28px!important;left:50%!important;transform:translateX(-50%)!important;z-index:99999!important;width:max-content!important;max-width:min(90vw,820px)!important;" hidden>
+    <div id="kiosk-toast" class="kiosk-toast" role="status" aria-live="polite" style="position:fixed;bottom:28px;left:50%;z-index:99999;max-width:min(90vw,820px);" hidden>
       <i id="kiosk-toast-icon" class="ri-information-line" aria-hidden="true"></i>
       <span id="kiosk-toast-text"></span>
     </div>
@@ -349,12 +349,12 @@
   <!-- JAVASCRIPT MODULES (MODULAR, CLEAN, SCALEABLE)                       -->
   <!-- ==================================================================== -->
   <!-- 1. Central Configuration (Semua pesan, warna, ukuran, animasi) -->
-  <script src="js/kiosk-config.js"></script>
+  <script src="js/kiosk-config.js?v=20261027a"></script>
   <!-- 2. Kiosk Security Lock (Blokir keyboard santri, sembunyikan kursor, Alt + O) -->
-  <script src="js/kiosk-lock.js"></script>
+  <script src="js/kiosk-lock.js?v=20261027a"></script>
   <!-- 3. API Service Layer & Hardware RFID Driver -->
-  <script src="js/kiosk-api.js"></script>
+  <script src="js/kiosk-api.js?v=20261027a"></script>
   <!-- 4. Application Controller & GSAP Animation Engine -->
-  <script src="js/app.js"></script>
+  <script src="js/app.js?v=20261027a"></script>
 </body>
 </html>

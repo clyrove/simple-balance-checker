@@ -3,19 +3,19 @@
  * KIOSK API & HARDWARE RFID SCANNER CONTROLLER
  * ============================================================================
  * Modul ini menangani:
- * 1. Pengambilan data saldo santri dari API riil backend (`api/lookup.php`).
+ * 1. Pengambilan data saldo santri dari API riil (`https://ceksaldo.al-wafi.sch.id/api/lookup.php`)
+ *    baik di Production maupun di Local Development (mendukung Direct & Local Dev Proxy).
  * 2. Micro-cache in-memory (5 detik) untuk mencegah double-tap jaringan berulang.
  * 3. Masking nomor kartu RFID seperti sandi (hanya 2 digit terakhir terlihat).
- * 4. Driver pendeteksi keyboard-wedge dari scanner RFID USB fisik.
+ * 4. Driver pendeteksi keyboard-wedge dari scanner RFID USB fisik (anti ketikan manusia).
  * 5. Tampilan 2 Limit (Limit Harian & Limit Bulanan) dengan fallback "Tidak ada data".
- * 6. Seluruh pesan status & error terpusat dari `KIOSK_CONFIG.messages`.
+ * 6. Anti-jitter loading toast (tidak berkedip jika respons cepat).
  * ============================================================================
  */
 
 (function (window, document) {
   'use strict';
 
-  // Ambil referensi konfigurasi terpusat
   const CONFIG = window.KIOSK_CONFIG || {
     messages: {
       readingCard: 'Membaca kartu...',
@@ -28,30 +28,35 @@
       walletFallbackType: 'Saldo Wallet',
       unknownUser: 'Pemilik Wallet'
     },
-    api: { endpoint: 'api/lookup.php', timeoutMs: 6000, cacheTtlMs: 5000, fallbackToMockOnOffline: true },
-    timing: { autoCloseSeconds: 3, toastDurationMs: 4000, scanCharMaxIntervalMs: 400, scanSubmitMaxAgeMs: 2000 }
+    api: {
+      productionBaseUrl: 'https://ceksaldo.al-wafi.sch.id',
+      remoteEndpoint: 'https://ceksaldo.al-wafi.sch.id/api/lookup.php',
+      localProxyEndpoint: 'http://127.0.0.1:8787/api/lookup.php',
+      endpoint: 'https://ceksaldo.al-wafi.sch.id/api/lookup.php',
+      isLocalDev: false,
+      timeoutMs: 6000,
+      cacheTtlMs: 5000,
+      fallbackToMockOnOffline: false
+    },
+    timing: {
+      autoCloseSeconds: 3,
+      toastDurationMs: 3200,
+      scanCharMaxIntervalMs: 55,
+      scanSubmitMaxAgeMs: 120,
+      scanMinChars: 5,
+      scanCooldownMs: 600
+    }
   };
 
   let currentActiveData = null;
   let isRequestBusy = false;
+  let lastTapFinishedTime = 0;
 
   // Micro-cache in-memory: Map(walletId => { data, timestamp })
   const microCache = new Map();
 
-  // Mock Database Lokal sebagai fallback jika server offline / demo
+  // Mock Database Lokal (digunakan jika tombol "Terapkan Mock" dipilih atau fallback diaktifkan)
   const LOCAL_MOCK_DATABASE = {
-    '104928172': {
-      cardUid: '104928172',
-      name: 'Ahmad Fauzi Ridwan',
-      nis: '202401089',
-      className: 'Kelas 10-A • Asrama Abu Bakar',
-      balance: 350000,
-      limitHarian: 100000,
-      limitBulanan: 500000,
-      status: 'Kartu Aktif',
-      accountType: 'Saldo Wallet',
-      initials: 'AF'
-    },
     'STR-202401': {
       cardUid: 'STR-202401',
       name: 'Ahmad Fauzi Ridwan',
@@ -142,13 +147,95 @@
     }));
   }
 
+  /**
+   * Menyusun daftar endpoint API yang akan dicoba secara berurutan.
+   * Mendukung:
+   * - Server Production (`https://ceksaldo.al-wafi.sch.id/api/lookup.php`)
+   * - Local Dev Server / CORS Proxy (`http://127.0.0.1:8787/api/lookup.php`)
+   * - Relative path (`api/lookup.php`) jika dijalankan di server PHP lokal
+   */
+  function getApiCandidateEndpoints() {
+    const candidates = [];
+    const remoteUrl = (CONFIG.api && CONFIG.api.remoteEndpoint) || 'https://ceksaldo.al-wafi.sch.id/api/lookup.php';
+    const localProxyUrl = (CONFIG.api && CONFIG.api.localProxyEndpoint) || 'http://127.0.0.1:8787/api/lookup.php';
+    const isLocalDev = !!(CONFIG.api && CONFIG.api.isLocalDev);
+
+    if (isLocalDev) {
+      // Jika user membuka lewat dev-server lokal di port 8787, gunakan relative/same-origin dulu
+      if (window.location && window.location.port === '8787') {
+        candidates.push('/api/lookup.php');
+      }
+      // Di environment lokal (Live Server 5500, file://, localhost), coba:
+      // 1. Local Dev Proxy (127.0.0.1:8787) yang meneruskan ke https://ceksaldo.al-wafi.sch.id bebas CORS
+      candidates.push(localProxyUrl);
+      // 2. Direct ke https://ceksaldo.al-wafi.sch.id/api/lookup.php
+      candidates.push(remoteUrl);
+      // 3. Relative path jika dijalankan di Laragon / XAMPP lokal yang punya api/lookup.php
+      if (window.location && window.location.protocol !== 'file:') {
+        candidates.push('api/lookup.php');
+      }
+    } else {
+      // Di server Production (ceksaldo.al-wafi.sch.id)
+      candidates.push((CONFIG.api && CONFIG.api.endpoint) || remoteUrl);
+      if (!candidates.includes(remoteUrl)) {
+        candidates.push(remoteUrl);
+      }
+    }
+
+    // Hilangkan duplikat
+    return Array.from(new Set(candidates));
+  }
+
+  /**
+   * Melakukan single HTTP POST request ke satu URL endpoint dengan timeout
+   */
+  async function requestEndpoint(url, cleanId, timeoutMs) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+          'Accept': 'application/json'
+        },
+        body: new URLSearchParams({ wallet: cleanId }).toString(),
+        cache: 'no-store',
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
+      const rawText = await response.text();
+      let payload = null;
+      try {
+        payload = JSON.parse(rawText);
+      } catch (_) {
+        payload = null;
+      }
+
+      // Pastikan respons benar-benar berasal dari API JSON (bukan halaman HTML 404/405 dari Live Server)
+      if (!payload || typeof payload !== 'object' || typeof payload.success !== 'boolean') {
+        const notApiErr = new Error('Non-JSON API response');
+        notApiErr.isNotApiEndpoint = true;
+        throw notApiErr;
+      }
+
+      return { response, payload };
+    } catch (err) {
+      clearTimeout(timeoutId);
+      throw err;
+    }
+  }
+
   // --------------------------------------------------------------------------
   // 2. PUBLIC API CONTROLLER (window.SantriKioskAPI)
   // --------------------------------------------------------------------------
   const SantriKioskAPI = {
     /**
-     * Mengambil data santri dari backend API /api/lookup.php
-     * Menggunakan AbortController, timeout, micro-cache, dan offline fallback
+     * Mengambil data santri dari backend API (`https://ceksaldo.al-wafi.sch.id/api/lookup.php`)
+     * Mendukung penuh eksekusi dari Local Development maupun Production Server.
      */
     async fetchSantriByCardId(cardId) {
       const cleanId = String(cardId || '').replace(/\s+/g, '');
@@ -168,74 +255,60 @@
         return { success: true, data: cached.data, fromCache: true };
       }
 
-      // 2. Request jaringan ke backend endpoint
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), CONFIG.api.timeoutMs);
+      // 2. Coba daftar kandidat endpoint secara berurutan (Local Proxy -> Direct Remote -> Fallback)
+      const endpoints = getApiCandidateEndpoints();
+      let lastError = null;
 
-      try {
-        const response = await fetch(CONFIG.api.endpoint, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-            'Accept': 'application/json'
-          },
-          body: new URLSearchParams({ wallet: cleanId }).toString(),
-          cache: 'no-store',
-          signal: controller.signal
-        });
-
-        clearTimeout(timeoutId);
-
-        let payload;
+      for (let i = 0; i < endpoints.length; i++) {
+        const endpointUrl = endpoints[i];
         try {
-          payload = await response.json();
-        } catch (jsonErr) {
-          payload = null;
+          const { response, payload } = await requestEndpoint(
+            endpointUrl,
+            cleanId,
+            CONFIG.api.timeoutMs || 6000
+          );
+
+          // Jika sukses ditemukan
+          if (response.ok && payload.success === true && payload.data) {
+            microCache.set(cleanId, {
+              data: payload.data,
+              timestamp: Date.now()
+            });
+            return { success: true, data: payload.data, endpoint: endpointUrl };
+          }
+
+          // Jika kartu tidak terdaftar atau ditolak oleh server API (misal HTTP 404 / 400 dari lookup.php)
+          let errMsg = payload.message || (CONFIG.messages && CONFIG.messages.cardNotRegistered);
+          if (errMsg) {
+            errMsg = errMsg.replace(/petugas/gi, 'tim IT');
+          }
+          const errCode = payload.code || `HTTP_${response.status}`;
+
+          return {
+            success: false,
+            code: errCode,
+            message: errMsg,
+            endpoint: endpointUrl
+          };
+        } catch (err) {
+          lastError = err;
+          // Lanjut coba kandidat endpoint berikutnya
         }
-
-        // Tangani respons HTTP dan payload sukses
-        if (response.ok && payload && payload.success === true && payload.data) {
-          // Simpan ke micro-cache
-          microCache.set(cleanId, {
-            data: payload.data,
-            timestamp: Date.now()
-          });
-          return { success: true, data: payload.data };
-        }
-
-        // Jika kartu tidak terdaftar di backend (HTTP 404 / 400)
-        let errMsg = (payload && payload.message) || (CONFIG.messages && CONFIG.messages.cardNotRegistered);
-        // Ganti kata "petugas" dengan "tim IT" jika ada di pesan dari backend
-        if (errMsg) {
-          errMsg = errMsg.replace(/petugas/gi, 'tim IT');
-        }
-        const errCode = (payload && payload.code) || `HTTP_${response.status}`;
-
-        // Fallback ke mock jika server mengembalikan 404 pada data test
-        if (LOCAL_MOCK_DATABASE[cleanId]) {
-          return { success: true, data: LOCAL_MOCK_DATABASE[cleanId], fromMock: true };
-        }
-
-        return { success: false, code: errCode, message: errMsg };
-
-      } catch (err) {
-        clearTimeout(timeoutId);
-
-        const isTimeout = err.name === 'AbortError';
-
-        // Jika offline atau jaringan gagal, dan fallback diaktifkan
-        if (CONFIG.api.fallbackToMockOnOffline && LOCAL_MOCK_DATABASE[cleanId]) {
-          return { success: true, data: LOCAL_MOCK_DATABASE[cleanId], fromMock: true };
-        }
-
-        return {
-          success: false,
-          code: isTimeout ? 'timeout' : 'network_error',
-          message: isTimeout
-            ? (CONFIG.messages && CONFIG.messages.timeoutError) || 'Koneksi ke server timeout. Silakan coba lagi atau hubungi tim IT.'
-            : (CONFIG.messages && CONFIG.messages.networkError) || 'Tidak dapat menghubungi server. Periksa koneksi atau hubungi tim IT.'
-        };
       }
+
+      // 3. Jika seluruh endpoint gagal dihubungi (misal benar-benar offline)
+      if (CONFIG.api.fallbackToMockOnOffline && LOCAL_MOCK_DATABASE[cleanId]) {
+        return { success: true, data: LOCAL_MOCK_DATABASE[cleanId], fromMock: true };
+      }
+
+      const isTimeout = lastError && lastError.name === 'AbortError';
+      return {
+        success: false,
+        code: isTimeout ? 'timeout' : 'network_error',
+        message: isTimeout
+          ? (CONFIG.messages && CONFIG.messages.timeoutError) || 'Koneksi ke server timeout. Silakan coba lagi atau hubungi tim IT.'
+          : (CONFIG.messages && CONFIG.messages.networkError) || 'Tidak dapat menghubungi server. Periksa koneksi atau hubungi tim IT.'
+      };
     },
 
     /**
@@ -252,12 +325,12 @@
       const elSantriId = document.getElementById('kiosk-api-santri-id');
 
       if (elRawBalance) elRawBalance.value = data.balance || 0;
-      if (elCardUid) elCardUid.value = data.cardUid || '';
+      if (elCardUid) elCardUid.value = data.cardUid || data.wallet || '';
       if (elSantriId) elSantriId.value = data.nis || '';
 
       // 2. Nomor kartu terproteksi (masking password)
       const elMaskedCard = document.getElementById('kiosk-card-masked-number');
-      const maskedString = maskRfidCardNumber(data.cardUid);
+      const maskedString = maskRfidCardNumber(data.cardUid || data.wallet);
       if (elMaskedCard) {
         const textSpan = elMaskedCard.querySelector('.masked-text');
         if (textSpan) {
@@ -288,13 +361,10 @@
       const elDailyLimit = document.getElementById('kiosk-daily-limit');
       const elMonthlyLimit = document.getElementById('kiosk-monthly-limit');
 
-      // Ambil nilai dari field API:
-      // Limit Harian: data.limitHarian atau data.dailyLimit
       const dailyVal = (data.limitHarian !== undefined && data.limitHarian !== null)
         ? data.limitHarian
         : data.dailyLimit;
 
-      // Limit Bulanan: data.limitBulanan atau data.monthlyLimit
       const monthlyVal = (data.limitBulanan !== undefined && data.limitBulanan !== null)
         ? data.limitBulanan
         : data.monthlyLimit;
@@ -326,7 +396,7 @@
         elTimestamp.textContent = `Diperbarui pukul ${timeStr} WIB`;
       }
 
-      // 7. Sembunyikan toast dan pemicu animasi tampilan saldo
+      // 7. Sembunyikan toast dan picu animasi tampilan saldo
       window.dispatchEvent(new CustomEvent('kiosk:toast-hide'));
       window.dispatchEvent(new CustomEvent('kiosk:show-balance', {
         detail: {
@@ -337,19 +407,36 @@
     },
 
     /**
-     * Memproses tap kartu: mengambil data dari API lalu menampilkan
+     * Memproses tap kartu: mengambil data dari API lalu menampilkan.
+     * Dilengkapi anti-jitter delay pada loading toast & cooldown antar-tap.
      */
     async tapCard(cardId) {
       if (isRequestBusy) return;
+
+      const now = Date.now();
+      const cooldownMs = (CONFIG.timing && CONFIG.timing.scanCooldownMs) || 600;
+      if (now - lastTapFinishedTime < cooldownMs) {
+        return;
+      }
+
       const cleanId = String(cardId || '').replace(/\s+/g, '');
       if (!cleanId) return;
 
       isRequestBusy = true;
+
+      // Tampilkan toast "Membaca kartu..." HANYA jika request memakan waktu > 160ms
+      // sehingga tidak terjadi kedipan/jitter saat respons cepat
       const readingMsg = (CONFIG.messages && CONFIG.messages.readingCard) || 'Membaca kartu...';
-      showToast(readingMsg, 'info', 0);
+      const loadingToastTimer = setTimeout(() => {
+        if (isRequestBusy) {
+          showToast(readingMsg, 'info', 0);
+        }
+      }, 160);
 
       try {
         const res = await this.fetchSantriByCardId(cleanId);
+        clearTimeout(loadingToastTimer);
+
         if (res && res.success && res.data) {
           this.setSantriData(res.data);
         } else {
@@ -357,10 +444,12 @@
           showToast(notRegMsg, 'error', CONFIG.timing.toastDurationMs);
         }
       } catch (err) {
+        clearTimeout(loadingToastTimer);
         const genErrMsg = (CONFIG.messages && CONFIG.messages.generalError) || 'Gagal memeriksa saldo. Silakan hubungi tim IT.';
         showToast(genErrMsg, 'error', CONFIG.timing.toastDurationMs);
       } finally {
         isRequestBusy = false;
+        lastTapFinishedTime = Date.now();
       }
     },
 
@@ -387,7 +476,7 @@
   window.SantriKioskAPI = SantriKioskAPI;
 
   // --------------------------------------------------------------------------
-  // 3. HARDWARE RFID SCANNER DRIVER (USB KEYBOARD-WEDGE)
+  // 3. HARDWARE RFID SCANNER DRIVER (USB KEYBOARD-WEDGE ANTI KETIKAN MANUSIA)
   // --------------------------------------------------------------------------
   let rfidScanBuffer = '';
   let lastStrokeTime = 0;
@@ -403,30 +492,41 @@
       return;
     }
 
-    const now = Date.now();
+    // Abaikan tombol yang ditahan (repeat) atau menggunakan modifier (Ctrl, Alt, Meta)
+    if (e.repeat || e.ctrlKey || e.altKey || e.metaKey) {
+      rfidScanBuffer = '';
+      return;
+    }
 
-    // Enter atau Tab menandakan akhir scan dari hardware reader
+    const now = Date.now();
+    const maxCharInterval = (CONFIG.timing && CONFIG.timing.scanCharMaxIntervalMs) || 55;
+    const maxSubmitAge = (CONFIG.timing && CONFIG.timing.scanSubmitMaxAgeMs) || 120;
+    const minChars = (CONFIG.timing && CONFIG.timing.scanMinChars) || 5;
+
+    // Enter atau Tab menandakan akhir scan dari hardware reader RFID
     if (e.key === 'Enter' || e.key === 'Tab') {
       const scanned = rfidScanBuffer.trim();
       const age = now - lastStrokeTime;
       rfidScanBuffer = '';
       lastStrokeTime = now;
 
-      if (scanned.length >= 3 && age <= CONFIG.timing.scanSubmitMaxAgeMs) {
+      if (scanned.length >= minChars && age <= maxSubmitAge) {
         e.preventDefault();
         SantriKioskAPI.tapCard(scanned);
       }
       return;
     }
 
-    // Reader RFID USB mengetik sangat rapat (<400ms antar karakter)
-    if (now - lastStrokeTime > CONFIG.timing.scanCharMaxIntervalMs) {
+    // Reader RFID USB mengetik sangat rapat (< 55ms antar karakter)
+    if (now - lastStrokeTime > maxCharInterval) {
       rfidScanBuffer = '';
     }
     lastStrokeTime = now;
 
-    if (e.key && e.key.length === 1) {
+    if (e.key && e.key.length === 1 && /^[0-9a-zA-Z\-]$/.test(e.key)) {
       rfidScanBuffer += e.key;
+    } else {
+      rfidScanBuffer = '';
     }
   });
 

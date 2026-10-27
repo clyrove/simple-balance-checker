@@ -7,12 +7,68 @@
  * - Tim IT Pesantren
  * - Administrator / Orang awam
  *
- * Seluruh pesan status, error, warning, warna, ukuran, dan animasi terpusat di sini!
+ * Seluruh pesan status, error, warning, warna, ukuran, animasi, dan API terpusat di sini!
  * ============================================================================
  */
 
 (function (window) {
   'use strict';
+
+  const PRODUCTION_BASE_URL = 'https://ceksaldo.al-wafi.sch.id';
+  const LOCAL_PROXY_BASE_URL = 'http://127.0.0.1:8787';
+
+  /**
+   * Mendeteksi apakah aplikasi sedang dijalankan di environment Development Lokal
+   * (seperti file://, localhost, 127.0.0.1, Live Server, atau IP LAN lokal)
+   */
+  function detectLocalDevEnvironment() {
+    if (typeof window === 'undefined' || !window.location) return false;
+    const protocol = window.location.protocol;
+    const hostname = (window.location.hostname || '').toLowerCase();
+
+    if (protocol === 'file:') return true;
+    if (!hostname) return true;
+    if (
+      hostname === 'localhost' ||
+      hostname === '127.0.0.1' ||
+      hostname === '::1' ||
+      hostname.endsWith('.local') ||
+      hostname.endsWith('.test') ||
+      /^192\.168\./.test(hostname) ||
+      /^10\./.test(hostname) ||
+      /^172\.(1[6-9]|2\d|3[0-1])\./.test(hostname)
+    ) {
+      return true;
+    }
+    return hostname !== 'ceksaldo.al-wafi.sch.id';
+  }
+
+  /**
+   * Menyelesaikan endpoint URL backend secara cerdas untuk Production & Development
+   */
+  function resolveEndpoint(relativePath) {
+    const cleanPath = String(relativePath || 'api/lookup.php').replace(/^\/+/, '');
+    if (typeof window === 'undefined' || !window.location) {
+      return PRODUCTION_BASE_URL + '/' + cleanPath;
+    }
+
+    // Jika diakses dari environment lokal (development), arahkan ke server asli
+    if (detectLocalDevEnvironment()) {
+      return PRODUCTION_BASE_URL + '/' + cleanPath;
+    }
+
+    // Jika diakses langsung di server production (ceksaldo.al-wafi.sch.id)
+    const origin = window.location.origin;
+    let pathname = window.location.pathname || '/';
+    if (!pathname.endsWith('/')) {
+      if (/\.[a-zA-Z0-9]+$/.test(pathname)) {
+        pathname = pathname.replace(/\/[^/]*$/, '/');
+      } else {
+        pathname = pathname + '/';
+      }
+    }
+    return origin + pathname + cleanPath;
+  }
 
   const KIOSK_CONFIG = {
     // ------------------------------------------------------------------------
@@ -30,7 +86,7 @@
       touchPrompt: 'Tempelkan kartu pada reader RFID.',
       autoClosePrefix: 'Menutup otomatis dalam',
 
-      // Pesan Error & Validasi (Menggunakan "IT", bukan "petugas")
+      // Pesan Error & Validasi (Menggunakan "tim IT", bukan "petugas")
       cardNotRegistered: 'Kartu tidak terdaftar. Silakan hubungi tim IT.',
       invalidCard: 'Nomor kartu tidak valid. Silakan hubungi tim IT.',
       networkError: 'Tidak dapat menghubungi server. Periksa koneksi atau hubungi tim IT.',
@@ -45,9 +101,9 @@
       walletFallbackType: 'Saldo Wallet',
       unknownUser: 'Pemilik Wallet',
 
-      // Pesan Kios Lock & Keamanan
-      kioskLocked: 'Kios Terkunci: Layar penuh terkunci, keyboard & tombol mouse dinonaktifkan.',
-      kioskUnlocked: 'Mode Pemeliharaan IT: Keyboard, mouse & jendela diaktifkan. (Tekan Alt + O untuk mengunci)'
+      // Pesan Kios Lock & Keamanan (Tanpa Force Fullscreen)
+      kioskLocked: 'Kios Terkunci: Keyboard & klik mouse dinonaktifkan.',
+      kioskUnlocked: 'Mode Pemeliharaan IT: Keyboard & mouse diaktifkan. (Tekan Alt + O untuk mengunci)'
     },
 
     // ------------------------------------------------------------------------
@@ -139,47 +195,38 @@
     },
 
     // ------------------------------------------------------------------------
-    // 5. TIMING & BATAS WAKTU
+    // 5. TIMING & FILTER HARDWARE RFID SCANNER
     // ------------------------------------------------------------------------
     timing: {
       autoCloseSeconds: 3,
-      toastDurationMs: 4000,
-      scanCharMaxIntervalMs: 400,
-      scanSubmitMaxAgeMs: 2000
+      toastDurationMs: 3200,
+      // Filter ketat agar ketikan tangan manusia tidak dianggap sebagai scan RFID:
+      // Alat scan RFID USB mengirim karakter sangat rapat (< 55ms per karakter)
+      scanCharMaxIntervalMs: 55,
+      // Enter dari alat scan RFID dikirim seketika (< 120ms setelah digit terakhir)
+      scanSubmitMaxAgeMs: 120,
+      // Panjang minimal karakter UID kartu RFID
+      scanMinChars: 5,
+      // Cooldown antar scan untuk mencegah spam / jitter
+      scanCooldownMs: 600
     },
 
     // ------------------------------------------------------------------------
-    // 6. KONEKSI API & ENDPOINT BACKEND
+    // 6. KONEKSI API & ENDPOINT BACKEND (SUPPORT LOCAL DEV & PRODUCTION)
     // ------------------------------------------------------------------------
     api: {
+      productionBaseUrl: PRODUCTION_BASE_URL,
+      remoteEndpoint: PRODUCTION_BASE_URL + '/api/lookup.php',
+      localProxyEndpoint: LOCAL_PROXY_BASE_URL + '/api/lookup.php',
       endpoint: resolveEndpoint('api/lookup.php'),
+      isLocalDev: detectLocalDevEnvironment(),
       timeoutMs: 6000,
       cacheTtlMs: 5000,
-      fallbackToMockOnOffline: true
+      // Nonaktifkan mock otomatis agar di development & production selalu memanggil API asli
+      // (Data mock tetap bisa diuji kapan saja lewat tombol "Terapkan Mock" di [Alt + S])
+      fallbackToMockOnOffline: false
     }
   };
-
-  /**
-   * Helper menyelesaikan endpoint URL backend
-   */
-  function resolveEndpoint(relativePath) {
-    if (typeof window === 'undefined') return relativePath;
-    const origin = window.location.origin;
-    let pathname = window.location.pathname;
-
-    if (window.location.protocol === 'file:') {
-      return 'https://ceksaldo.al-wafi.sch.id/' + relativePath;
-    }
-
-    if (!pathname.endsWith('/')) {
-      if (/\.[a-zA-Z0-9]+$/.test(pathname)) {
-        pathname = pathname.replace(/\/[^/]*$/, '/');
-      } else {
-        pathname = pathname + '/';
-      }
-    }
-    return origin + pathname + relativePath;
-  }
 
   /**
    * Menyinkronkan variabel KIOSK_CONFIG langsung ke CSS Variables (:root)
