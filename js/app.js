@@ -95,7 +95,8 @@ document.addEventListener('DOMContentLoaded', () => {
           poly.setAttribute('points', `${tr[0][0]},${tr[0][1]} ${tr[1][0]},${tr[1][1]} ${tr[2][0]},${tr[2][1]}`);
           const colorIdx = Math.abs(Math.floor(Math.sin(idx * 19.7 + c * 7.1) * shardColors.length)) % shardColors.length;
           poly.setAttribute('fill', shardColors[colorIdx]);
-          poly.setAttribute('class', `${shardClassPrefix} ${shardClassPrefix.slice(0, 2)}-${(idx % 5) + 1}`);
+          const shortPrefix = shardClassPrefix === 'diamond-shard' ? 'ds' : (shardClassPrefix === 'glory-shard' ? 'gs' : shardClassPrefix.slice(0, 2));
+          poly.setAttribute('class', `${shardClassPrefix} ${shortPrefix}-${(idx % 5) + 1} ${shardClassPrefix.slice(0, 2)}-${(idx % 5) + 1}`);
           poly.style.animationDelay = `${((idx * 0.23) % 2.4).toFixed(2)}s`;
           frag.appendChild(poly);
           idx++;
@@ -127,16 +128,16 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const diamondShardColors = [
-    'rgba(186, 230, 253, 0.08)', 'rgba(56, 189, 248, 0.06)', 'rgba(224, 242, 254, 0.07)',
-    'rgba(255, 255, 255, 0.12)', 'rgba(147, 197, 253, 0.05)', 'rgba(199, 210, 254, 0.06)',
-    'rgba(125, 211, 252, 0.07)', 'rgba(255, 255, 255, 0.10)'
+    'rgba(186, 230, 253, 0.035)', 'rgba(56, 189, 248, 0.025)', 'rgba(224, 242, 254, 0.03)',
+    'rgba(255, 255, 255, 0.05)', 'rgba(147, 197, 253, 0.02)', 'rgba(199, 210, 254, 0.025)',
+    'rgba(125, 211, 252, 0.03)', 'rgba(255, 255, 255, 0.04)'
   ];
   buildTriangularMosaic('kiosk-diamond-mosaic', 'diamond-shard', 'diamond-vertex-star', diamondShardColors, 5, 1.2);
 
   const gloryShardColors = [
-    'rgba(250, 204, 21, 0.10)', 'rgba(234, 179, 8, 0.08)', 'rgba(254, 240, 138, 0.12)',
-    'rgba(255, 255, 255, 0.14)', 'rgba(245, 158, 11, 0.08)', 'rgba(253, 224, 71, 0.10)',
-    'rgba(217, 119, 6, 0.06)', 'rgba(254, 249, 195, 0.12)'
+    'rgba(250, 204, 21, 0.045)', 'rgba(234, 179, 8, 0.035)', 'rgba(254, 240, 138, 0.06)',
+    'rgba(255, 255, 255, 0.07)', 'rgba(245, 158, 11, 0.035)', 'rgba(253, 224, 71, 0.045)',
+    'rgba(217, 119, 6, 0.025)', 'rgba(254, 249, 195, 0.055)'
   ];
   buildTriangularMosaic('kiosk-glory-mosaic', 'glory-shard', 'glory-vertex-star', gloryShardColors, 5, 1.2);
   buildTriangularMosaic('kiosk-prismatic-mosaic', 'glory-shard', 'glory-vertex-star', gloryShardColors, 5, 1.2);
@@ -374,6 +375,147 @@ document.addEventListener('DOMContentLoaded', () => {
     confettiRafId = requestAnimationFrame(renderConfetti);
   }
 
+  let gloryFogCanvas = null;
+  let gloryFogCtx = null;
+  let gloryFogRafId = null;
+  let gloryFogParticles = [];
+  let isGloryFogActive = false;
+
+  function initGloryFog() {
+    gloryFogCanvas = document.getElementById('kiosk-glory-fog-canvas');
+    if (!gloryFogCanvas) return;
+    gloryFogCtx = gloryFogCanvas.getContext('2d');
+    resizeGloryFog();
+  }
+
+  function resizeGloryFog() {
+    if (!gloryFogCanvas) return;
+    const rect = gloryFogCanvas.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    const w = Math.round((rect.width || 1200) * dpr);
+    const h = Math.round((rect.height || 800) * dpr);
+    if (gloryFogCanvas.width !== w || gloryFogCanvas.height !== h) {
+      gloryFogCanvas.width = w;
+      gloryFogCanvas.height = h;
+    }
+  }
+
+  function createFogParticle(w, h, cx0, cy0, cx1, cy1, isInitial) {
+    const edge = Math.floor(Math.random() * 4);
+    let x = 0, y = 0, vx = 0, vy = 0;
+    const offset = (Math.random() - 0.5) * 45;
+
+    if (edge === 0) {
+      x = cx0 + Math.random() * (cx1 - cx0);
+      y = cy0 + offset;
+      vx = (Math.random() - 0.5) * 0.45;
+      vy = -(0.3 + Math.random() * 0.65);
+    } else if (edge === 1) {
+      x = cx1 + offset;
+      y = cy0 + Math.random() * (cy1 - cy0);
+      vx = (0.3 + Math.random() * 0.65);
+      vy = (Math.random() - 0.5) * 0.45;
+    } else if (edge === 2) {
+      x = cx0 + Math.random() * (cx1 - cx0);
+      y = cy1 + offset;
+      vx = (Math.random() - 0.5) * 0.45;
+      vy = (0.3 + Math.random() * 0.65);
+    } else {
+      x = cx0 + offset;
+      y = cy0 + Math.random() * (cy1 - cy0);
+      vx = -(0.3 + Math.random() * 0.65);
+      vy = (Math.random() - 0.5) * 0.45;
+    }
+
+    const maxAge = 120 + Math.floor(Math.random() * 110);
+    return {
+      x, y, vx, vy,
+      radius: 95 + Math.random() * 95,
+      growRate: 0.22 + Math.random() * 0.32,
+      baseAlpha: 0.20 + Math.random() * 0.16,
+      age: isInitial ? Math.floor(Math.random() * maxAge) : 0,
+      maxAge
+    };
+  }
+
+  function startGloryFog() {
+    if (!gloryFogCanvas) initGloryFog();
+    if (!gloryFogCanvas || !gloryFogCtx) return;
+    resizeGloryFog();
+    isGloryFogActive = true;
+    if (gloryFogRafId) cancelAnimationFrame(gloryFogRafId);
+
+    const w = gloryFogCanvas.width;
+    const h = gloryFogCanvas.height;
+    const cw = w * 0.72;
+    const ch = h * 0.70;
+    const cx0 = (w - cw) / 2;
+    const cy0 = (h - ch) / 2;
+    const cx1 = cx0 + cw;
+    const cy1 = cy0 + ch;
+
+    gloryFogParticles = [];
+    const count = 42;
+    for (let i = 0; i < count; i++) {
+      gloryFogParticles.push(createFogParticle(w, h, cx0, cy0, cx1, cy1, true));
+    }
+
+    function renderFog() {
+      if (!isGloryFogActive) {
+        gloryFogCtx.clearRect(0, 0, w, h);
+        return;
+      }
+
+      gloryFogCtx.clearRect(0, 0, w, h);
+      gloryFogCtx.globalCompositeOperation = 'lighter';
+
+      for (let i = 0; i < gloryFogParticles.length; i++) {
+        const p = gloryFogParticles[i];
+        p.age++;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.radius += p.growRate;
+
+        const progress = p.age / p.maxAge;
+        const alpha = Math.sin(progress * Math.PI) * p.baseAlpha;
+
+        if (alpha > 0.001) {
+          const grad = gloryFogCtx.createRadialGradient(p.x, p.y, p.radius * 0.1, p.x, p.y, p.radius);
+          grad.addColorStop(0, `rgba(254, 240, 138, ${alpha * 0.5})`);
+          grad.addColorStop(0.35, `rgba(245, 158, 11, ${alpha * 0.3})`);
+          grad.addColorStop(0.7, `rgba(217, 119, 6, ${alpha * 0.12})`);
+          grad.addColorStop(1, 'rgba(180, 83, 9, 0)');
+
+          gloryFogCtx.fillStyle = grad;
+          gloryFogCtx.beginPath();
+          gloryFogCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          gloryFogCtx.fill();
+        }
+
+        if (p.age >= p.maxAge) {
+          gloryFogParticles[i] = createFogParticle(w, h, cx0, cy0, cx1, cy1, false);
+        }
+      }
+
+      gloryFogCtx.globalCompositeOperation = 'source-over';
+      gloryFogRafId = requestAnimationFrame(renderFog);
+    }
+
+    gloryFogRafId = requestAnimationFrame(renderFog);
+  }
+
+  function stopGloryFog() {
+    isGloryFogActive = false;
+    if (gloryFogRafId) {
+      cancelAnimationFrame(gloryFogRafId);
+      gloryFogRafId = null;
+    }
+    if (gloryFogCanvas && gloryFogCtx) {
+      gloryFogCtx.clearRect(0, 0, gloryFogCanvas.width, gloryFogCanvas.height);
+    }
+    gloryFogParticles = [];
+  }
+
   function triggerShiningSweep() {
     if (!balanceAmountEl) return;
     balanceAmountEl.classList.remove('has-shining');
@@ -403,6 +545,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     triggerShiningSweep();
 
+    if (tier === 'glory' || tier === 'prismatic') {
+      startGloryFog();
+    } else {
+      stopGloryFog();
+    }
+
     if (tier !== 'standard') {
       triggerConfetti(tier);
     } else {
@@ -412,6 +560,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function resetBalanceTier() {
     clearConfetti();
+    stopGloryFog();
     document.body.classList.remove('tier-silver', 'tier-gold', 'tier-platinum', 'tier-diamond', 'tier-glory', 'tier-prismatic');
     if (heroBalancePlate) {
       heroBalancePlate.classList.remove('tier-glory', 'tier-prismatic', 'tier-diamond', 'tier-platinum', 'tier-gold', 'tier-silver');
@@ -594,6 +743,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const rect = clockWidget.getBoundingClientRect();
         applyPosition({ left: rect.left, top: rect.top });
       }
+      if (isGloryFogActive) resizeGloryFog();
     });
   }
 

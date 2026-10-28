@@ -54,6 +54,66 @@
       background: linear-gradient(135deg, #FDE047 0%, #D97706 20%, #F59E0B 40%, #FEF08A 60%, #B45309 80%, #FDE047 100%) !important;
       background-size: 300% 300% !important;
       animation: glory-card-border-flow 3.5s ease-in-out infinite alternate !important;
+      box-shadow: 0 0 45px rgba(245, 158, 11, 0.28), 0 0 90px rgba(234, 179, 8, 0.15) !important;
+    }
+    body.tier-glory .kiosk-card-frame::before,
+    body.tier-prismatic .kiosk-card-frame::before {
+      content: '';
+      position: absolute;
+      inset: -65%;
+      background: conic-gradient(
+        from 0deg at 50% 50%,
+        transparent 0deg,
+        transparent 55deg,
+        rgba(254, 240, 138, 0.25) 70deg,
+        #FFFFFF 82deg,
+        rgba(253, 224, 71, 0.95) 90deg,
+        rgba(245, 158, 11, 0.6) 100deg,
+        transparent 115deg,
+        transparent 360deg
+      );
+      animation: glory-border-beam-rotate 3.6s linear infinite !important;
+      pointer-events: none;
+      z-index: 1;
+    }
+    body.tier-glory .kiosk-card-frame::after,
+    body.tier-prismatic .kiosk-card-frame::after {
+      content: '';
+      position: absolute;
+      inset: -100%;
+      background: linear-gradient(
+        58deg,
+        transparent 38%,
+        rgba(254, 240, 138, 0.3) 46%,
+        rgba(255, 255, 255, 0.95) 50%,
+        rgba(253, 224, 71, 0.4) 54%,
+        transparent 62%
+      );
+      transform: translate3d(-100%, -100%, 0);
+      animation: glory-border-shine-sweep 3.2s cubic-bezier(0.22, 1, 0.36, 1) infinite !important;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .kiosk-view-layer {
+      position: relative;
+      z-index: 2;
+    }
+    .kiosk-glory-fog-canvas {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: clamp(1020px, 80vw, 1360px);
+      height: clamp(700px, 88vh, 920px);
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+      filter: blur(8px);
+    }
+    body.tier-glory .kiosk-glory-fog-canvas,
+    body.tier-prismatic .kiosk-glory-fog-canvas {
+      opacity: 1;
     }
     #kiosk-dev-modal :focus-visible,
     .dev-squircle-dialog :focus-visible,
@@ -66,9 +126,9 @@
     }
   </style>
 
-  <link rel="stylesheet" href="css/tokens.css?v=20261028i">
-  <link rel="stylesheet" href="css/style.css?v=20261028i">
-  <link rel="stylesheet" href="css/kiosk-extra.css?v=20261028i">
+  <link rel="stylesheet" href="css/tokens.css?v=20261028j">
+  <link rel="stylesheet" href="css/style.css?v=20261028j">
+  <link rel="stylesheet" href="css/kiosk-extra.css?v=20261028j">
 </head>
 <body class="kiosk-body">
 
@@ -121,6 +181,7 @@
     </header>
 
     <div class="kiosk-center-stage">
+      <canvas id="kiosk-glory-fog-canvas" class="kiosk-glory-fog-canvas" aria-hidden="true"></canvas>
       <div id="kiosk-state-container" class="kiosk-card-frame state-waiting" role="region" aria-live="polite">
 
         <section id="kiosk-waiting-view" class="kiosk-view-layer active" aria-hidden="false">
@@ -346,9 +407,9 @@
     </div>
   </dialog>
 
-  <script src="js/kiosk-config.js?v=20261028i"></script>
-  <script src="js/kiosk-lock.js?v=20261028i"></script>
-  <script src="js/kiosk-api.js?v=20261028i"></script>
-  <script src="js/app.js?v=20261028i"></script>
+  <script src="js/kiosk-config.js?v=20261028j"></script>
+  <script src="js/kiosk-lock.js?v=20261028j"></script>
+  <script src="js/kiosk-api.js?v=20261028j"></script>
+  <script src="js/app.js?v=20261028j"></script>
 </body>
 </html>
