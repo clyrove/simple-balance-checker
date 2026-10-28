@@ -516,6 +516,224 @@ document.addEventListener('DOMContentLoaded', () => {
     gloryFogParticles = [];
   }
 
+  let glorySparklesCanvas = null;
+  let glorySparklesCtx = null;
+  let glorySparklesRafId = null;
+  let glorySparkles = [];
+  let isGlorySparklesActive = false;
+
+  function initGlorySparkles() {
+    glorySparklesCanvas = document.getElementById('kiosk-glory-sparkles-canvas');
+    if (!glorySparklesCanvas) return;
+    glorySparklesCtx = glorySparklesCanvas.getContext('2d');
+    resizeGlorySparkles();
+  }
+
+  function resizeGlorySparkles() {
+    if (!glorySparklesCanvas) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const cssW = window.innerWidth;
+    const cssH = window.innerHeight;
+    const targetW = Math.round(cssW * dpr);
+    const targetH = Math.round(cssH * dpr);
+    if (glorySparklesCanvas.width !== targetW || glorySparklesCanvas.height !== targetH) {
+      glorySparklesCanvas.width = targetW;
+      glorySparklesCanvas.height = targetH;
+    }
+  }
+
+  function createGlorySparkle(w, h, cardRect, isInitial) {
+    let x, y;
+    const isNearCard = Math.random() < 0.45 && cardRect;
+
+    if (isNearCard) {
+      const paddingX = 160;
+      const paddingY = 120;
+      const minX = Math.max(15, cardRect.left - paddingX);
+      const maxX = Math.min(w - 15, cardRect.right + paddingX);
+      const minY = Math.max(15, cardRect.top - paddingY);
+      const maxY = Math.min(h - 15, cardRect.bottom + paddingY);
+      x = minX + Math.random() * (maxX - minX);
+      y = minY + Math.random() * (maxY - minY);
+    } else {
+      x = Math.random() * w;
+      y = isInitial ? Math.random() * h : (h + 10 + Math.random() * 40);
+    }
+
+    const vx = (Math.random() - 0.5) * 0.35;
+    const vy = -(0.25 + Math.random() * 0.55);
+
+    const sizeRand = Math.random();
+    let size, isSuperGlint;
+    if (sizeRand < 0.5) {
+      size = 2.5 + Math.random() * 3.5;
+      isSuperGlint = false;
+    } else if (sizeRand < 0.88) {
+      size = 6 + Math.random() * 5.5;
+      isSuperGlint = Math.random() < 0.35;
+    } else {
+      size = 12 + Math.random() * 7;
+      isSuperGlint = true;
+    }
+
+    const maxAge = 140 + Math.floor(Math.random() * 160);
+    const phase = Math.random() * Math.PI * 2;
+    const twinkleSpeed = 0.04 + Math.random() * 0.06;
+    const rotation = Math.random() * Math.PI;
+    const rotationSpeed = (Math.random() - 0.5) * 0.02;
+
+    return {
+      x, y, vx, vy,
+      size,
+      isSuperGlint,
+      phase,
+      twinkleSpeed,
+      rotation,
+      rotationSpeed,
+      baseAlpha: 0.5 + Math.random() * 0.45,
+      age: isInitial ? Math.floor(Math.random() * maxAge) : 0,
+      maxAge
+    };
+  }
+
+  function drawGloryStar(ctx, x, y, size, alpha, rotation, isSuperGlint) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(rotation);
+
+    const auraRadius = size * (isSuperGlint ? 2.6 : 1.8);
+    const auraGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, auraRadius);
+    auraGrad.addColorStop(0, `rgba(255, 255, 255, ${alpha * 0.9})`);
+    auraGrad.addColorStop(0.25, `rgba(254, 240, 138, ${alpha * 0.7})`);
+    auraGrad.addColorStop(0.6, `rgba(245, 158, 11, ${alpha * 0.3})`);
+    auraGrad.addColorStop(1, 'rgba(180, 83, 9, 0)');
+    ctx.fillStyle = auraGrad;
+    ctx.beginPath();
+    ctx.arc(0, 0, auraRadius, 0, Math.PI * 2);
+    ctx.fill();
+
+    const rayLen = size * (isSuperGlint ? 2.2 : 1.6);
+    const rayWidth = Math.max(0.8, size * 0.18);
+
+    ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(1, alpha * 1.25)})`;
+
+    ctx.beginPath();
+    ctx.moveTo(0, -rayLen);
+    ctx.quadraticCurveTo(rayWidth * 0.25, 0, rayWidth, 0);
+    ctx.quadraticCurveTo(rayWidth * 0.25, 0, 0, rayLen);
+    ctx.quadraticCurveTo(-rayWidth * 0.25, 0, -rayWidth, 0);
+    ctx.quadraticCurveTo(-rayWidth * 0.25, 0, 0, -rayLen);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(-rayLen, 0);
+    ctx.quadraticCurveTo(0, rayWidth * 0.25, 0, rayWidth);
+    ctx.quadraticCurveTo(0, rayWidth * 0.25, rayLen, 0);
+    ctx.quadraticCurveTo(0, -rayWidth * 0.25, 0, -rayWidth);
+    ctx.quadraticCurveTo(0, -rayWidth * 0.25, -rayLen, 0);
+    ctx.fill();
+
+    if (isSuperGlint) {
+      const diagLen = rayLen * 0.55;
+      const diagWidth = rayWidth * 0.65;
+      ctx.rotate(Math.PI / 4);
+      ctx.fillStyle = `rgba(254, 240, 138, ${alpha * 0.85})`;
+
+      ctx.beginPath();
+      ctx.moveTo(-diagLen, 0);
+      ctx.lineTo(0, diagWidth);
+      ctx.lineTo(diagLen, 0);
+      ctx.lineTo(0, -diagWidth);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    ctx.fillStyle = `rgba(255, 255, 255, ${Math.min(1, alpha * 1.4)})`;
+    ctx.beginPath();
+    ctx.arc(0, 0, Math.max(1.0, size * 0.22), 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  function startGlorySparkles() {
+    if (!glorySparklesCanvas) initGlorySparkles();
+    if (!glorySparklesCanvas || !glorySparklesCtx) return;
+    resizeGlorySparkles();
+    isGlorySparklesActive = true;
+    if (glorySparklesRafId) cancelAnimationFrame(glorySparklesRafId);
+
+    const cssW = window.innerWidth;
+    const cssH = window.innerHeight;
+    const cardRect = stateContainer ? stateContainer.getBoundingClientRect() : null;
+
+    glorySparkles = [];
+    const count = 62;
+    for (let i = 0; i < count; i++) {
+      glorySparkles.push(createGlorySparkle(cssW, cssH, cardRect, true));
+    }
+
+    function renderSparkles() {
+      if (!isGlorySparklesActive) {
+        if (glorySparklesCtx && glorySparklesCanvas) {
+          glorySparklesCtx.setTransform(1, 0, 0, 1, 0, 0);
+          glorySparklesCtx.clearRect(0, 0, glorySparklesCanvas.width, glorySparklesCanvas.height);
+        }
+        return;
+      }
+
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const curW = window.innerWidth;
+      const curH = window.innerHeight;
+      const curCardRect = stateContainer ? stateContainer.getBoundingClientRect() : null;
+
+      glorySparklesCtx.setTransform(1, 0, 0, 1, 0, 0);
+      glorySparklesCtx.clearRect(0, 0, glorySparklesCanvas.width, glorySparklesCanvas.height);
+      glorySparklesCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      glorySparklesCtx.globalCompositeOperation = 'lighter';
+
+      for (let i = 0; i < glorySparkles.length; i++) {
+        const s = glorySparkles[i];
+        s.age++;
+        s.x += s.vx;
+        s.y += s.vy;
+        s.phase += s.twinkleSpeed;
+        s.rotation += s.rotationSpeed;
+
+        const lifeProgress = s.age / s.maxAge;
+        const lifeFade = Math.sin(lifeProgress * Math.PI);
+        const twinkleFactor = 0.25 + 0.75 * Math.pow(Math.sin(s.phase), 2);
+        const alpha = Math.max(0, lifeFade * twinkleFactor * s.baseAlpha);
+
+        if (alpha > 0.008) {
+          drawGloryStar(glorySparklesCtx, s.x, s.y, s.size, alpha, s.rotation, s.isSuperGlint);
+        }
+
+        if (s.age >= s.maxAge || s.y < -40 || s.x < -40 || s.x > curW + 40) {
+          glorySparkles[i] = createGlorySparkle(curW, curH, curCardRect, false);
+        }
+      }
+
+      glorySparklesCtx.globalCompositeOperation = 'source-over';
+      glorySparklesRafId = requestAnimationFrame(renderSparkles);
+    }
+
+    glorySparklesRafId = requestAnimationFrame(renderSparkles);
+  }
+
+  function stopGlorySparkles() {
+    isGlorySparklesActive = false;
+    if (glorySparklesRafId) {
+      cancelAnimationFrame(glorySparklesRafId);
+      glorySparklesRafId = null;
+    }
+    if (glorySparklesCanvas && glorySparklesCtx) {
+      glorySparklesCtx.setTransform(1, 0, 0, 1, 0, 0);
+      glorySparklesCtx.clearRect(0, 0, glorySparklesCanvas.width, glorySparklesCanvas.height);
+    }
+    glorySparkles = [];
+  }
+
   function triggerShiningSweep() {
     if (!balanceAmountEl) return;
     balanceAmountEl.classList.remove('has-shining');
@@ -547,8 +765,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (tier === 'glory' || tier === 'prismatic') {
       startGloryFog();
+      startGlorySparkles();
     } else {
       stopGloryFog();
+      stopGlorySparkles();
     }
 
     if (tier !== 'standard') {
@@ -561,6 +781,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function resetBalanceTier() {
     clearConfetti();
     stopGloryFog();
+    stopGlorySparkles();
     document.body.classList.remove('tier-silver', 'tier-gold', 'tier-platinum', 'tier-diamond', 'tier-glory', 'tier-prismatic');
     if (heroBalancePlate) {
       heroBalancePlate.classList.remove('tier-glory', 'tier-prismatic', 'tier-diamond', 'tier-platinum', 'tier-gold', 'tier-silver');
@@ -744,6 +965,7 @@ document.addEventListener('DOMContentLoaded', () => {
         applyPosition({ left: rect.left, top: rect.top });
       }
       if (isGloryFogActive) resizeGloryFog();
+      if (isGlorySparklesActive) resizeGlorySparkles();
     });
   }
 
@@ -1106,6 +1328,17 @@ document.addEventListener('DOMContentLoaded', () => {
       if (devModal) devModal.close();
     });
   }
+
+  document.querySelectorAll('.dev-preset-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const bal = btn.getAttribute('data-balance');
+      const balInput = document.getElementById('sim-input-balance');
+      if (balInput && bal) {
+        balInput.value = bal;
+        if (simBtnApply) simBtnApply.click();
+      }
+    });
+  });
 
   window.addEventListener('kiosk:show-balance', (event) => {
     const { targetBalance, santri } = event.detail;

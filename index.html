@@ -27,6 +27,8 @@
     }
     .kiosk-card-frame {
       background: #222226 !important;
+      position: relative !important;
+      z-index: 3 !important;
     }
     .kiosk-inner-card {
       background: #121214 !important;
@@ -115,6 +117,85 @@
     body.tier-prismatic .kiosk-glory-fog-canvas {
       opacity: 1;
     }
+    .kiosk-glory-sparkles-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0;
+      transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    body.tier-glory .kiosk-glory-sparkles-canvas,
+    body.tier-prismatic .kiosk-glory-sparkles-canvas {
+      opacity: 1;
+    }
+    body.tier-glory .user-display-name,
+    body.tier-prismatic .user-display-name {
+      color: transparent !important;
+      -webkit-text-fill-color: transparent !important;
+      background-image:
+        linear-gradient(
+          60deg,
+          transparent 0%,
+          transparent 32%,
+          rgba(255, 255, 255, 0.45) 38%,
+          rgba(255, 255, 255, 1) 48%,
+          rgba(254, 240, 138, 1) 52%,
+          rgba(255, 255, 255, 1) 56%,
+          rgba(250, 204, 21, 0.5) 62%,
+          transparent 70%,
+          transparent 100%
+        ),
+        linear-gradient(
+          180deg,
+          #FFFFFF 0%,
+          #FEF08A 22%,
+          #FDE047 44%,
+          #F59E0B 72%,
+          #D97706 90%,
+          #B45309 100%
+        ) !important;
+      background-size: 320% 320%, 100% 100% !important;
+      background-position: 130% 0%, 0% 0% !important;
+      background-repeat: no-repeat !important;
+      -webkit-background-clip: text !important;
+      background-clip: text !important;
+      animation: glory-name-shine 2.8s cubic-bezier(0.22, 1, 0.36, 1) infinite !important;
+      filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.42)) drop-shadow(0 0 2px rgba(254, 240, 138, 0.65)) !important;
+      display: inline-block;
+      will-change: background-position, filter;
+    }
+    @keyframes glory-name-shine {
+      0% {
+        background-position: 130% 0%, 0% 0%;
+        filter: drop-shadow(0 0 7px rgba(245, 158, 11, 0.35)) drop-shadow(0 0 1px rgba(254, 240, 138, 0.5));
+      }
+      35% {
+        background-position: -40% 100%, 0% 0%;
+        filter: drop-shadow(0 0 16px rgba(250, 204, 21, 0.8)) drop-shadow(0 0 3px rgba(255, 255, 255, 0.95));
+      }
+      48% {
+        background-position: -60% 100%, 0% 0%;
+        filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.5)) drop-shadow(0 0 2px rgba(254, 240, 138, 0.7));
+      }
+      100% {
+        background-position: -60% 100%, 0% 0%;
+        filter: drop-shadow(0 0 7px rgba(245, 158, 11, 0.35)) drop-shadow(0 0 1px rgba(254, 240, 138, 0.5));
+      }
+    }
+    body.tier-glory .user-subcaption,
+    body.tier-prismatic .user-subcaption {
+      color: #D97706 !important;
+      text-shadow: 0 0 8px rgba(245, 158, 11, 0.25);
+    }
+    body.tier-glory .user-avatar-squircle,
+    body.tier-prismatic .user-avatar-squircle {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.24) 0%, #27272A 100%) !important;
+      color: #FDE047 !important;
+      box-shadow: 0 0 18px rgba(245, 158, 11, 0.22) !important;
+    }
     #kiosk-dev-modal :focus-visible,
     .dev-squircle-dialog :focus-visible,
     .dev-input:focus-visible,
@@ -126,9 +207,9 @@
     }
   </style>
 
-  <link rel="stylesheet" href="css/tokens.css?v=20261028j">
-  <link rel="stylesheet" href="css/style.css?v=20261028j">
-  <link rel="stylesheet" href="css/kiosk-extra.css?v=20261028j">
+  <link rel="stylesheet" href="css/tokens.css?v=20261028k">
+  <link rel="stylesheet" href="css/style.css?v=20261028k">
+  <link rel="stylesheet" href="css/kiosk-extra.css?v=20261028k">
 </head>
 <body class="kiosk-body">
 
@@ -150,6 +231,8 @@
     <svg id="kiosk-glory-mosaic" class="glory-triangle-mosaic prismatic-triangle-mosaic" viewBox="0 0 1600 900" preserveAspectRatio="none"></svg>
     <div class="glory-crystal-glint-layer prismatic-crystal-glint-layer"></div>
   </div>
+
+  <canvas id="kiosk-glory-sparkles-canvas" class="kiosk-glory-sparkles-canvas" aria-hidden="true"></canvas>
 
   <main class="kiosk-viewport" role="main" aria-label="Kios Pengecekan Saldo Santri">
 
@@ -402,14 +485,23 @@
               <span>Reset Standby</span>
             </button>
           </div>
+
+          <div class="dev-presets-row" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;">
+            <button type="button" class="dev-preset-btn" data-balance="50000" style="background:#27272A;color:#A1A1AA;padding:6px 12px;border-radius:9999px;font-size:12px;font-weight:600;cursor:pointer;border:none;">Standard (50k)</button>
+            <button type="button" class="dev-preset-btn" data-balance="200000" style="background:#27272A;color:#E2E8F0;padding:6px 12px;border-radius:9999px;font-size:12px;font-weight:600;cursor:pointer;border:none;">Silver (200k)</button>
+            <button type="button" class="dev-preset-btn" data-balance="400000" style="background:#27272A;color:#FACC15;padding:6px 12px;border-radius:9999px;font-size:12px;font-weight:600;cursor:pointer;border:none;">Gold (400k)</button>
+            <button type="button" class="dev-preset-btn" data-balance="750000" style="background:#27272A;color:#38BDF8;padding:6px 12px;border-radius:9999px;font-size:12px;font-weight:600;cursor:pointer;border:none;">Platinum (750k)</button>
+            <button type="button" class="dev-preset-btn" data-balance="1200000" style="background:#27272A;color:#60A5FA;padding:6px 12px;border-radius:9999px;font-size:12px;font-weight:600;cursor:pointer;border:none;">Diamond (1.2M)</button>
+            <button type="button" class="dev-preset-btn" data-balance="1850000" style="background:rgba(245,158,11,0.2);color:#FDE047;border:1px solid rgba(250,204,21,0.4);padding:6px 12px;border-radius:9999px;font-size:12px;font-weight:700;cursor:pointer;">Glory (1.85M)</button>
+          </div>
         </form>
       </div>
     </div>
   </dialog>
 
-  <script src="js/kiosk-config.js?v=20261028j"></script>
-  <script src="js/kiosk-lock.js?v=20261028j"></script>
-  <script src="js/kiosk-api.js?v=20261028j"></script>
-  <script src="js/app.js?v=20261028j"></script>
+  <script src="js/kiosk-config.js?v=20261028k"></script>
+  <script src="js/kiosk-lock.js?v=20261028k"></script>
+  <script src="js/kiosk-api.js?v=20261028k"></script>
+  <script src="js/app.js?v=20261028k"></script>
 </body>
 </html>

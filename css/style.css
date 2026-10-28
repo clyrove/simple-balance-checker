@@ -816,6 +816,22 @@ body.tier-prismatic .kiosk-glory-fog-canvas {
   opacity: 1;
 }
 
+.kiosk-glory-sparkles-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+body.tier-glory .kiosk-glory-sparkles-canvas,
+body.tier-prismatic .kiosk-glory-sparkles-canvas {
+  opacity: 1;
+}
+
 /* Fixed-footprint Frame for 16:9 Landscape Screen */
 .kiosk-card-frame {
   width: 100%;
@@ -828,7 +844,7 @@ body.tier-prismatic .kiosk-glory-fog-canvas {
   display: grid;
   grid-template-areas: "kiosk-screen";
   position: relative;
-  z-index: 2;
+  z-index: 3;
   overflow: hidden;
 }
 
@@ -1595,6 +1611,76 @@ body.tier-prismatic .kiosk-glory-fog-canvas {
   letter-spacing: var(--tracking-tighter);
   color: #F4F4F5;
   line-height: 1.2;
+}
+
+/* Tier Glory: Sparkling Gold Text Effect on User Card Name */
+body.tier-glory .user-display-name,
+body.tier-prismatic .user-display-name {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  background-image:
+    linear-gradient(
+      60deg,
+      transparent 0%,
+      transparent 32%,
+      rgba(255, 255, 255, 0.45) 38%,
+      rgba(255, 255, 255, 1) 48%,
+      rgba(254, 240, 138, 1) 52%,
+      rgba(255, 255, 255, 1) 56%,
+      rgba(250, 204, 21, 0.5) 62%,
+      transparent 70%,
+      transparent 100%
+    ),
+    linear-gradient(
+      180deg,
+      #FFFFFF 0%,
+      #FEF08A 22%,
+      #FDE047 44%,
+      #F59E0B 72%,
+      #D97706 90%,
+      #B45309 100%
+    ) !important;
+  background-size: 320% 320%, 100% 100% !important;
+  background-position: 130% 0%, 0% 0% !important;
+  background-repeat: no-repeat !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  animation: glory-name-shine 2.8s cubic-bezier(0.22, 1, 0.36, 1) infinite !important;
+  filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.42)) drop-shadow(0 0 2px rgba(254, 240, 138, 0.65)) !important;
+  display: inline-block;
+  will-change: background-position, filter;
+}
+
+@keyframes glory-name-shine {
+  0% {
+    background-position: 130% 0%, 0% 0%;
+    filter: drop-shadow(0 0 7px rgba(245, 158, 11, 0.35)) drop-shadow(0 0 1px rgba(254, 240, 138, 0.5));
+  }
+  35% {
+    background-position: -40% 100%, 0% 0%;
+    filter: drop-shadow(0 0 16px rgba(250, 204, 21, 0.8)) drop-shadow(0 0 3px rgba(255, 255, 255, 0.95));
+  }
+  48% {
+    background-position: -60% 100%, 0% 0%;
+    filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.5)) drop-shadow(0 0 2px rgba(254, 240, 138, 0.7));
+  }
+  100% {
+    background-position: -60% 100%, 0% 0%;
+    filter: drop-shadow(0 0 7px rgba(245, 158, 11, 0.35)) drop-shadow(0 0 1px rgba(254, 240, 138, 0.5));
+  }
+}
+
+body.tier-glory .user-subcaption,
+body.tier-prismatic .user-subcaption {
+  color: #D97706 !important;
+  text-shadow: 0 0 8px rgba(245, 158, 11, 0.25);
+}
+
+body.tier-glory .user-avatar-squircle,
+body.tier-prismatic .user-avatar-squircle {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.24) 0%, #27272A 100%) !important;
+  color: #FDE047 !important;
+  box-shadow: 0 0 18px rgba(245, 158, 11, 0.22) !important;
 }
 
 .user-badge-group {
