@@ -23,19 +23,19 @@
   <style>
     html, body, .kiosk-body {
       background-color: #010101 !important;
-      color: #F8FAFC !important;
+      color: #F4F4F5 !important;
     }
     .kiosk-card-frame {
-      background: #0D121B !important;
+      background: #222226 !important;
     }
     .kiosk-inner-card {
-      background: #06080D !important;
-      color: #F8FAFC !important;
+      background: #121214 !important;
+      color: #F4F4F5 !important;
     }
     .kiosk-clock-showcase,
     .device-status-badge {
-      background: #0B0E14 !important;
-      color: #F8FAFC !important;
+      background: #18181B !important;
+      color: #F4F4F5 !important;
     }
     body.tier-silver .kiosk-card-frame {
       background: linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0%, rgba(148, 163, 184, 0.35) 50%, rgba(255, 255, 255, 0.5) 100%) !important;
@@ -49,14 +49,26 @@
     body.tier-diamond .kiosk-card-frame {
       background: linear-gradient(135deg, rgba(186, 230, 253, 0.8) 0%, #FFFFFF 25%, rgba(56, 189, 248, 0.7) 50%, rgba(192, 132, 252, 0.7) 75%, rgba(56, 189, 248, 0.85) 100%) !important;
     }
+    body.tier-glory .kiosk-card-frame,
     body.tier-prismatic .kiosk-card-frame {
-      background: linear-gradient(135deg, #F43F5E 0%, #A855F7 20%, #38BDF8 42%, #22C55E 65%, #EAB308 82%, #EC4899 100%) !important;
+      background: linear-gradient(135deg, #FDE047 0%, #D97706 20%, #F59E0B 40%, #FEF08A 60%, #B45309 80%, #FDE047 100%) !important;
+      background-size: 300% 300% !important;
+      animation: glory-card-border-flow 3.5s ease-in-out infinite alternate !important;
+    }
+    #kiosk-dev-modal :focus-visible,
+    .dev-squircle-dialog :focus-visible,
+    .dev-input:focus-visible,
+    .dev-btn:focus-visible,
+    .dev-modal-close:focus-visible {
+      outline: 3px solid #00D2FF !important;
+      outline-width: 3px !important;
+      outline-offset: 3px !important;
     }
   </style>
 
-  <link rel="stylesheet" href="css/tokens.css?v=20261028h">
-  <link rel="stylesheet" href="css/style.css?v=20261028h">
-  <link rel="stylesheet" href="css/kiosk-extra.css?v=20261028h">
+  <link rel="stylesheet" href="css/tokens.css?v=20261028i">
+  <link rel="stylesheet" href="css/style.css?v=20261028i">
+  <link rel="stylesheet" href="css/kiosk-extra.css?v=20261028i">
 </head>
 <body class="kiosk-body">
 
@@ -72,11 +84,11 @@
     <div class="diamond-crystal-glint-layer"></div>
   </div>
 
-  <div id="kiosk-prismatic-backdrop" class="kiosk-prismatic-backdrop" aria-hidden="true">
-    <div class="prismatic-light-rays"></div>
-    <div class="prismatic-glow-layer"></div>
-    <svg id="kiosk-prismatic-mosaic" class="prismatic-triangle-mosaic" viewBox="0 0 1600 900" preserveAspectRatio="none"></svg>
-    <div class="prismatic-crystal-glint-layer"></div>
+  <div id="kiosk-glory-backdrop" class="kiosk-glory-backdrop kiosk-prismatic-backdrop" aria-hidden="true">
+    <div class="glory-light-rays prismatic-light-rays"></div>
+    <div class="glory-glow-layer prismatic-glow-layer"></div>
+    <svg id="kiosk-glory-mosaic" class="glory-triangle-mosaic prismatic-triangle-mosaic" viewBox="0 0 1600 900" preserveAspectRatio="none"></svg>
+    <div class="glory-crystal-glint-layer prismatic-crystal-glint-layer"></div>
   </div>
 
   <main class="kiosk-viewport" role="main" aria-label="Kios Pengecekan Saldo Santri">
@@ -334,9 +346,9 @@
     </div>
   </dialog>
 
-  <script src="js/kiosk-config.js?v=20261028h"></script>
-  <script src="js/kiosk-lock.js?v=20261028h"></script>
-  <script src="js/kiosk-api.js?v=20261028h"></script>
-  <script src="js/app.js?v=20261028h"></script>
+  <script src="js/kiosk-config.js?v=20261028i"></script>
+  <script src="js/kiosk-lock.js?v=20261028i"></script>
+  <script src="js/kiosk-api.js?v=20261028i"></script>
+  <script src="js/app.js?v=20261028i"></script>
 </body>
 </html>

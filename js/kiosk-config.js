@@ -70,19 +70,19 @@
     },
     colors: {
       background: '#010101',
-      backgroundSubtle: '#080A0E',
-      foreground: '#F8FAFC',
+      backgroundSubtle: '#0B0B0C',
+      foreground: '#F4F4F5',
       primaryNavy: '#38BDF8',
-      surfaceNavy: '#1E293B',
-      cardSurface: '#06080D',
-      cardFrameOuter: '#0D121B',
-      userPlateBg: 'rgba(255, 255, 255, 0.04)',
+      surfaceNavy: '#27272A',
+      cardSurface: '#121214',
+      cardFrameOuter: '#222226',
+      userPlateBg: '#18181B',
       accent: 'rgba(250, 204, 21, 0.16)',
-      accentLight: 'linear-gradient(135deg, #101622 0%, #161F30 50%, #0D121B 100%)',
+      accentLight: 'linear-gradient(135deg, #1C1C20 0%, #26262B 50%, #17171A 100%)',
       accentDeep: '#FACC15',
       accentText: '#FDE047',
-      textPrimary: '#F8FAFC',
-      textMuted: '#94A3B8',
+      textPrimary: '#F4F4F5',
+      textMuted: '#A1A1AA',
       textOnNavy: '#FFFFFF',
       success: '#4ADE80',
       successBg: 'rgba(34, 197, 94, 0.16)',
@@ -122,12 +122,13 @@
         goldMax: 499000,
         platinumMax: 899000,
         diamondMax: 1549999,
+        gloryMin: 1550000,
         prismaticMin: 1550000
       },
       getTierKey: function (amount) {
         const val = Math.round(Number(amount) || 0);
         const t = this.thresholds;
-        if (val >= t.prismaticMin) return 'prismatic';
+        if (val >= (t.gloryMin || t.prismaticMin)) return 'glory';
         if (val > t.platinumMax) return 'diamond';
         if (val > t.goldMax) return 'platinum';
         if (val > t.silverMax) return 'gold';
@@ -146,8 +147,11 @@
       diamond: {
         confettiColors: ['#FFFFFF', '#E0F2FE', '#BAE6FD', '#7DD3FC', '#38BDF8', '#C084FC', '#A78BFA']
       },
+      glory: {
+        confettiColors: ['#FFE57F', '#FFD700', '#F59E0B', '#D97706', '#FEF08A', '#FFFBEB', '#B45309', '#FBBF24']
+      },
       prismatic: {
-        confettiColors: ['#FFFFFF', '#F43F5E', '#EC4899', '#C084FC', '#818CF8', '#38BDF8', '#34D399', '#FDE047']
+        confettiColors: ['#FFE57F', '#FFD700', '#F59E0B', '#D97706', '#FEF08A', '#FFFBEB', '#B45309', '#FBBF24']
       }
     },
     api: {
@@ -175,7 +179,7 @@
     root.style.setProperty('--navy-primary', c.primaryNavy);
     root.style.setProperty('--surface-card-inner', c.cardSurface);
     root.style.setProperty('--surface-card-outer', c.cardFrameOuter);
-    root.style.setProperty('--color-white', '#0B0E14');
+    root.style.setProperty('--color-white', '#18181B');
     root.style.setProperty('--pastel-yellow', c.accent);
     root.style.setProperty('--surface-hero-balance', c.accentLight);
     root.style.setProperty('--navy-muted', c.textMuted);

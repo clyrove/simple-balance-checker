@@ -127,20 +127,19 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const diamondShardColors = [
-    'rgba(186, 230, 253, 0.16)', 'rgba(56, 189, 248, 0.10)', 'rgba(224, 242, 254, 0.12)',
-    'rgba(255, 255, 255, 0.22)', 'rgba(147, 197, 253, 0.08)', 'rgba(199, 210, 254, 0.10)',
-    'rgba(125, 211, 252, 0.12)', 'rgba(255, 255, 255, 0.18)', 'rgba(56, 189, 248, 0.08)',
-    'rgba(186, 230, 253, 0.14)'
+    'rgba(186, 230, 253, 0.08)', 'rgba(56, 189, 248, 0.06)', 'rgba(224, 242, 254, 0.07)',
+    'rgba(255, 255, 255, 0.12)', 'rgba(147, 197, 253, 0.05)', 'rgba(199, 210, 254, 0.06)',
+    'rgba(125, 211, 252, 0.07)', 'rgba(255, 255, 255, 0.10)'
   ];
-  buildTriangularMosaic('kiosk-diamond-mosaic', 'diamond-shard', 'diamond-vertex-star', diamondShardColors, 6, 1.5);
+  buildTriangularMosaic('kiosk-diamond-mosaic', 'diamond-shard', 'diamond-vertex-star', diamondShardColors, 5, 1.2);
 
-  const prismaticShardColors = [
-    'rgba(244, 114, 182, 0.14)', 'rgba(167, 139, 250, 0.14)', 'rgba(56, 189, 248, 0.14)',
-    'rgba(52, 211, 153, 0.12)', 'rgba(250, 204, 21, 0.12)', 'rgba(244, 114, 182, 0.10)',
-    'rgba(255, 255, 255, 0.22)', 'rgba(129, 140, 248, 0.12)', 'rgba(56, 189, 248, 0.10)',
-    'rgba(238, 242, 255, 0.12)'
+  const gloryShardColors = [
+    'rgba(250, 204, 21, 0.10)', 'rgba(234, 179, 8, 0.08)', 'rgba(254, 240, 138, 0.12)',
+    'rgba(255, 255, 255, 0.14)', 'rgba(245, 158, 11, 0.08)', 'rgba(253, 224, 71, 0.10)',
+    'rgba(217, 119, 6, 0.06)', 'rgba(254, 249, 195, 0.12)'
   ];
-  buildTriangularMosaic('kiosk-prismatic-mosaic', 'prismatic-shard', 'prismatic-vertex-star', prismaticShardColors, 6, 1.5);
+  buildTriangularMosaic('kiosk-glory-mosaic', 'glory-shard', 'glory-vertex-star', gloryShardColors, 5, 1.2);
+  buildTriangularMosaic('kiosk-prismatic-mosaic', 'glory-shard', 'glory-vertex-star', gloryShardColors, 5, 1.2);
 
   function clearConfetti() {
     if (confettiWaveTimer) {
@@ -159,8 +158,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function spawnThreeCannonBurst(width, height, palette, tier, countPerCannon) {
-    const shapes = (tier === 'prismatic' || tier === 'diamond')
-      ? ['triangle_shard', 'triangle_shard', 'crystal', 'sparkle']
+    const isGoldTier = (tier === 'glory' || tier === 'prismatic' || tier === 'gold');
+    const shapes = (tier === 'glory' || tier === 'prismatic' || tier === 'diamond')
+      ? ['triangle_shard', 'crystal', 'sparkle', 'triangle_shard']
       : ['crystal', 'crystal', 'crystal', 'sparkle'];
 
     for (let i = 0; i < countPerCannon; i++) {
@@ -246,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     confettiParticles = [];
 
-    if (tier === 'prismatic' || tier === 'diamond') {
+    if (tier === 'glory' || tier === 'prismatic' || tier === 'diamond') {
       spawnThreeCannonBurst(width, height, palette, tier, 26);
       confettiWaveTimer = setTimeout(() => {
         spawnThreeCannonBurst(width, height, palette, tier, 22);
@@ -316,7 +316,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.lineTo(r * 0.9, r * 0.75);
             ctx.lineTo(0, r * 0.1);
             ctx.closePath();
-            ctx.fillStyle = 'rgba(255, 228, 230, 0.82)';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
             ctx.fill();
           } else if (p.shape === 'crystal') {
             ctx.scale(Math.cos(p.wobble) * 0.85 + 0.15, 1);
@@ -387,15 +387,19 @@ document.addEventListener('DOMContentLoaded', () => {
       : 'standard';
 
     if (heroBalancePlate) {
-      heroBalancePlate.classList.remove('tier-prismatic', 'tier-diamond', 'tier-platinum', 'tier-gold', 'tier-silver', 'tier-standard');
+      heroBalancePlate.classList.remove('tier-glory', 'tier-prismatic', 'tier-diamond', 'tier-platinum', 'tier-gold', 'tier-silver', 'tier-standard');
       heroBalancePlate.classList.add(`tier-${tier}`);
+      if (tier === 'glory') {
+        heroBalancePlate.classList.add('tier-prismatic');
+      }
     }
 
     document.body.classList.toggle('tier-silver', tier === 'silver');
     document.body.classList.toggle('tier-gold', tier === 'gold');
     document.body.classList.toggle('tier-platinum', tier === 'platinum');
     document.body.classList.toggle('tier-diamond', tier === 'diamond');
-    document.body.classList.toggle('tier-prismatic', tier === 'prismatic');
+    document.body.classList.toggle('tier-glory', tier === 'glory' || tier === 'prismatic');
+    document.body.classList.toggle('tier-prismatic', tier === 'glory' || tier === 'prismatic');
 
     triggerShiningSweep();
 
@@ -408,9 +412,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function resetBalanceTier() {
     clearConfetti();
-    document.body.classList.remove('tier-silver', 'tier-gold', 'tier-platinum', 'tier-diamond', 'tier-prismatic');
+    document.body.classList.remove('tier-silver', 'tier-gold', 'tier-platinum', 'tier-diamond', 'tier-glory', 'tier-prismatic');
     if (heroBalancePlate) {
-      heroBalancePlate.classList.remove('tier-prismatic', 'tier-diamond', 'tier-platinum', 'tier-gold', 'tier-silver');
+      heroBalancePlate.classList.remove('tier-glory', 'tier-prismatic', 'tier-diamond', 'tier-platinum', 'tier-gold', 'tier-silver');
       heroBalancePlate.classList.add('tier-standard');
     }
     if (balanceAmountEl) {
@@ -608,7 +612,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tier = (CONFIG.tiers && typeof CONFIG.tiers.getTierKey === 'function')
       ? CONFIG.tiers.getTierKey(targetAmount)
       : 'standard';
-    const isSpecial = tier === 'diamond' || tier === 'prismatic';
+    const isSpecial = tier === 'diamond' || tier === 'glory' || tier === 'prismatic';
     const counterSpeed = isSpecial ? 0.86 : ((CONFIG.animation && CONFIG.animation.counterSpeed) || 0.4);
     const counterEasing = isSpecial ? 'expo.out' : ((CONFIG.animation && CONFIG.animation.counterEasing) || 'power2.out');
     const bounceSpeed = (CONFIG.animation && CONFIG.animation.splitBounceSpeed) || 0.35;
@@ -756,7 +760,7 @@ document.addEventListener('DOMContentLoaded', () => {
       stateTransitionTl = null;
     }
     isTransitioning = true;
-    document.body.classList.remove('tier-silver', 'tier-gold', 'tier-platinum', 'tier-diamond', 'tier-prismatic');
+    document.body.classList.remove('tier-silver', 'tier-gold', 'tier-platinum', 'tier-diamond', 'tier-glory', 'tier-prismatic');
 
     if (!hasGsap) {
       activeView.classList.remove('active');
